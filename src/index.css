@@ -1,8 +1,9 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. */
+/* Fabel Brand Design System */
 
 @layer base {
   :root {
@@ -34,61 +35,40 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 222.2 84% 4.9%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Fabel Brand Colors */
+    --soft-gold: 43 35% 72%;
+    --misty-grey-blue: 174 15% 74%;
+    --soft-blush: 355 19% 73%;
+    --muted-teal: 199 23% 72%;
+    
+    --fabel-primary: var(--soft-gold);
+    --fabel-secondary: var(--misty-grey-blue);
+    --fabel-accent: var(--soft-blush);
+    --fabel-neutral: var(--muted-teal);
   }
 
   .dark {
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
-
     --card: 222.2 84% 4.9%;
     --card-foreground: 210 40% 98%;
-
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
-
     --primary: 210 40% 98%;
     --primary-foreground: 222.2 47.4% 11.2%;
-
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
-
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
-
     --accent: 217.2 32.6% 17.5%;
     --accent-foreground: 210 40% 98%;
-
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
-
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
   }
 }
 
@@ -98,6 +78,80 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer utilities {
+  .text-fabel-primary {
+    color: hsl(var(--fabel-primary));
+  }
+  
+  .text-fabel-secondary {
+    color: hsl(var(--fabel-secondary));
+  }
+  
+  .text-fabel-accent {
+    color: hsl(var(--fabel-accent));
+  }
+  
+  .text-fabel-neutral {
+    color: hsl(var(--fabel-neutral));
+  }
+  
+  .bg-fabel-primary {
+    background-color: hsl(var(--fabel-primary));
+  }
+  
+  .bg-fabel-secondary {
+    background-color: hsl(var(--fabel-secondary));
+  }
+  
+  .bg-fabel-accent {
+    background-color: hsl(var(--fabel-accent));
+  }
+  
+  .bg-fabel-neutral {
+    background-color: hsl(var(--fabel-neutral));
+  }
+  
+  .border-fabel-primary {
+    border-color: hsl(var(--fabel-primary));
+  }
+  
+  .gradient-fabel {
+    background: linear-gradient(135deg, hsl(var(--fabel-primary)) 0%, hsl(var(--fabel-secondary)) 50%, hsl(var(--fabel-accent)) 100%);
+  }
+  
+  .animate-fade-in-up {
+    animation: fadeInUp 0.6s ease-out forwards;
+  }
+  
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
   }
 }
