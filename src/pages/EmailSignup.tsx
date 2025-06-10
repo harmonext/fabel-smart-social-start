@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const EmailSignup = () => {
   const [formData, setFormData] = useState({
@@ -45,24 +46,48 @@ const EmailSignup = () => {
 
     setIsLoading(true);
     
-    // TODO: Implement actual registration logic
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Store email for OTP verification
-      sessionStorage.setItem('verificationEmail', formData.email);
-      
-      toast({
-        title: "Account created successfully!",
-        description: "Please check your email for verification code."
+      const { error } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/dashboard`,
+          data: {
+            first_name: formData.firstName,
+            last_name: formData.lastName,
+          }
+        }
       });
-      
-      navigate('/signup/verify-email');
+
+      if (error) {
+        if (error.message.includes('User already registered')) {
+          toast({
+            title: "Account already exists",
+            description: "An account with this email already exists. Please sign in instead.",
+            variant: "destructive"
+          });
+        } else {
+          toast({
+            title: "Registration failed",
+            description: error.message,
+            variant: "destructive"
+          });
+        }
+      } else {
+        // Store email for verification page
+        sessionStorage.setItem('verificationEmail', formData.email);
+        
+        toast({
+          title: "Check your email!",
+          description: "We've sent you a verification link. Please check your email and click the link to verify your account."
+        });
+        
+        navigate('/signup/verify-email');
+      }
     } catch (error) {
       toast({
         title: "Registration failed",
-        description: "Something went wrong. Please try again.",
+        description: "An unexpected error occurred. Please try again.",
         variant: "destructive"
       });
     } finally {
