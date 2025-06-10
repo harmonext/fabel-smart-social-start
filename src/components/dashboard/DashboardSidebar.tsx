@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { 
   Sidebar, 
@@ -36,6 +37,7 @@ const DashboardSidebar = ({
   setActiveSubTab 
 }: DashboardSidebarProps) => {
   const [expandedSections, setExpandedSections] = useState<string[]>(["company-profile", "content-management"]);
+  const navigate = useNavigate();
 
   const toggleSection = (section: string) => {
     setExpandedSections(prev => 
@@ -52,6 +54,12 @@ const DashboardSidebar = ({
     } else {
       setActiveSubTab("");
     }
+  };
+
+  const handleLogout = () => {
+    // TODO: Add actual logout logic here when authentication is implemented
+    console.log("User logged out");
+    navigate("/");
   };
 
   const isExpanded = (section: string) => expandedSections.includes(section);
@@ -200,6 +208,7 @@ const DashboardSidebar = ({
         <Button
           variant="ghost"
           className="w-full justify-start text-left h-10 text-destructive hover:text-destructive hover:bg-destructive/10"
+          onClick={handleLogout}
         >
           <LogOut className="h-4 w-4 mr-3" />
           Logout
