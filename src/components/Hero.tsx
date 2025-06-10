@@ -4,6 +4,13 @@ import { ArrowRight, Play } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Hero = () => {
+  const scrollToHowItWorks = () => {
+    const howItWorksSection = document.getElementById('how-it-works');
+    if (howItWorksSection) {
+      howItWorksSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <section className="pt-32 pb-20 px-6">
       <div className="container mx-auto">
@@ -30,6 +37,7 @@ const Hero = () => {
               variant="outline" 
               size="lg"
               className="border-2 px-8 py-4 text-lg rounded-xl transition-all duration-300 hover:scale-105"
+              onClick={scrollToHowItWorks}
             >
               <Play className="mr-2 h-5 w-5" />
               See How It Works
