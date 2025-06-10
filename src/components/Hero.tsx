@@ -2,8 +2,11 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Play } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Hero = () => {
+  const { user } = useAuth();
+
   const scrollToHowItWorks = () => {
     const howItWorksSection = document.getElementById('how-it-works');
     if (howItWorksSection) {
@@ -28,8 +31,8 @@ const Hero = () => {
               size="lg" 
               className="gradient-fabel text-white hover:opacity-90 px-8 py-4 text-lg rounded-xl transition-all duration-300 hover:scale-105 shadow-lg"
             >
-              <Link to="/signup">
-                Sign Up Free
+              <Link to={user ? "/dashboard" : "/signup"}>
+                {user ? "Go to Dashboard" : "Sign Up Free"}
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>

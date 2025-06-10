@@ -9,6 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { Apple, Eye, EyeOff } from "lucide-react";
 import GoogleIcon from "@/components/auth/GoogleIcon";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -25,19 +26,28 @@ const Login = () => {
     setIsLoading(true);
     
     try {
-      // TODO: Implement actual login logic
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      toast({
-        title: "Welcome back!",
-        description: "You have successfully signed in."
+      const { error } = await supabase.auth.signInWithPassword({
+        email: formData.email,
+        password: formData.password,
       });
-      
-      navigate('/dashboard');
+
+      if (error) {
+        toast({
+          title: "Sign in failed",
+          description: error.message,
+          variant: "destructive"
+        });
+      } else {
+        toast({
+          title: "Welcome back!",
+          description: "You have successfully signed in."
+        });
+        navigate('/dashboard');
+      }
     } catch (error) {
       toast({
         title: "Sign in failed",
-        description: "Invalid email or password. Please try again.",
+        description: "An unexpected error occurred. Please try again.",
         variant: "destructive"
       });
     } finally {
@@ -45,9 +55,29 @@ const Login = () => {
     }
   };
 
-  const handleSocialLogin = (provider: 'google' | 'apple') => {
-    // TODO: Implement social authentication
-    console.log(`Signing in with ${provider}`);
+  const handleSocialLogin = async (provider: 'google' | 'apple') => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: `${window.location.origin}/dashboard`
+        }
+      });
+
+      if (error) {
+        toast({
+          title: "Authentication failed",
+          description: error.message,
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Authentication failed",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
