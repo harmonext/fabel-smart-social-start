@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -51,7 +50,6 @@ const EmailSignup = () => {
         email: formData.email,
         password: formData.password,
         options: {
-          emailRedirectTo: `${window.location.origin}/dashboard`,
           data: {
             first_name: formData.firstName,
             last_name: formData.lastName,
@@ -74,12 +72,12 @@ const EmailSignup = () => {
           });
         }
       } else {
-        // Store email for verification page
+        // Store email for OTP verification page
         sessionStorage.setItem('verificationEmail', formData.email);
         
         toast({
           title: "Check your email!",
-          description: "We've sent you a verification link. Please check your email and click the link to verify your account."
+          description: "We've sent you a 6-digit verification code. Please check your email and enter the code to verify your account."
         });
         
         navigate('/signup/verify-email');

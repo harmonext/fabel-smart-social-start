@@ -3,11 +3,14 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { ArrowLeft, Mail } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
 const EmailVerification = () => {
+  const [otp, setOtp] = useState("");
+  const [isVerifying, setIsVerifying] = useState(false);
   const [isResending, setIsResending] = useState(false);
   const [resendTimer, setResendTimer] = useState(0);
   const [email, setEmail] = useState("");
@@ -33,7 +36,45 @@ const EmailVerification = () => {
     }
   }, [resendTimer]);
 
-  const handleResendVerification = async () => {
+  const handleVerifyOtp = async () => {
+    if (!email || otp.length !== 6) return;
+    
+    setIsVerifying(true);
+    
+    try {
+      const { error } = await supabase.auth.verifyOtp({
+        email: email,
+        token: otp,
+        type: 'signup'
+      });
+
+      if (error) {
+        toast({
+          title: "Verification failed",
+          description: error.message,
+          variant: "destructive"
+        });
+      } else {
+        toast({
+          title: "Email verified!",
+          description: "Your account has been successfully verified. You're now signed in."
+        });
+        // Clear the stored email
+        sessionStorage.removeItem('verificationEmail');
+        navigate('/dashboard');
+      }
+    } catch (error) {
+      toast({
+        title: "Verification failed",
+        description: "Please try again later.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsVerifying(false);
+    }
+  };
+
+  const handleResendCode = async () => {
     if (!email) return;
     
     setIsResending(true);
@@ -41,28 +82,25 @@ const EmailVerification = () => {
     try {
       const { error } = await supabase.auth.resend({
         type: 'signup',
-        email: email,
-        options: {
-          emailRedirectTo: `${window.location.origin}/dashboard`
-        }
+        email: email
       });
 
       if (error) {
         toast({
-          title: "Failed to resend verification",
+          title: "Failed to resend code",
           description: error.message,
           variant: "destructive"
         });
       } else {
         toast({
-          title: "Verification email sent",
-          description: "A new verification email has been sent to your email address."
+          title: "Verification code sent",
+          description: "A new 6-digit code has been sent to your email address."
         });
         setResendTimer(60);
       }
     } catch (error) {
       toast({
-        title: "Failed to resend verification",
+        title: "Failed to resend code",
         description: "Please try again later.",
         variant: "destructive"
       });
@@ -70,6 +108,13 @@ const EmailVerification = () => {
       setIsResending(false);
     }
   };
+
+  // Auto-verify when OTP is complete
+  useEffect(() => {
+    if (otp.length === 6) {
+      handleVerifyOtp();
+    }
+  }, [otp]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-soft-gold/20 via-background to-muted-teal/20 p-4">
@@ -80,38 +125,58 @@ const EmailVerification = () => {
               <Mail className="h-6 w-6 text-primary" />
             </div>
           </div>
-          <CardTitle className="text-2xl font-semibold">Check your email</CardTitle>
+          <CardTitle className="text-2xl font-semibold">Verify your email</CardTitle>
           <CardDescription>
-            We've sent a verification link to{" "}
+            We've sent a 6-digit code to{" "}
             <span className="font-medium text-foreground">{email}</span>
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
+          <div className="flex justify-center">
+            <InputOTP
+              maxLength={6}
+              value={otp}
+              onChange={(value) => setOtp(value)}
+              disabled={isVerifying}
+            >
+              <InputOTPGroup>
+                <InputOTPSlot index={0} />
+                <InputOTPSlot index={1} />
+                <InputOTPSlot index={2} />
+                <InputOTPSlot index={3} />
+                <InputOTPSlot index={4} />
+                <InputOTPSlot index={5} />
+              </InputOTPGroup>
+            </InputOTP>
+          </div>
+
           <div className="text-center space-y-4">
             <p className="text-sm text-muted-foreground">
-              Click the verification link in your email to complete your account setup.
+              Enter the 6-digit code sent to your email to verify your account.
             </p>
             
-            <p className="text-sm text-muted-foreground">
-              After clicking the link, you'll be automatically signed in and redirected to your dashboard.
-            </p>
+            {isVerifying && (
+              <p className="text-sm text-muted-foreground">
+                Verifying your code...
+              </p>
+            )}
           </div>
 
           <div className="text-center space-y-2">
             <p className="text-sm text-muted-foreground">
-              Didn't receive the email?
+              Didn't receive the code?
             </p>
             <Button
               variant="ghost"
               className="p-0 h-auto font-normal"
-              onClick={handleResendVerification}
+              onClick={handleResendCode}
               disabled={isResending || resendTimer > 0}
             >
               {isResending
                 ? "Sending..."
                 : resendTimer > 0
-                ? `Resend email in ${resendTimer}s`
-                : "Resend verification email"
+                ? `Resend code in ${resendTimer}s`
+                : "Resend verification code"
               }
             </Button>
           </div>
