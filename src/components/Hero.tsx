@@ -32,7 +32,7 @@ const Hero = () => {
               className="gradient-fabel text-white hover:opacity-90 px-8 py-4 text-lg rounded-xl transition-all duration-300 hover:scale-105 shadow-lg"
             >
               <Link to={user ? "/dashboard" : "/signup"}>
-                {user ? "Go to Dashboard" : "Sign Up Free"}
+                Sign Up Free
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
