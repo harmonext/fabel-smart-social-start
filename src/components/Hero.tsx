@@ -5,9 +5,9 @@ import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 
 const Hero = () => {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
 
-  console.log('Hero component - User state:', user?.email || 'no user');
+  console.log('Hero component - User state:', user?.email || 'no user', 'Loading:', loading);
 
   const scrollToHowItWorks = () => {
     const howItWorksSection = document.getElementById('how-it-works');
@@ -16,7 +16,8 @@ const Hero = () => {
     }
   };
 
-  const targetRoute = user ? "/dashboard" : "/signup";
+  // Only determine target route when not loading and we have definitive user state
+  const targetRoute = (!loading && user) ? "/dashboard" : "/signup";
   console.log('Hero component - Target route:', targetRoute);
 
   return (
