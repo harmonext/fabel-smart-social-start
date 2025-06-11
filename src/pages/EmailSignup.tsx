@@ -46,14 +46,16 @@ const EmailSignup = () => {
     setIsLoading(true);
     
     try {
-      const { error } = await supabase.auth.signUp({
+      // Sign up with email confirmation disabled (OTP will be sent instead)
+      const { data, error } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
         options: {
           data: {
             first_name: formData.firstName,
             last_name: formData.lastName,
-          }
+          },
+          emailRedirectTo: undefined // Disable email confirmation links
         }
       });
 
@@ -71,8 +73,8 @@ const EmailSignup = () => {
             variant: "destructive"
           });
         }
-      } else {
-        // Store email for OTP verification page
+      } else if (data.user && !data.session) {
+        // User created successfully but needs email verification via OTP
         sessionStorage.setItem('verificationEmail', formData.email);
         
         toast({
@@ -81,8 +83,16 @@ const EmailSignup = () => {
         });
         
         navigate('/signup/verify-email');
+      } else if (data.session) {
+        // User was created and automatically signed in (shouldn't happen with email confirmation)
+        toast({
+          title: "Account created!",
+          description: "Your account has been successfully created and you're now signed in."
+        });
+        navigate('/dashboard');
       }
     } catch (error) {
+      console.error('Signup error:', error);
       toast({
         title: "Registration failed",
         description: "An unexpected error occurred. Please try again.",
