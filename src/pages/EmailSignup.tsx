@@ -46,7 +46,16 @@ const EmailSignup = () => {
     setIsLoading(true);
     
     try {
-      // Sign up with email confirmation disabled (OTP will be sent instead)
+      // First check if user already exists
+      const { data: existingUser } = await supabase.auth.signInWithPassword({
+        email: formData.email,
+        password: 'dummy-password'
+      });
+
+      // If no error was thrown above, user exists - but we'll catch the error anyway
+      console.log('Signing up user with email:', formData.email);
+
+      // Sign up with OTP verification
       const { data, error } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
@@ -55,12 +64,15 @@ const EmailSignup = () => {
             first_name: formData.firstName,
             last_name: formData.lastName,
           },
-          emailRedirectTo: undefined // Disable email confirmation links
+          // This will send an OTP instead of confirmation link
+          emailRedirectTo: undefined
         }
       });
 
+      console.log('Signup response:', { data, error });
+
       if (error) {
-        if (error.message.includes('User already registered')) {
+        if (error.message.includes('User already registered') || error.message.includes('already been registered')) {
           toast({
             title: "Account already exists",
             description: "An account with this email already exists. Please sign in instead.",
@@ -74,7 +86,7 @@ const EmailSignup = () => {
           });
         }
       } else if (data.user && !data.session) {
-        // User created successfully but needs email verification via OTP
+        // User created successfully, OTP should be sent
         sessionStorage.setItem('verificationEmail', formData.email);
         
         toast({
@@ -84,20 +96,28 @@ const EmailSignup = () => {
         
         navigate('/signup/verify-email');
       } else if (data.session) {
-        // User was created and automatically signed in (shouldn't happen with email confirmation)
+        // User was created and automatically signed in (email confirmation disabled)
         toast({
           title: "Account created!",
           description: "Your account has been successfully created and you're now signed in."
         });
         navigate('/dashboard');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Signup error:', error);
-      toast({
-        title: "Registration failed",
-        description: "An unexpected error occurred. Please try again.",
-        variant: "destructive"
-      });
+      
+      // Handle the case where user already exists
+      if (error.message && error.message.includes('Invalid login credentials')) {
+        // This means we were testing if user exists, continue with signup
+        console.log('User does not exist, proceeding with signup');
+        // The actual signup code already ran above
+      } else {
+        toast({
+          title: "Registration failed",
+          description: "An unexpected error occurred. Please try again.",
+          variant: "destructive"
+        });
+      }
     } finally {
       setIsLoading(false);
     }

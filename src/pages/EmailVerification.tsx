@@ -42,19 +42,27 @@ const EmailVerification = () => {
     setIsVerifying(true);
     
     try {
-      const { error } = await supabase.auth.verifyOtp({
+      console.log('Verifying OTP for email:', email, 'OTP:', otp);
+      
+      const { data, error } = await supabase.auth.verifyOtp({
         email: email,
         token: otp,
         type: 'signup'
       });
 
+      console.log('OTP verification response:', { data, error });
+
       if (error) {
+        console.error('OTP verification error:', error);
         toast({
           title: "Verification failed",
-          description: error.message,
+          description: error.message || "Invalid verification code. Please try again.",
           variant: "destructive"
         });
-      } else {
+        // Clear the OTP field on error
+        setOtp("");
+      } else if (data.user) {
+        console.log('OTP verification successful, user:', data.user.email);
         toast({
           title: "Email verified!",
           description: "Your account has been successfully verified. You're now signed in."
@@ -63,12 +71,14 @@ const EmailVerification = () => {
         sessionStorage.removeItem('verificationEmail');
         navigate('/dashboard');
       }
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Unexpected OTP verification error:', error);
       toast({
         title: "Verification failed",
-        description: "Please try again later.",
+        description: "An unexpected error occurred. Please try again.",
         variant: "destructive"
       });
+      setOtp("");
     } finally {
       setIsVerifying(false);
     }
@@ -80,28 +90,34 @@ const EmailVerification = () => {
     setIsResending(true);
     
     try {
+      console.log('Resending OTP to email:', email);
+      
       const { error } = await supabase.auth.resend({
         type: 'signup',
         email: email
       });
 
       if (error) {
+        console.error('Resend OTP error:', error);
         toast({
           title: "Failed to resend code",
-          description: error.message,
+          description: error.message || "Unable to resend verification code. Please try again.",
           variant: "destructive"
         });
       } else {
+        console.log('OTP resent successfully');
         toast({
           title: "Verification code sent",
           description: "A new 6-digit code has been sent to your email address."
         });
         setResendTimer(60);
+        setOtp(""); // Clear current OTP
       }
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Unexpected resend error:', error);
       toast({
         title: "Failed to resend code",
-        description: "Please try again later.",
+        description: "An unexpected error occurred. Please try again.",
         variant: "destructive"
       });
     } finally {
