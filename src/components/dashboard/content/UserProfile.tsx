@@ -1,10 +1,11 @@
-
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { User, Mail, Phone, MapPin } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { User, Mail, Phone, MapPin, Edit, Save } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface UserProfileData {
   firstName: string;
@@ -16,6 +17,7 @@ interface UserProfileData {
 
 const UserProfile = () => {
   const { user } = useAuth();
+  const { toast } = useToast();
   const [profileData, setProfileData] = useState<UserProfileData>({
     firstName: "",
     lastName: "",
@@ -24,6 +26,8 @@ const UserProfile = () => {
     location: ""
   });
   const [isLoading, setIsLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -48,6 +52,47 @@ const UserProfile = () => {
       setIsLoading(false);
     }
   }, [user]);
+
+  const handleSaveProfile = async () => {
+    if (!user) return;
+    
+    setIsSaving(true);
+    try {
+      const { error } = await supabase.auth.updateUser({
+        data: {
+          first_name: profileData.firstName,
+          last_name: profileData.lastName,
+          phone: profileData.phone,
+          location: profileData.location
+        }
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Profile updated",
+        description: "Your profile has been successfully updated.",
+      });
+      
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update profile. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleInputChange = (field: keyof UserProfileData, value: string) => {
+    setProfileData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
 
   if (isLoading) {
     return (
@@ -96,15 +141,31 @@ const UserProfile = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <label className="text-sm font-medium text-foreground">First Name</label>
-              <div className="p-3 border rounded-lg bg-muted">
-                {profileData.firstName || "Not provided"}
-              </div>
+              {isEditing ? (
+                <Input
+                  value={profileData.firstName}
+                  onChange={(e) => handleInputChange('firstName', e.target.value)}
+                  placeholder="Enter first name"
+                />
+              ) : (
+                <div className="p-3 border rounded-lg bg-muted">
+                  {profileData.firstName || "Not provided"}
+                </div>
+              )}
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium text-foreground">Last Name</label>
-              <div className="p-3 border rounded-lg bg-muted">
-                {profileData.lastName || "Not provided"}
-              </div>
+              {isEditing ? (
+                <Input
+                  value={profileData.lastName}
+                  onChange={(e) => handleInputChange('lastName', e.target.value)}
+                  placeholder="Enter last name"
+                />
+              ) : (
+                <div className="p-3 border rounded-lg bg-muted">
+                  {profileData.lastName || "Not provided"}
+                </div>
+              )}
             </div>
           </div>
           
@@ -113,8 +174,9 @@ const UserProfile = () => {
               <Mail className="h-4 w-4" />
               Email Address
             </label>
-            <div className="p-3 border rounded-lg bg-muted">
+            <div className="p-3 border rounded-lg bg-muted text-muted-foreground">
               {profileData.email || "Not provided"}
+              <span className="text-xs ml-2">(Cannot be changed)</span>
             </div>
           </div>
           
@@ -123,9 +185,17 @@ const UserProfile = () => {
               <Phone className="h-4 w-4" />
               Phone Number
             </label>
-            <div className="p-3 border rounded-lg bg-muted">
-              {profileData.phone || "Not provided"}
-            </div>
+            {isEditing ? (
+              <Input
+                value={profileData.phone}
+                onChange={(e) => handleInputChange('phone', e.target.value)}
+                placeholder="Enter phone number"
+              />
+            ) : (
+              <div className="p-3 border rounded-lg bg-muted">
+                {profileData.phone || "Not provided"}
+              </div>
+            )}
           </div>
           
           <div className="space-y-2">
@@ -133,15 +203,47 @@ const UserProfile = () => {
               <MapPin className="h-4 w-4" />
               Location
             </label>
-            <div className="p-3 border rounded-lg bg-muted">
-              {profileData.location || "Not provided"}
-            </div>
+            {isEditing ? (
+              <Input
+                value={profileData.location}
+                onChange={(e) => handleInputChange('location', e.target.value)}
+                placeholder="Enter location"
+              />
+            ) : (
+              <div className="p-3 border rounded-lg bg-muted">
+                {profileData.location || "Not provided"}
+              </div>
+            )}
           </div>
           
-          <div className="pt-4">
-            <Button className="bg-fabel-primary hover:bg-fabel-primary/90">
-              Edit Profile
-            </Button>
+          <div className="pt-4 flex gap-2">
+            {isEditing ? (
+              <>
+                <Button 
+                  onClick={handleSaveProfile}
+                  disabled={isSaving}
+                  className="bg-fabel-primary hover:bg-fabel-primary/90"
+                >
+                  <Save className="h-4 w-4 mr-2" />
+                  {isSaving ? "Saving..." : "Save Profile"}
+                </Button>
+                <Button 
+                  variant="outline"
+                  onClick={() => setIsEditing(false)}
+                  disabled={isSaving}
+                >
+                  Cancel
+                </Button>
+              </>
+            ) : (
+              <Button 
+                onClick={() => setIsEditing(true)}
+                className="bg-fabel-primary hover:bg-fabel-primary/90"
+              >
+                <Edit className="h-4 w-4 mr-2" />
+                Edit Profile
+              </Button>
+            )}
           </div>
         </CardContent>
       </Card>
