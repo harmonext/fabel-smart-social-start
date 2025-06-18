@@ -16,10 +16,6 @@ const Hero = () => {
     }
   };
 
-  // Only determine target route when not loading and we have definitive user state
-  const targetRoute = (!loading && user) ? "/dashboard" : "/signup";
-  console.log('Hero component - Target route:', targetRoute);
-
   return (
     <section className="pt-32 pb-20 px-6">
       <div className="container mx-auto">
@@ -37,7 +33,7 @@ const Hero = () => {
               size="lg" 
               className="gradient-fabel text-white hover:opacity-90 px-8 py-4 text-lg rounded-xl transition-all duration-300 hover:scale-105 shadow-lg"
             >
-              <Link to={targetRoute}>
+              <Link to="/signup">
                 Sign Up Free
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
