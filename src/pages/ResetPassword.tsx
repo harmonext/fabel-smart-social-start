@@ -22,27 +22,11 @@ const ResetPassword = () => {
 
   useEffect(() => {
     const handlePasswordReset = async () => {
-      // Check if we have the required tokens from the URL
-      const accessToken = searchParams.get('access_token');
-      const refreshToken = searchParams.get('refresh_token');
-      
-      if (!accessToken || !refreshToken) {
-        toast({
-          title: "Invalid reset link",
-          description: "This reset link is invalid or has expired.",
-          variant: "destructive"
-        });
-        navigate('/forgot-password');
-        return;
-      }
-
+      // For password reset, Supabase automatically handles the session
+      // We just need to check if we have a valid session
       try {
-        // Set the session with the tokens from the URL
-        const { data, error } = await supabase.auth.setSession({
-          access_token: accessToken,
-          refresh_token: refreshToken
-        });
-
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
         if (error) {
           console.error('Session error:', error);
           toast({
@@ -54,18 +38,20 @@ const ResetPassword = () => {
           return;
         }
 
-        if (data.session) {
+        if (session && session.user) {
+          console.log('Valid reset session found for user:', session.user.email);
           setIsValidToken(true);
         } else {
+          console.log('No valid session found');
           toast({
-            title: "Session error",
-            description: "Unable to establish reset session.",
+            title: "Invalid reset link",
+            description: "This reset link is invalid or has expired. Please request a new one.",
             variant: "destructive"
           });
           navigate('/forgot-password');
         }
       } catch (error) {
-        console.error('Error setting session:', error);
+        console.error('Error checking session:', error);
         toast({
           title: "Error",
           description: "An error occurred while processing the reset link.",
@@ -76,7 +62,7 @@ const ResetPassword = () => {
     };
 
     handlePasswordReset();
-  }, [searchParams, navigate, toast]);
+  }, [navigate, toast]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -107,6 +93,7 @@ const ResetPassword = () => {
       });
 
       if (error) {
+        console.error('Password update error:', error);
         toast({
           title: "Error",
           description: error.message,
@@ -120,6 +107,7 @@ const ResetPassword = () => {
         navigate('/dashboard');
       }
     } catch (error) {
+      console.error('Unexpected error:', error);
       toast({
         title: "Error",
         description: "An unexpected error occurred. Please try again.",
