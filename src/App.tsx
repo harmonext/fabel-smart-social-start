@@ -12,6 +12,8 @@ import Signup from "./pages/Signup";
 import EmailSignup from "./pages/EmailSignup";
 import EmailVerification from "./pages/EmailVerification";
 import Login from "./pages/Login";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,6 +31,8 @@ const App = () => (
             <Route path="/signup/email" element={<EmailSignup />} />
             <Route path="/signup/verify-email" element={<EmailVerification />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route 
               path="/dashboard" 
               element={
