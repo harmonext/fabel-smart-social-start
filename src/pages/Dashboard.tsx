@@ -8,7 +8,7 @@ import { useOnboarding } from "@/hooks/useOnboarding";
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState("company-profile");
-  const [activeSubTab, setActiveSubTab] = useState("onboarding");
+  const [activeSubTab, setActiveSubTab] = useState("profile-survey");
   const { isCompleted, isLoading } = useOnboarding();
   const navigate = useNavigate();
 

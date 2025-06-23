@@ -119,23 +119,23 @@ const DashboardSidebar = ({
                   variant="ghost"
                   className={cn(
                     "w-full justify-start text-left h-9 text-sm",
-                    activeTab === "company-profile" && activeSubTab === "onboarding" && "bg-fabel-primary/10 text-fabel-primary"
-                  )}
-                  onClick={() => handleTabClick("company-profile", "onboarding")}
-                >
-                  <ClipboardList className="h-3 w-3 mr-3" />
-                  Onboarding
-                </Button>
-                <Button
-                  variant="ghost"
-                  className={cn(
-                    "w-full justify-start text-left h-9 text-sm",
                     activeTab === "company-profile" && activeSubTab === "profile-survey" && "bg-fabel-primary/10 text-fabel-primary"
                   )}
                   onClick={() => handleTabClick("company-profile", "profile-survey")}
                 >
                   <FileText className="h-3 w-3 mr-3" />
                   Profile Survey
+                </Button>
+                <Button
+                  variant="ghost"
+                  className={cn(
+                    "w-full justify-start text-left h-9 text-sm",
+                    activeTab === "company-profile" && activeSubTab === "onboarding" && "bg-fabel-primary/10 text-fabel-primary"
+                  )}
+                  onClick={() => handleTabClick("company-profile", "onboarding")}
+                >
+                  <ClipboardList className="h-3 w-3 mr-3" />
+                  Onboarding
                 </Button>
                 <Button
                   variant="ghost"

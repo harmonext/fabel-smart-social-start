@@ -19,16 +19,16 @@ const DashboardContent = ({ activeTab, activeSubTab }: DashboardContentProps) =>
     }
     
     if (activeTab === "company-profile") {
-      if (activeSubTab === "onboarding") {
-        return <OnboardingFlow />;
-      }
       if (activeSubTab === "profile-survey") {
         return <ProfileSurvey />;
+      }
+      if (activeSubTab === "onboarding") {
+        return <OnboardingFlow />;
       }
       if (activeSubTab === "personas") {
         return <Personas />;
       }
-      return <OnboardingFlow />; // Default to onboarding flow
+      return <ProfileSurvey />; // Default to profile survey
     }
     
     if (activeTab === "content-management") {
