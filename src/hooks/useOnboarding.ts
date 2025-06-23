@@ -32,17 +32,25 @@ export const useOnboarding = () => {
       }
 
       try {
-        const { data, error } = await supabase
-          .from('tenant_onboarding')
-          .select('id')
-          .eq('user_id', user.id)
-          .maybeSingle();
+        // Check both company details and onboarding completion
+        const [companyDetailsResult, onboardingResult] = await Promise.all([
+          supabase
+            .from('company_details')
+            .select('id')
+            .eq('user_id', user.id)
+            .maybeSingle(),
+          supabase
+            .from('tenant_onboarding')
+            .select('id')
+            .eq('user_id', user.id)
+            .maybeSingle()
+        ]);
 
-        if (error && error.code !== 'PGRST116') {
-          console.error('Error checking onboarding status:', error);
-        }
+        const hasCompanyDetails = !!companyDetailsResult.data;
+        const hasOnboarding = !!onboardingResult.data;
 
-        setIsCompleted(!!data);
+        // Both must be completed for full onboarding completion
+        setIsCompleted(hasCompanyDetails && hasOnboarding);
       } catch (error) {
         console.error('Error checking onboarding status:', error);
         setIsCompleted(false);
