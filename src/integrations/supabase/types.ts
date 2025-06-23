@@ -9,7 +9,60 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      tenant_onboarding: {
+        Row: {
+          business_name_description: string
+          completed_at: string
+          content_tone: string
+          created_at: string
+          customer_problem: string
+          customer_profile: string
+          customer_values: string
+          id: string
+          preferred_platforms: string[]
+          social_media_goals: string[]
+          target_segments: string
+          top_customer_questions: string
+          unique_selling_proposition: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          business_name_description: string
+          completed_at?: string
+          content_tone: string
+          created_at?: string
+          customer_problem: string
+          customer_profile: string
+          customer_values: string
+          id?: string
+          preferred_platforms?: string[]
+          social_media_goals?: string[]
+          target_segments: string
+          top_customer_questions: string
+          unique_selling_proposition: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          business_name_description?: string
+          completed_at?: string
+          content_tone?: string
+          created_at?: string
+          customer_problem?: string
+          customer_profile?: string
+          customer_values?: string
+          id?: string
+          preferred_platforms?: string[]
+          social_media_goals?: string[]
+          target_segments?: string
+          top_customer_questions?: string
+          unique_selling_proposition?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
