@@ -1,5 +1,5 @@
-
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { OnboardingData, useOnboarding } from "@/hooks/useOnboarding";
 
 const OnboardingForm = () => {
+  const navigate = useNavigate();
   const { saveOnboarding, isSaving } = useOnboarding();
   const [formData, setFormData] = useState<OnboardingData>({
     business_name_description: "",
@@ -98,7 +99,10 @@ const OnboardingForm = () => {
       return;
     }
 
-    await saveOnboarding(formData);
+    const success = await saveOnboarding(formData);
+    if (success) {
+      navigate('/dashboard');
+    }
   };
 
   return (
