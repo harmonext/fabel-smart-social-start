@@ -7,8 +7,8 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { useOnboarding } from "@/hooks/useOnboarding";
 
 const Dashboard = () => {
-  const [activeTab, setActiveTab] = useState("user-profile");
-  const [activeSubTab, setActiveSubTab] = useState("");
+  const [activeTab, setActiveTab] = useState("company-profile");
+  const [activeSubTab, setActiveSubTab] = useState("onboarding");
   const { isCompleted, isLoading } = useOnboarding();
   const navigate = useNavigate();
 

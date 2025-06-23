@@ -5,6 +5,7 @@ import Personas from "./content/Personas";
 import SocialConnections from "./content/SocialConnections";
 import ContentScheduling from "./content/ContentScheduling";
 import DashboardSettings from "./content/DashboardSettings";
+import OnboardingForm from "@/components/onboarding/OnboardingForm";
 
 interface DashboardContentProps {
   activeTab: string;
@@ -18,13 +19,16 @@ const DashboardContent = ({ activeTab, activeSubTab }: DashboardContentProps) =>
     }
     
     if (activeTab === "company-profile") {
+      if (activeSubTab === "onboarding") {
+        return <OnboardingForm />;
+      }
       if (activeSubTab === "profile-survey") {
         return <ProfileSurvey />;
       }
       if (activeSubTab === "personas") {
         return <Personas />;
       }
-      return <ProfileSurvey />; // Default to profile survey
+      return <OnboardingForm />; // Default to onboarding instead of profile survey
     }
     
     if (activeTab === "content-management") {

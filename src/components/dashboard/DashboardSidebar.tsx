@@ -19,7 +19,8 @@ import {
   Settings, 
   LogOut,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
+  ClipboardList
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -114,6 +115,17 @@ const DashboardSidebar = ({
             
             {isExpanded("company-profile") && (
               <div className="ml-7 mt-1 space-y-1">
+                <Button
+                  variant="ghost"
+                  className={cn(
+                    "w-full justify-start text-left h-9 text-sm",
+                    activeTab === "company-profile" && activeSubTab === "onboarding" && "bg-fabel-primary/10 text-fabel-primary"
+                  )}
+                  onClick={() => handleTabClick("company-profile", "onboarding")}
+                >
+                  <ClipboardList className="h-3 w-3 mr-3" />
+                  Onboarding
+                </Button>
                 <Button
                   variant="ghost"
                   className={cn(
