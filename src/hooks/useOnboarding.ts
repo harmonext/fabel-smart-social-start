@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -62,6 +61,45 @@ export const useOnboarding = () => {
     checkOnboardingStatus();
   }, [user]);
 
+  const fetchOnboardingData = async (): Promise<OnboardingData | null> => {
+    if (!user) {
+      return null;
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('tenant_onboarding')
+        .select('*')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (error) {
+        console.error('Error fetching onboarding data:', error);
+        return null;
+      }
+
+      if (data) {
+        return {
+          business_name_description: data.business_name_description,
+          customer_profile: data.customer_profile,
+          customer_problem: data.customer_problem,
+          unique_selling_proposition: data.unique_selling_proposition,
+          social_media_goals: data.social_media_goals,
+          content_tone: data.content_tone,
+          preferred_platforms: data.preferred_platforms,
+          top_customer_questions: data.top_customer_questions,
+          target_segments: data.target_segments,
+          customer_values: data.customer_values
+        };
+      }
+
+      return null;
+    } catch (error) {
+      console.error('Error fetching onboarding data:', error);
+      return null;
+    }
+  };
+
   const saveOnboarding = async (data: OnboardingData): Promise<boolean> => {
     if (!user) {
       toast({
@@ -115,6 +153,7 @@ export const useOnboarding = () => {
     isCompleted,
     isLoading,
     isSaving,
-    saveOnboarding
+    saveOnboarding,
+    fetchOnboardingData
   };
 };

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,7 +11,7 @@ import { OnboardingData, useOnboarding } from "@/hooks/useOnboarding";
 
 const OnboardingForm = () => {
   const navigate = useNavigate();
-  const { saveOnboarding, isSaving } = useOnboarding();
+  const { saveOnboarding, isSaving, fetchOnboardingData } = useOnboarding();
   const [formData, setFormData] = useState<OnboardingData>({
     business_name_description: "",
     customer_profile: "",
@@ -24,6 +24,7 @@ const OnboardingForm = () => {
     target_segments: "",
     customer_values: ""
   });
+  const [isLoadingData, setIsLoadingData] = useState(true);
 
   const socialMediaGoalsOptions = [
     "Brand Awareness",
@@ -50,6 +51,18 @@ const OnboardingForm = () => {
     "TikTok",
     "Other"
   ];
+
+  useEffect(() => {
+    const loadExistingData = async () => {
+      const existingData = await fetchOnboardingData();
+      if (existingData) {
+        setFormData(existingData);
+      }
+      setIsLoadingData(false);
+    };
+
+    loadExistingData();
+  }, [fetchOnboardingData]);
 
   const handleInputChange = (field: keyof OnboardingData, value: string) => {
     setFormData(prev => ({
@@ -101,6 +114,19 @@ const OnboardingForm = () => {
 
     await saveOnboarding(formData);
   };
+
+  if (isLoadingData) {
+    return (
+      <div className="max-w-4xl mx-auto">
+        <Card>
+          <CardContent className="flex items-center justify-center py-12">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <span className="ml-2">Loading your onboarding data...</span>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl mx-auto">
