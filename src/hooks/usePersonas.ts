@@ -127,11 +127,24 @@ export const usePersonas = () => {
     setIsSaving(true);
 
     try {
+      // Get the current user
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      
+      if (userError || !user) {
+        console.error('Error getting user:', userError);
+        toast({
+          title: "Authentication Error",
+          description: "You must be logged in to save personas.",
+          variant: "destructive"
+        });
+        return false;
+      }
+
       // First, delete existing saved personas for this user
       const { error: deleteError } = await supabase
         .from('saved_personas')
         .delete()
-        .neq('id', '00000000-0000-0000-0000-000000000000'); // Delete all user's personas
+        .eq('user_id', user.id);
 
       if (deleteError) {
         console.error('Error deleting existing personas:', deleteError);
@@ -147,6 +160,7 @@ export const usePersonas = () => {
         preferred_channels: persona.preferredChannels,
         buying_motivation: persona.buyingMotivation,
         content_preferences: persona.contentPreferences,
+        user_id: user.id,
       }));
 
       const { error: insertError } = await supabase
