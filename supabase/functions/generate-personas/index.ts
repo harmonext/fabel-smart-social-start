@@ -36,49 +36,69 @@ serve(async (req) => {
 
     console.log('Generating personas for user:', user.id);
 
-    // Fetch company details and onboarding data
+    // Fetch company details and onboarding data with better error handling
     const [companyDetailsResult, onboardingResult] = await Promise.all([
       supabase
         .from('company_details')
         .select('*')
         .eq('user_id', user.id)
-        .single(),
+        .maybeSingle(),
       supabase
         .from('tenant_onboarding')
         .select('*')
         .eq('user_id', user.id)
-        .single()
+        .maybeSingle()
     ]);
 
-    if (companyDetailsResult.error || onboardingResult.error) {
-      console.error('Error fetching user data:', companyDetailsResult.error, onboardingResult.error);
-      throw new Error('Could not fetch user profile data');
+    // Check for database errors (not "no data found" errors)
+    if (companyDetailsResult.error && companyDetailsResult.error.code !== 'PGRST116') {
+      console.error('Database error fetching company details:', companyDetailsResult.error);
+      throw new Error('Failed to fetch company details');
+    }
+
+    if (onboardingResult.error && onboardingResult.error.code !== 'PGRST116') {
+      console.error('Database error fetching onboarding data:', onboardingResult.error);
+      throw new Error('Failed to fetch onboarding data');
     }
 
     const companyDetails = companyDetailsResult.data;
     const onboardingData = onboardingResult.data;
 
+    // Check if we have enough data to generate personas
+    if (!companyDetails && !onboardingData) {
+      return new Response(JSON.stringify({ 
+        error: 'Please complete your company profile and onboarding survey first to generate personalized personas.' 
+      }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     // Create a comprehensive prompt for persona generation
-    const prompt = `Based on the following company and business information, generate 3 detailed marketing personas in JSON format.
+    let prompt = `Generate 3 detailed marketing personas in JSON format for a business. `;
 
-Company Information:
-- Company Name: ${companyDetails.company_name}
-- Industry: ${companyDetails.company_industry}
-- Location: ${companyDetails.company_address}
+    if (companyDetails) {
+      prompt += `\n\nCompany Information:
+- Company Name: ${companyDetails.company_name || 'Not provided'}
+- Industry: ${companyDetails.company_industry || 'Not provided'}
+- Location: ${companyDetails.company_address || 'Not provided'}`;
+    }
 
-Business Details:
-- Business Description: ${onboardingData.business_name_description}
-- Customer Profile: ${onboardingData.customer_profile}
-- Customer Problem: ${onboardingData.customer_problem}
-- Unique Selling Proposition: ${onboardingData.unique_selling_proposition}
-- Social Media Goals: ${onboardingData.social_media_goals.join(', ')}
-- Content Tone: ${onboardingData.content_tone}
-- Preferred Platforms: ${onboardingData.preferred_platforms.join(', ')}
-- Top Customer Questions: ${onboardingData.top_customer_questions}
-- Target Segments: ${onboardingData.target_segments}
-- Customer Values: ${onboardingData.customer_values}
+    if (onboardingData) {
+      prompt += `\n\nBusiness Details:
+- Business Description: ${onboardingData.business_name_description || 'Not provided'}
+- Customer Profile: ${onboardingData.customer_profile || 'Not provided'}
+- Customer Problem: ${onboardingData.customer_problem || 'Not provided'}
+- Unique Selling Proposition: ${onboardingData.unique_selling_proposition || 'Not provided'}
+- Social Media Goals: ${onboardingData.social_media_goals?.join(', ') || 'Not provided'}
+- Content Tone: ${onboardingData.content_tone || 'Not provided'}
+- Preferred Platforms: ${onboardingData.preferred_platforms?.join(', ') || 'Not provided'}
+- Top Customer Questions: ${onboardingData.top_customer_questions || 'Not provided'}
+- Target Segments: ${onboardingData.target_segments || 'Not provided'}
+- Customer Values: ${onboardingData.customer_values || 'Not provided'}`;
+    }
 
-Please generate 3 distinct marketing personas that would be ideal customers for this business. For each persona, provide:
+    prompt += `\n\nPlease generate 3 distinct marketing personas that would be ideal customers for this business. For each persona, provide:
 - name: A descriptive persona name
 - description: A brief description of who they are
 - demographics: Age range, education, location, occupation details

@@ -37,11 +37,21 @@ export const usePersonas = () => {
 
       if (data.error) {
         console.error('Error from generate-personas function:', data.error);
-        toast({
-          title: "Error", 
-          description: data.error,
-          variant: "destructive"
-        });
+        
+        // Handle specific error about incomplete profile
+        if (data.error.includes('complete your company profile')) {
+          toast({
+            title: "Profile Incomplete", 
+            description: data.error,
+            variant: "destructive"
+          });
+        } else {
+          toast({
+            title: "Error", 
+            description: data.error,
+            variant: "destructive"
+          });
+        }
         return false;
       }
 
