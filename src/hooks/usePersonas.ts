@@ -23,39 +23,33 @@ export const usePersonas = () => {
     setIsLoading(true);
 
     try {
+      console.log('Starting persona generation...');
       const { data, error } = await supabase.functions.invoke('generate-personas');
 
       if (error) {
         console.error('Error calling generate-personas function:', error);
         toast({
-          title: "Error",
-          description: "Failed to generate personas. Please try again.",
+          title: "Connection Error",
+          description: "Failed to connect to the persona generation service. Please try again.",
           variant: "destructive"
         });
         return false;
       }
 
+      console.log('Function response:', data);
+
       if (data.error) {
         console.error('Error from generate-personas function:', data.error);
-        
-        // Handle specific error about incomplete profile
-        if (data.error.includes('complete your company profile')) {
-          toast({
-            title: "Profile Incomplete", 
-            description: data.error,
-            variant: "destructive"
-          });
-        } else {
-          toast({
-            title: "Error", 
-            description: data.error,
-            variant: "destructive"
-          });
-        }
+        toast({
+          title: "Generation Error", 
+          description: data.error,
+          variant: "destructive"
+        });
         return false;
       }
 
       if (data.personas && Array.isArray(data.personas)) {
+        console.log('Setting personas:', data.personas);
         setPersonas(data.personas);
         toast({
           title: "Success",
@@ -63,13 +57,14 @@ export const usePersonas = () => {
         });
         return true;
       } else {
-        throw new Error('Invalid response format');
+        console.error('Invalid response format:', data);
+        throw new Error('Invalid response format from persona generation service');
       }
     } catch (error) {
       console.error('Error generating personas:', error);
       toast({
-        title: "Error",
-        description: "An unexpected error occurred while generating personas.",
+        title: "Unexpected Error",
+        description: "An unexpected error occurred while generating personas. Please try again.",
         variant: "destructive"
       });
       return false;

@@ -17,6 +17,7 @@ serve(async (req) => {
   try {
     const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
     if (!OPENAI_API_KEY) {
+      console.error('OPENAI_API_KEY is not set');
       throw new Error('OPENAI_API_KEY is not set');
     }
 
@@ -31,53 +32,45 @@ serve(async (req) => {
     const { data: { user }, error: authError } = await supabase.auth.getUser(token);
 
     if (authError || !user) {
+      console.error('Authentication error:', authError);
       throw new Error('Unauthorized');
     }
 
     console.log('Generating personas for user:', user.id);
 
     // Fetch company details and onboarding data with better error handling
-    const [companyDetailsResult, onboardingResult] = await Promise.all([
-      supabase
-        .from('company_details')
-        .select('*')
-        .eq('user_id', user.id)
-        .maybeSingle(),
-      supabase
-        .from('tenant_onboarding')
-        .select('*')
-        .eq('user_id', user.id)
-        .maybeSingle()
-    ]);
+    console.log('Fetching company details...');
+    const { data: companyDetails, error: companyError } = await supabase
+      .from('company_details')
+      .select('*')
+      .eq('user_id', user.id)
+      .maybeSingle();
 
-    // Check for database errors (not "no data found" errors)
-    if (companyDetailsResult.error && companyDetailsResult.error.code !== 'PGRST116') {
-      console.error('Database error fetching company details:', companyDetailsResult.error);
-      throw new Error('Failed to fetch company details');
+    if (companyError) {
+      console.error('Error fetching company details:', companyError);
+    } else {
+      console.log('Company details found:', !!companyDetails);
     }
 
-    if (onboardingResult.error && onboardingResult.error.code !== 'PGRST116') {
-      console.error('Database error fetching onboarding data:', onboardingResult.error);
-      throw new Error('Failed to fetch onboarding data');
+    console.log('Fetching onboarding data...');
+    const { data: onboardingData, error: onboardingError } = await supabase
+      .from('tenant_onboarding')
+      .select('*')
+      .eq('user_id', user.id)
+      .maybeSingle();
+
+    if (onboardingError) {
+      console.error('Error fetching onboarding data:', onboardingError);
+    } else {
+      console.log('Onboarding data found:', !!onboardingData);
     }
 
-    const companyDetails = companyDetailsResult.data;
-    const onboardingData = onboardingResult.data;
-
-    // Check if we have enough data to generate personas
-    if (!companyDetails && !onboardingData) {
-      return new Response(JSON.stringify({ 
-        error: 'Please complete your company profile and onboarding survey first to generate personalized personas.' 
-      }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    // Create a comprehensive prompt for persona generation
+    // Create a comprehensive prompt for persona generation even with limited data
     let prompt = `Generate 3 detailed marketing personas in JSON format for a business. `;
+    let hasData = false;
 
     if (companyDetails) {
+      hasData = true;
       prompt += `\n\nCompany Information:
 - Company Name: ${companyDetails.company_name || 'Not provided'}
 - Industry: ${companyDetails.company_industry || 'Not provided'}
@@ -85,6 +78,7 @@ serve(async (req) => {
     }
 
     if (onboardingData) {
+      hasData = true;
       prompt += `\n\nBusiness Details:
 - Business Description: ${onboardingData.business_name_description || 'Not provided'}
 - Customer Profile: ${onboardingData.customer_profile || 'Not provided'}
@@ -96,6 +90,12 @@ serve(async (req) => {
 - Top Customer Questions: ${onboardingData.top_customer_questions || 'Not provided'}
 - Target Segments: ${onboardingData.target_segments || 'Not provided'}
 - Customer Values: ${onboardingData.customer_values || 'Not provided'}`;
+    }
+
+    // If no data is available, generate generic business personas
+    if (!hasData) {
+      prompt = `Generate 3 detailed marketing personas in JSON format for a general business. Create diverse personas that could apply to various types of businesses.`;
+      console.log('No specific company data found, generating generic personas');
     }
 
     prompt += `\n\nPlease generate 3 distinct marketing personas that would be ideal customers for this business. For each persona, provide:
@@ -138,11 +138,16 @@ Return the response as a JSON array with exactly 3 personas. Make sure the JSON 
     if (!response.ok) {
       const errorText = await response.text();
       console.error('OpenAI API error:', response.status, errorText);
-      throw new Error(`OpenAI API error: ${response.status}`);
+      throw new Error(`OpenAI API error: ${response.status} - ${errorText}`);
     }
 
     const data = await response.json();
     console.log('OpenAI response received');
+
+    if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+      console.error('Invalid OpenAI response structure:', data);
+      throw new Error('Invalid response from OpenAI API');
+    }
 
     const generatedContent = data.choices[0].message.content;
     console.log('Generated content:', generatedContent);
@@ -171,7 +176,7 @@ Return the response as a JSON array with exactly 3 personas. Make sure the JSON 
   } catch (error) {
     console.error('Error in generate-personas function:', error);
     return new Response(JSON.stringify({ 
-      error: error.message || 'An unexpected error occurred' 
+      error: error.message || 'An unexpected error occurred while generating personas' 
     }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
