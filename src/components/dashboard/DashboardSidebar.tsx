@@ -124,7 +124,7 @@ const DashboardSidebar = ({
                   onClick={() => handleTabClick("company-profile", "profile-survey")}
                 >
                   <FileText className="h-3 w-3 mr-3" />
-                  Profile Survey
+                  Company
                 </Button>
                 <Button
                   variant="ghost"
