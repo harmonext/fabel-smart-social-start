@@ -39,6 +39,51 @@ export type Database = {
         }
         Relationships: []
       }
+      saved_personas: {
+        Row: {
+          buying_motivation: string
+          content_preferences: string
+          created_at: string
+          demographics: string
+          description: string
+          goals: string
+          id: string
+          name: string
+          pain_points: string
+          preferred_channels: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          buying_motivation: string
+          content_preferences: string
+          created_at?: string
+          demographics: string
+          description: string
+          goals: string
+          id?: string
+          name: string
+          pain_points: string
+          preferred_channels: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          buying_motivation?: string
+          content_preferences?: string
+          created_at?: string
+          demographics?: string
+          description?: string
+          goals?: string
+          id?: string
+          name?: string
+          pain_points?: string
+          preferred_channels?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       tenant_onboarding: {
         Row: {
           business_name_description: string

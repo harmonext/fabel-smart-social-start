@@ -1,4 +1,3 @@
-
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.0';
@@ -25,6 +24,49 @@ const cleanJsonResponse = (content: string): string => {
   }
   
   return cleaned.trim();
+};
+
+// Function to normalize persona data to expected format
+const normalizePersona = (persona: any) => {
+  const normalized = { ...persona };
+  
+  // Handle demographics - convert object to string if needed
+  if (typeof persona.demographics === 'object' && persona.demographics !== null) {
+    const demo = persona.demographics;
+    const parts = [];
+    if (demo.ageRange) parts.push(`Ages ${demo.ageRange}`);
+    if (demo.education) parts.push(demo.education);
+    if (demo.location) parts.push(demo.location);
+    if (demo.occupation) parts.push(demo.occupation);
+    normalized.demographics = parts.join(', ');
+  }
+  
+  // Handle pain points - convert array to string if needed
+  if (Array.isArray(persona.painPoints)) {
+    normalized.painPoints = persona.painPoints.join(', ');
+  }
+  
+  // Handle goals - convert array to string if needed
+  if (Array.isArray(persona.goals)) {
+    normalized.goals = persona.goals.join(', ');
+  }
+  
+  // Handle preferred channels - convert array to string if needed
+  if (Array.isArray(persona.preferredChannels)) {
+    normalized.preferredChannels = persona.preferredChannels.join(', ');
+  }
+  
+  // Handle buying motivation - convert array to string if needed
+  if (Array.isArray(persona.buyingMotivation)) {
+    normalized.buyingMotivation = persona.buyingMotivation.join(', ');
+  }
+  
+  // Handle content preferences - convert array to string if needed
+  if (Array.isArray(persona.contentPreferences)) {
+    normalized.contentPreferences = persona.contentPreferences.join(', ');
+  }
+  
+  return normalized;
 };
 
 // Fallback personas when OpenAI is unavailable
@@ -193,14 +235,14 @@ serve(async (req) => {
         prompt += `\n\nPlease generate 3 distinct marketing personas that would be ideal customers for this business. For each persona, provide:
 - name: A descriptive persona name
 - description: A brief description of who they are
-- demographics: Age range, education, location, occupation details
-- painPoints: Their main challenges and pain points
-- goals: What they want to achieve
-- preferredChannels: Which social media platforms they use most
-- buyingMotivation: What motivates them to make purchasing decisions
-- contentPreferences: What type of content resonates with them
+- demographics: A single string with age range, education, location, occupation details (e.g., "Ages 30-45, college-educated, urban/suburban, professionals")
+- painPoints: A single string describing their main challenges and pain points
+- goals: A single string describing what they want to achieve
+- preferredChannels: A single string listing which social media platforms they use most
+- buyingMotivation: A single string describing what motivates them to make purchasing decisions
+- contentPreferences: A single string describing what type of content resonates with them
 
-Return the response as a JSON array with exactly 3 personas. Make sure the JSON is valid and properly formatted. Do not include any markdown formatting or code blocks in your response.`;
+Return the response as a JSON array with exactly 3 personas. Make sure the JSON is valid and properly formatted. Do not include any markdown formatting or code blocks in your response. Keep all field values as strings, not arrays or objects.`;
 
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
           method: 'POST',
@@ -213,7 +255,7 @@ Return the response as a JSON array with exactly 3 personas. Make sure the JSON 
             messages: [
               {
                 role: 'system',
-                content: 'You are a marketing expert specializing in creating detailed customer personas. Always respond with valid JSON format containing exactly 3 personas. Do not use markdown formatting or code blocks in your response.'
+                content: 'You are a marketing expert specializing in creating detailed customer personas. Always respond with valid JSON format containing exactly 3 personas. Do not use markdown formatting or code blocks in your response. Keep all persona field values as strings, not nested objects or arrays.'
               },
               {
                 role: 'user',
@@ -238,14 +280,16 @@ Return the response as a JSON array with exactly 3 personas. Make sure the JSON 
               const cleanedContent = cleanJsonResponse(generatedContent);
               console.log('Cleaned content:', cleanedContent);
               
-              const personas = JSON.parse(cleanedContent);
-              if (Array.isArray(personas) && personas.length === 3) {
-                console.log('Successfully generated personas with OpenAI');
+              const rawPersonas = JSON.parse(cleanedContent);
+              if (Array.isArray(rawPersonas) && rawPersonas.length === 3) {
+                // Normalize personas to ensure consistent string format
+                const personas = rawPersonas.map(normalizePersona);
+                console.log('Successfully generated and normalized personas with OpenAI');
                 return new Response(JSON.stringify({ personas }), {
                   headers: { ...corsHeaders, 'Content-Type': 'application/json' },
                 });
               } else {
-                console.error('Invalid personas array structure:', personas);
+                console.error('Invalid personas array structure:', rawPersonas);
               }
             } catch (parseError) {
               console.error('Error parsing OpenAI response:', parseError);
