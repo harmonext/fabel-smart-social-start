@@ -86,7 +86,18 @@ export const usePersonas = () => {
 
       if (data.personas && Array.isArray(data.personas)) {
         console.log('Setting personas:', data.personas);
-        setPersonas(data.personas);
+        // Map AI response fields to our interface
+        const mappedPersonas = data.personas.map((persona: any) => ({
+          name: persona.name,
+          description: persona.description,
+          demographics: persona.demographics,
+          painPoints: persona.painPoints,
+          goals: persona.goal || persona.goals, // Handle both singular and plural
+          preferredChannels: persona.preferredChannels,
+          buyingMotivation: persona.buyingMotivation,
+          contentPreferences: persona.contentPreferences,
+        }));
+        setPersonas(mappedPersonas);
         toast({
           title: "Success",
           description: "Marketing personas have been generated successfully!",
@@ -162,6 +173,8 @@ export const usePersonas = () => {
         content_preferences: persona.contentPreferences,
         user_id: user.id,
       }));
+
+      console.log('Saving personas:', personasToSave);
 
       const { error: insertError } = await supabase
         .from('saved_personas')
