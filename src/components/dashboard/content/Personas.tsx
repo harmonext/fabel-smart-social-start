@@ -73,7 +73,7 @@ const Personas = () => {
         <h1 className="text-3xl font-bold text-foreground mb-2">Marketing Personas</h1>
         <p className="text-muted-foreground">
           {isUsingAIPersonas 
-            ? "Your saved personas based on your company profile to target your ideal customers."
+            ? "Your AI-generated personas based on your company profile to target your ideal customers."
             : "Sample personas shown below. Click 'Generate Personas' to create personalized ones based on your company profile."
           }
         </p>
