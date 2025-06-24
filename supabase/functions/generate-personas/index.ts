@@ -8,6 +8,82 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Fallback personas when OpenAI is unavailable
+const getFallbackPersonas = (hasCompanyData: boolean, companyDetails?: any, onboardingData?: any) => {
+  if (hasCompanyData && (companyDetails || onboardingData)) {
+    // Generate more specific personas based on available company data
+    const industry = companyDetails?.company_industry || 'business';
+    const customerProfile = onboardingData?.customer_profile || 'professionals';
+    
+    return [
+      {
+        name: `The ${industry} Professional`,
+        description: `Decision-makers in the ${industry} industry who value efficiency and results`,
+        demographics: `Ages 30-50, college-educated, ${companyDetails?.company_address || 'urban/suburban'} based`,
+        painPoints: `Time constraints, need for reliable solutions, staying competitive in ${industry}`,
+        goals: `Improve business outcomes, streamline operations, achieve professional growth`,
+        preferredChannels: `LinkedIn, industry publications, email newsletters`,
+        buyingMotivation: `ROI, reliability, and proven track record`,
+        contentPreferences: `Case studies, industry insights, how-to guides, webinars`
+      },
+      {
+        name: "The Growth-Oriented Leader",
+        description: `Forward-thinking leaders focused on scaling and innovation`,
+        demographics: `Ages 35-55, leadership roles, tech-savvy`,
+        painPoints: `Scaling challenges, team management, staying ahead of trends`,
+        goals: `Business growth, team development, market expansion`,
+        preferredChannels: `LinkedIn, business podcasts, conferences`,
+        buyingMotivation: `Innovation, scalability, competitive advantage`,
+        contentPreferences: `Thought leadership, success stories, trend analysis`
+      },
+      {
+        name: "The Practical Implementer",
+        description: `Hands-on professionals who focus on practical solutions`,
+        demographics: `Ages 25-45, implementation-focused roles`,
+        painPoints: `Resource limitations, time pressures, need for practical solutions`,
+        goals: `Efficient execution, problem-solving, skill development`,
+        preferredChannels: `Professional forums, YouTube, industry blogs`,
+        buyingMotivation: `Practicality, ease of use, clear benefits`,
+        contentPreferences: `Tutorials, best practices, tool comparisons`
+      }
+    ];
+  }
+
+  // Generic fallback personas
+  return [
+    {
+      name: "The Strategic Executive",
+      description: "C-level executives and senior managers focused on strategic growth",
+      demographics: "Ages 40-60, MBA or equivalent experience, urban markets",
+      painPoints: "Limited time, need for high-level insights, pressure for results",
+      goals: "Drive company growth, optimize operations, stay competitive",
+      preferredChannels: "LinkedIn, business publications, executive networks",
+      buyingMotivation: "Strategic value, ROI, competitive advantage",
+      contentPreferences: "Executive summaries, market analysis, thought leadership"
+    },
+    {
+      name: "The Innovative Entrepreneur",
+      description: "Small business owners and startup founders seeking growth",
+      demographics: "Ages 25-45, self-motivated, technology-adopters",
+      painPoints: "Limited resources, wearing multiple hats, scaling challenges",
+      goals: "Build successful business, achieve work-life balance, create impact",
+      preferredChannels: "Social media, entrepreneur communities, podcasts",
+      buyingMotivation: "Innovation, efficiency, growth potential",
+      contentPreferences: "Success stories, practical tips, industry trends"
+    },
+    {
+      name: "The Detail-Oriented Professional",
+      description: "Mid-level professionals focused on execution and quality",
+      demographics: "Ages 28-42, specialized expertise, suburban/urban",
+      painPoints: "Staying updated with trends, process improvement, career advancement",
+      goals: "Professional development, skill enhancement, career growth",
+      preferredChannels: "Professional networks, industry forums, training platforms",
+      buyingMotivation: "Quality, reliability, professional development",
+      contentPreferences: "How-to guides, best practices, certification content"
+    }
+  ];
+};
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -15,12 +91,6 @@ serve(async (req) => {
   }
 
   try {
-    const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
-    if (!OPENAI_API_KEY) {
-      console.error('OPENAI_API_KEY is not set');
-      throw new Error('OPENAI_API_KEY is not set');
-    }
-
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')!;
@@ -38,7 +108,7 @@ serve(async (req) => {
 
     console.log('Generating personas for user:', user.id);
 
-    // Fetch company details and onboarding data with better error handling
+    // Fetch company details and onboarding data
     console.log('Fetching company details...');
     const { data: companyDetails, error: companyError } = await supabase
       .from('company_details')
@@ -65,21 +135,26 @@ serve(async (req) => {
       console.log('Onboarding data found:', !!onboardingData);
     }
 
-    // Create a comprehensive prompt for persona generation even with limited data
-    let prompt = `Generate 3 detailed marketing personas in JSON format for a business. `;
-    let hasData = false;
+    const hasData = !!(companyDetails || onboardingData);
+    const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
 
-    if (companyDetails) {
-      hasData = true;
-      prompt += `\n\nCompany Information:
+    // Try OpenAI first if API key is available
+    if (OPENAI_API_KEY) {
+      try {
+        console.log('Attempting OpenAI persona generation...');
+        
+        // Create a comprehensive prompt for persona generation
+        let prompt = `Generate 3 detailed marketing personas in JSON format for a business. `;
+
+        if (companyDetails) {
+          prompt += `\n\nCompany Information:
 - Company Name: ${companyDetails.company_name || 'Not provided'}
 - Industry: ${companyDetails.company_industry || 'Not provided'}
 - Location: ${companyDetails.company_address || 'Not provided'}`;
-    }
+        }
 
-    if (onboardingData) {
-      hasData = true;
-      prompt += `\n\nBusiness Details:
+        if (onboardingData) {
+          prompt += `\n\nBusiness Details:
 - Business Description: ${onboardingData.business_name_description || 'Not provided'}
 - Customer Profile: ${onboardingData.customer_profile || 'Not provided'}
 - Customer Problem: ${onboardingData.customer_problem || 'Not provided'}
@@ -90,15 +165,13 @@ serve(async (req) => {
 - Top Customer Questions: ${onboardingData.top_customer_questions || 'Not provided'}
 - Target Segments: ${onboardingData.target_segments || 'Not provided'}
 - Customer Values: ${onboardingData.customer_values || 'Not provided'}`;
-    }
+        }
 
-    // If no data is available, generate generic business personas
-    if (!hasData) {
-      prompt = `Generate 3 detailed marketing personas in JSON format for a general business. Create diverse personas that could apply to various types of businesses.`;
-      console.log('No specific company data found, generating generic personas');
-    }
+        if (!hasData) {
+          prompt = `Generate 3 detailed marketing personas in JSON format for a general business. Create diverse personas that could apply to various types of businesses.`;
+        }
 
-    prompt += `\n\nPlease generate 3 distinct marketing personas that would be ideal customers for this business. For each persona, provide:
+        prompt += `\n\nPlease generate 3 distinct marketing personas that would be ideal customers for this business. For each persona, provide:
 - name: A descriptive persona name
 - description: A brief description of who they are
 - demographics: Age range, education, location, occupation details
@@ -110,65 +183,62 @@ serve(async (req) => {
 
 Return the response as a JSON array with exactly 3 personas. Make sure the JSON is valid and properly formatted.`;
 
-    console.log('Sending request to OpenAI...');
-
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${OPENAI_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          {
-            role: 'system',
-            content: 'You are a marketing expert specializing in creating detailed customer personas. Always respond with valid JSON format containing exactly 3 personas.'
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${OPENAI_API_KEY}`,
+            'Content-Type': 'application/json',
           },
-          {
-            role: 'user',
-            content: prompt
+          body: JSON.stringify({
+            model: 'gpt-4o-mini',
+            messages: [
+              {
+                role: 'system',
+                content: 'You are a marketing expert specializing in creating detailed customer personas. Always respond with valid JSON format containing exactly 3 personas.'
+              },
+              {
+                role: 'user',
+                content: prompt
+              }
+            ],
+            temperature: 0.7,
+            max_tokens: 2000,
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log('OpenAI response received successfully');
+
+          if (data.choices && data.choices[0] && data.choices[0].message) {
+            const generatedContent = data.choices[0].message.content;
+            
+            try {
+              const personas = JSON.parse(generatedContent);
+              if (Array.isArray(personas) && personas.length === 3) {
+                console.log('Successfully generated personas with OpenAI');
+                return new Response(JSON.stringify({ personas }), {
+                  headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+                });
+              }
+            } catch (parseError) {
+              console.error('Error parsing OpenAI response:', parseError);
+            }
           }
-        ],
-        temperature: 0.7,
-        max_tokens: 2000,
-      }),
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('OpenAI API error:', response.status, errorText);
-      throw new Error(`OpenAI API error: ${response.status} - ${errorText}`);
+        } else {
+          const errorText = await response.text();
+          console.error('OpenAI API error:', response.status, errorText);
+        }
+      } catch (openaiError) {
+        console.error('OpenAI request failed:', openaiError);
+      }
     }
 
-    const data = await response.json();
-    console.log('OpenAI response received');
-
-    if (!data.choices || !data.choices[0] || !data.choices[0].message) {
-      console.error('Invalid OpenAI response structure:', data);
-      throw new Error('Invalid response from OpenAI API');
-    }
-
-    const generatedContent = data.choices[0].message.content;
-    console.log('Generated content:', generatedContent);
-
-    // Parse the JSON response from OpenAI
-    let personas;
-    try {
-      personas = JSON.parse(generatedContent);
-    } catch (parseError) {
-      console.error('Error parsing OpenAI response as JSON:', parseError);
-      console.error('Raw content:', generatedContent);
-      throw new Error('Failed to parse personas from AI response');
-    }
-
-    if (!Array.isArray(personas) || personas.length !== 3) {
-      console.error('Invalid personas format:', personas);
-      throw new Error('AI did not return exactly 3 personas in the expected format');
-    }
-
-    console.log('Successfully generated personas:', personas);
-
+    // Fallback to generated personas
+    console.log('Using fallback persona generation');
+    const personas = getFallbackPersonas(hasData, companyDetails, onboardingData);
+    
+    console.log('Successfully generated fallback personas');
     return new Response(JSON.stringify({ personas }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });

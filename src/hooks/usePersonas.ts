@@ -29,8 +29,8 @@ export const usePersonas = () => {
       if (error) {
         console.error('Error calling generate-personas function:', error);
         toast({
-          title: "Connection Error",
-          description: "Failed to connect to the persona generation service. Please try again.",
+          title: "Service Unavailable",
+          description: "The persona generation service is temporarily unavailable. Please try again later.",
           variant: "destructive"
         });
         return false;
@@ -42,7 +42,7 @@ export const usePersonas = () => {
         console.error('Error from generate-personas function:', data.error);
         toast({
           title: "Generation Error", 
-          description: data.error,
+          description: "Unable to generate personas at this time. Please try again later.",
           variant: "destructive"
         });
         return false;
@@ -58,13 +58,18 @@ export const usePersonas = () => {
         return true;
       } else {
         console.error('Invalid response format:', data);
-        throw new Error('Invalid response format from persona generation service');
+        toast({
+          title: "Generation Error",
+          description: "Received invalid data from persona generation service. Please try again.",
+          variant: "destructive"
+        });
+        return false;
       }
     } catch (error) {
       console.error('Error generating personas:', error);
       toast({
-        title: "Unexpected Error",
-        description: "An unexpected error occurred while generating personas. Please try again.",
+        title: "Connection Error",
+        description: "Failed to connect to the persona generation service. Please check your internet connection and try again.",
         variant: "destructive"
       });
       return false;
