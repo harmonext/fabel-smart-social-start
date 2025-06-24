@@ -2,8 +2,28 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Building2, FileText, CheckCircle } from "lucide-react";
+import { useCompanyDetails } from "@/hooks/useCompanyDetails";
 
 const ProfileSurvey = () => {
+  const { companyDetails, isLoading } = useCompanyDetails();
+
+  if (isLoading) {
+    return (
+      <div className="max-w-4xl mx-auto space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold text-foreground mb-2">Company Profile Survey</h1>
+          <p className="text-muted-foreground">Complete your company profile to generate personalized marketing personas.</p>
+        </div>
+        <Card>
+          <CardContent className="flex items-center justify-center py-12">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <span className="ml-2">Loading company details...</span>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <div>
@@ -25,43 +45,35 @@ const ProfileSurvey = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <label className="text-sm font-medium text-foreground">Company Name</label>
-              <div className="p-3 border rounded-lg bg-muted">Acme Marketing Solutions</div>
+              <div className="p-3 border rounded-lg bg-muted">
+                {companyDetails?.company_name || "Not provided"}
+              </div>
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium text-foreground">Industry</label>
-              <div className="p-3 border rounded-lg bg-muted">Digital Marketing</div>
+              <div className="p-3 border rounded-lg bg-muted">
+                {companyDetails?.company_industry || "Not provided"}
+              </div>
             </div>
           </div>
           
           <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground">Company Description</label>
+            <label className="text-sm font-medium text-foreground">Company Address</label>
             <div className="p-3 border rounded-lg bg-muted min-h-20">
-              We help small businesses grow their online presence through strategic digital marketing campaigns and social media management.
+              {companyDetails?.company_address || "Not provided"}
             </div>
           </div>
           
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground">Target Audience</label>
-            <div className="p-3 border rounded-lg bg-muted min-h-20">
-              Small to medium-sized businesses looking to improve their digital marketing efforts and increase online visibility.
+          {companyDetails && (
+            <div className="flex items-center gap-3 p-4 bg-green-50 border border-green-200 rounded-lg">
+              <CheckCircle className="h-5 w-5 text-green-600" />
+              <span className="text-sm text-green-700">Company details completed!</span>
             </div>
-          </div>
-          
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground">Key Products/Services</label>
-            <div className="p-3 border rounded-lg bg-muted min-h-20">
-              Social media management, content creation, SEO optimization, paid advertising campaigns, and marketing strategy consultation.
-            </div>
-          </div>
-          
-          <div className="flex items-center gap-3 p-4 bg-green-50 border border-green-200 rounded-lg">
-            <CheckCircle className="h-5 w-5 text-green-600" />
-            <span className="text-sm text-green-700">Survey completed! Your personas are ready.</span>
-          </div>
+          )}
           
           <div className="pt-4 space-x-3">
             <Button className="bg-fabel-primary hover:bg-fabel-primary/90">
-              Update Survey
+              Update Company
             </Button>
             <Button variant="outline">
               View Generated Personas
