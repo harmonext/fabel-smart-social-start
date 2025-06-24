@@ -8,6 +8,25 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Function to clean and extract JSON from OpenAI response
+const cleanJsonResponse = (content: string): string => {
+  // Remove markdown code blocks if present
+  let cleaned = content.trim();
+  
+  // Remove ```json and ``` markers
+  if (cleaned.startsWith('```json')) {
+    cleaned = cleaned.replace(/^```json\s*/, '');
+  }
+  if (cleaned.startsWith('```')) {
+    cleaned = cleaned.replace(/^```\s*/, '');
+  }
+  if (cleaned.endsWith('```')) {
+    cleaned = cleaned.replace(/\s*```$/, '');
+  }
+  
+  return cleaned.trim();
+};
+
 // Fallback personas when OpenAI is unavailable
 const getFallbackPersonas = (hasCompanyData: boolean, companyDetails?: any, onboardingData?: any) => {
   if (hasCompanyData && (companyDetails || onboardingData)) {
@@ -181,7 +200,7 @@ serve(async (req) => {
 - buyingMotivation: What motivates them to make purchasing decisions
 - contentPreferences: What type of content resonates with them
 
-Return the response as a JSON array with exactly 3 personas. Make sure the JSON is valid and properly formatted.`;
+Return the response as a JSON array with exactly 3 personas. Make sure the JSON is valid and properly formatted. Do not include any markdown formatting or code blocks in your response.`;
 
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
           method: 'POST',
@@ -194,7 +213,7 @@ Return the response as a JSON array with exactly 3 personas. Make sure the JSON 
             messages: [
               {
                 role: 'system',
-                content: 'You are a marketing expert specializing in creating detailed customer personas. Always respond with valid JSON format containing exactly 3 personas.'
+                content: 'You are a marketing expert specializing in creating detailed customer personas. Always respond with valid JSON format containing exactly 3 personas. Do not use markdown formatting or code blocks in your response.'
               },
               {
                 role: 'user',
@@ -212,17 +231,25 @@ Return the response as a JSON array with exactly 3 personas. Make sure the JSON 
 
           if (data.choices && data.choices[0] && data.choices[0].message) {
             const generatedContent = data.choices[0].message.content;
+            console.log('Raw OpenAI response:', generatedContent);
             
             try {
-              const personas = JSON.parse(generatedContent);
+              // Clean the response before parsing
+              const cleanedContent = cleanJsonResponse(generatedContent);
+              console.log('Cleaned content:', cleanedContent);
+              
+              const personas = JSON.parse(cleanedContent);
               if (Array.isArray(personas) && personas.length === 3) {
                 console.log('Successfully generated personas with OpenAI');
                 return new Response(JSON.stringify({ personas }), {
                   headers: { ...corsHeaders, 'Content-Type': 'application/json' },
                 });
+              } else {
+                console.error('Invalid personas array structure:', personas);
               }
             } catch (parseError) {
               console.error('Error parsing OpenAI response:', parseError);
+              console.error('Failed content:', generatedContent);
             }
           }
         } else {
