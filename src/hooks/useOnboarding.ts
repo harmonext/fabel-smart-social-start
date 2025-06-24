@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -10,7 +11,6 @@ export interface OnboardingData {
   unique_selling_proposition: string;
   social_media_goals: string[];
   content_tone: string;
-  preferred_platforms: string[];
   top_customer_questions: string;
   target_segments: string;
   customer_values: string;
@@ -86,7 +86,6 @@ export const useOnboarding = () => {
           unique_selling_proposition: data.unique_selling_proposition,
           social_media_goals: data.social_media_goals,
           content_tone: data.content_tone,
-          preferred_platforms: data.preferred_platforms,
           top_customer_questions: data.top_customer_questions,
           target_segments: data.target_segments,
           customer_values: data.customer_values

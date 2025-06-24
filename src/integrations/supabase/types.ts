@@ -49,7 +49,6 @@ export type Database = {
           customer_profile: string
           customer_values: string
           id: string
-          preferred_platforms: string[]
           social_media_goals: string[]
           target_segments: string
           top_customer_questions: string
@@ -66,7 +65,6 @@ export type Database = {
           customer_profile: string
           customer_values: string
           id?: string
-          preferred_platforms?: string[]
           social_media_goals?: string[]
           target_segments: string
           top_customer_questions: string
@@ -83,7 +81,6 @@ export type Database = {
           customer_profile?: string
           customer_values?: string
           id?: string
-          preferred_platforms?: string[]
           social_media_goals?: string[]
           target_segments?: string
           top_customer_questions?: string

@@ -17,7 +17,6 @@ const OnboardingForm = () => {
     unique_selling_proposition: "",
     social_media_goals: [],
     content_tone: "",
-    preferred_platforms: [],
     top_customer_questions: "",
     target_segments: "",
     customer_values: ""
@@ -43,7 +42,7 @@ const OnboardingForm = () => {
     }));
   };
 
-  const handleMultiSelectChange = (field: 'social_media_goals' | 'preferred_platforms', value: string, checked: boolean) => {
+  const handleMultiSelectChange = (field: 'social_media_goals', value: string, checked: boolean) => {
     setFormData(prev => ({
       ...prev,
       [field]: checked 
@@ -70,7 +69,7 @@ const OnboardingForm = () => {
       }
     }
 
-    if (formData.social_media_goals.length === 0 || formData.preferred_platforms.length === 0) {
+    if (formData.social_media_goals.length === 0) {
       return false;
     }
 

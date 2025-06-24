@@ -7,7 +7,7 @@ import { OnboardingData } from "@/hooks/useOnboarding";
 interface SocialMediaSectionProps {
   formData: OnboardingData;
   onInputChange: (field: keyof OnboardingData, value: string) => void;
-  onMultiSelectChange: (field: 'social_media_goals' | 'preferred_platforms', value: string, checked: boolean) => void;
+  onMultiSelectChange: (field: 'social_media_goals', value: string, checked: boolean) => void;
 }
 
 const SocialMediaSection = ({ formData, onInputChange, onMultiSelectChange }: SocialMediaSectionProps) => {
@@ -25,16 +25,6 @@ const SocialMediaSection = ({ formData, onInputChange, onMultiSelectChange }: So
     "Humorous",
     "Inspirational",
     "Authoritative"
-  ];
-
-  const platformOptions = [
-    "LinkedIn",
-    "Facebook",
-    "Instagram",
-    "Twitter/X",
-    "Pinterest",
-    "TikTok",
-    "Other"
   ];
 
   return (
@@ -79,29 +69,6 @@ const SocialMediaSection = ({ formData, onInputChange, onMultiSelectChange }: So
             ))}
           </SelectContent>
         </Select>
-      </div>
-
-      {/* Preferred Platforms */}
-      <div className="space-y-3">
-        <Label className="text-base font-medium">
-          Which social media platforms do your customers use most frequently? * (Select all that apply)
-        </Label>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          {platformOptions.map((platform) => (
-            <div key={platform} className="flex items-center space-x-2">
-              <Checkbox
-                id={`platform-${platform}`}
-                checked={formData.preferred_platforms.includes(platform)}
-                onCheckedChange={(checked) => 
-                  onMultiSelectChange('preferred_platforms', platform, !!checked)
-                }
-              />
-              <Label htmlFor={`platform-${platform}`} className="text-sm">
-                {platform}
-              </Label>
-            </div>
-          ))}
-        </div>
       </div>
     </>
   );
