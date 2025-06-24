@@ -1,5 +1,5 @@
-
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { OnboardingData, useOnboarding } from "@/hooks/useOnboarding";
@@ -9,6 +9,7 @@ import SocialMediaSection from "./sections/SocialMediaSection";
 import AdditionalInfoSection from "./sections/AdditionalInfoSection";
 
 const OnboardingForm = () => {
+  const navigate = useNavigate();
   const { saveOnboarding, isSaving, fetchOnboardingData } = useOnboarding();
   const [formData, setFormData] = useState<OnboardingData>({
     business_name_description: "",
@@ -83,7 +84,11 @@ const OnboardingForm = () => {
       return;
     }
 
-    await saveOnboarding(formData);
+    const success = await saveOnboarding(formData);
+    if (success) {
+      // Redirect to dashboard with Personas tab active
+      navigate('/dashboard?tab=company-profile&subtab=personas');
+    }
   };
 
   if (isLoadingData) {

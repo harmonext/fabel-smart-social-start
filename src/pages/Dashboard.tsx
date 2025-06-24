@@ -1,12 +1,13 @@
 
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import DashboardContent from "@/components/dashboard/DashboardContent";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { useOnboarding } from "@/hooks/useOnboarding";
 
 const Dashboard = () => {
+  const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState("company-profile");
   const [activeSubTab, setActiveSubTab] = useState("profile-survey");
   const { isCompleted, isLoading } = useOnboarding();
@@ -17,6 +18,20 @@ const Dashboard = () => {
       navigate('/onboarding');
     }
   }, [isCompleted, isLoading, navigate]);
+
+  // Handle URL parameters for tab navigation
+  useEffect(() => {
+    const tabParam = searchParams.get('tab');
+    const subtabParam = searchParams.get('subtab');
+    
+    if (tabParam) {
+      setActiveTab(tabParam);
+    }
+    
+    if (subtabParam) {
+      setActiveSubTab(subtabParam);
+    }
+  }, [searchParams]);
 
   if (isLoading) {
     return (
