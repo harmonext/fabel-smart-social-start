@@ -164,25 +164,27 @@ const Personas = () => {
             }
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-x-3">
-          <Button 
-            className="bg-fabel-primary hover:bg-fabel-primary/90"
-            onClick={handleRegeneratePersonas}
-            disabled={isLoading}
-          >
-            {isLoading ? "Generating..." : isUsingAIPersonas ? "Regenerate Personas" : "Generate Personas"}
-          </Button>
-          {isUsingAIPersonas && (
+        <CardContent>
+          <div className="flex flex-col sm:flex-row gap-3">
             <Button 
-              variant="outline"
-              onClick={handleSavePersonas}
-              disabled={isSaving}
-              className="flex items-center gap-2"
+              className="bg-fabel-primary hover:bg-fabel-primary/90"
+              onClick={handleRegeneratePersonas}
+              disabled={isLoading}
             >
-              <Save className="h-4 w-4" />
-              {isSaving ? "Saving..." : "Save Personas"}
+              {isLoading ? "Generating..." : isUsingAIPersonas ? "Regenerate Personas" : "Generate Personas"}
             </Button>
-          )}
+            {isUsingAIPersonas && (
+              <Button 
+                variant="outline"
+                onClick={handleSavePersonas}
+                disabled={isSaving}
+                className="flex items-center gap-2"
+              >
+                <Save className="h-4 w-4" />
+                {isSaving ? "Saving..." : "Save Personas"}
+              </Button>
+            )}
+          </div>
         </CardContent>
       </Card>
     </div>
