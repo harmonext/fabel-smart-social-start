@@ -11,7 +11,7 @@ const ProfileSurvey = () => {
     return (
       <div className="max-w-4xl mx-auto space-y-6">
         <div>
-          <h1 className="text-3xl font-bold text-foreground mb-2">Company Profile Survey</h1>
+          <h1 className="text-3xl font-bold text-foreground mb-2">Company</h1>
           <p className="text-muted-foreground">Complete your company profile to generate personalized marketing personas.</p>
         </div>
         <Card>
@@ -27,7 +27,7 @@ const ProfileSurvey = () => {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-foreground mb-2">Company Profile Survey</h1>
+        <h1 className="text-3xl font-bold text-foreground mb-2">Company</h1>
         <p className="text-muted-foreground">Complete your company profile to generate personalized marketing personas.</p>
       </div>
 
