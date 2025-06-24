@@ -2,11 +2,11 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Users, Target, Heart, Briefcase, Sparkles } from "lucide-react";
+import { Users, Target, Heart, Briefcase, Sparkles, Save } from "lucide-react";
 import { usePersonas } from "@/hooks/usePersonas";
 
 const Personas = () => {
-  const { personas, isLoading, generatePersonas } = usePersonas();
+  const { personas, isLoading, isSaving, generatePersonas, savePersonas } = usePersonas();
   const [hasGenerated, setHasGenerated] = useState(false);
 
   // Default placeholder personas to show initially
@@ -53,6 +53,10 @@ const Personas = () => {
     }
   };
 
+  const handleSavePersonas = async () => {
+    await savePersonas();
+  };
+
   const getPersonaIcon = (index: number) => {
     const icons = [<Briefcase className="h-6 w-6" />, <Heart className="h-6 w-6" />, <Target className="h-6 w-6" />];
     return icons[index] || <Users className="h-6 w-6" />;
@@ -69,8 +73,8 @@ const Personas = () => {
         <h1 className="text-3xl font-bold text-foreground mb-2">Marketing Personas</h1>
         <p className="text-muted-foreground">
           {isUsingAIPersonas 
-            ? "AI-generated personas based on your company profile to target your ideal customers."
-            : "Sample personas shown below. Click 'Regenerate Personas' to create personalized ones based on your company profile."
+            ? "Your saved personas based on your company profile to target your ideal customers."
+            : "Sample personas shown below. Click 'Generate Personas' to create personalized ones based on your company profile."
           }
         </p>
       </div>
@@ -155,7 +159,7 @@ const Personas = () => {
           </CardTitle>
           <CardDescription>
             {isUsingAIPersonas 
-              ? "Manage and customize your AI-generated marketing personas."
+              ? "Manage your AI-generated marketing personas."
               : "Generate personalized marketing personas based on your company profile."
             }
           </CardDescription>
@@ -166,14 +170,19 @@ const Personas = () => {
             onClick={handleRegeneratePersonas}
             disabled={isLoading}
           >
-            {isLoading ? "Generating..." : "Regenerate Personas"}
+            {isLoading ? "Generating..." : isUsingAIPersonas ? "Regenerate Personas" : "Generate Personas"}
           </Button>
-          <Button variant="outline">
-            Customize Personas
-          </Button>
-          <Button variant="outline">
-            Export Personas
-          </Button>
+          {isUsingAIPersonas && (
+            <Button 
+              variant="outline"
+              onClick={handleSavePersonas}
+              disabled={isSaving}
+              className="flex items-center gap-2"
+            >
+              <Save className="h-4 w-4" />
+              {isSaving ? "Saving..." : "Save Personas"}
+            </Button>
+          )}
         </CardContent>
       </Card>
     </div>
