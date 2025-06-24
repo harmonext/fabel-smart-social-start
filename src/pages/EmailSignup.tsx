@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -46,13 +47,6 @@ const EmailSignup = () => {
     setIsLoading(true);
     
     try {
-      // First check if user already exists
-      const { data: existingUser } = await supabase.auth.signInWithPassword({
-        email: formData.email,
-        password: 'dummy-password'
-      });
-
-      // If no error was thrown above, user exists - but we'll catch the error anyway
       console.log('Signing up user with email:', formData.email);
 
       // Sign up with OTP verification
@@ -63,9 +57,7 @@ const EmailSignup = () => {
           data: {
             first_name: formData.firstName,
             last_name: formData.lastName,
-          },
-          // This will send an OTP instead of confirmation link
-          emailRedirectTo: undefined
+          }
         }
       });
 
@@ -105,19 +97,11 @@ const EmailSignup = () => {
       }
     } catch (error: any) {
       console.error('Signup error:', error);
-      
-      // Handle the case where user already exists
-      if (error.message && error.message.includes('Invalid login credentials')) {
-        // This means we were testing if user exists, continue with signup
-        console.log('User does not exist, proceeding with signup');
-        // The actual signup code already ran above
-      } else {
-        toast({
-          title: "Registration failed",
-          description: "An unexpected error occurred. Please try again.",
-          variant: "destructive"
-        });
-      }
+      toast({
+        title: "Registration failed",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive"
+      });
     } finally {
       setIsLoading(false);
     }
