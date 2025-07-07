@@ -15,6 +15,7 @@ import Login from "./pages/Login";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import Onboarding from "./pages/Onboarding";
+import MarketingOnboarding from "./pages/MarketingOnboarding";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -39,6 +40,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Onboarding />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/marketing-onboarding" 
+              element={
+                <ProtectedRoute>
+                  <MarketingOnboarding />
                 </ProtectedRoute>
               } 
             />
