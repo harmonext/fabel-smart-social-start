@@ -142,7 +142,7 @@ const DashboardSidebar = ({
                     variant="ghost"
                     className={cn(
                       "w-full justify-between text-left h-9 text-sm",
-                      activeTab === "company-profile" && (activeSubTab === "personas" || activeSubTab === "persona-1") && "bg-fabel-primary/10 text-fabel-primary"
+                      activeTab === "company-profile" && (activeSubTab === "personas" || activeSubTab === "persona-1" || activeSubTab === "persona-2" || activeSubTab === "persona-3") && "bg-fabel-primary/10 text-fabel-primary"
                     )}
                     onClick={() => toggleSection("personas")}
                   >
@@ -169,6 +169,28 @@ const DashboardSidebar = ({
                       >
                         <User className="h-3 w-3 mr-3" />
                         Persona 1
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        className={cn(
+                          "w-full justify-start text-left h-8 text-xs",
+                          activeTab === "company-profile" && activeSubTab === "persona-2" && "bg-fabel-primary/10 text-fabel-primary"
+                        )}
+                        onClick={() => handleTabClick("company-profile", "persona-2")}
+                      >
+                        <User className="h-3 w-3 mr-3" />
+                        Persona 2
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        className={cn(
+                          "w-full justify-start text-left h-8 text-xs",
+                          activeTab === "company-profile" && activeSubTab === "persona-3" && "bg-fabel-primary/10 text-fabel-primary"
+                        )}
+                        onClick={() => handleTabClick("company-profile", "persona-3")}
+                      >
+                        <User className="h-3 w-3 mr-3" />
+                        Persona 3
                       </Button>
                     </div>
                   )}
