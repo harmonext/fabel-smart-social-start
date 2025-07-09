@@ -3,6 +3,8 @@ import UserProfile from "./content/UserProfile";
 import ProfileSurvey from "./content/ProfileSurvey";
 import Personas from "./content/Personas";
 import Persona1 from "./content/Persona1";
+import Persona2 from "./content/Persona2";
+import Persona3 from "./content/Persona3";
 import SocialConnections from "./content/SocialConnections";
 import ContentScheduling from "./content/ContentScheduling";
 import DashboardSettings from "./content/DashboardSettings";
@@ -33,26 +35,10 @@ const DashboardContent = ({ activeTab, activeSubTab }: DashboardContentProps) =>
         return <Persona1 />;
       }
       if (activeSubTab === "persona-2") {
-        return <div className="space-y-6">
-          <div className="border-b border-border pb-4">
-            <h1 className="text-2xl font-bold text-foreground">Persona 2</h1>
-            <p className="text-muted-foreground mt-2">Create and manage your second customer persona</p>
-          </div>
-          <div className="bg-card rounded-lg border border-border p-6">
-            <p className="text-muted-foreground">Persona 2 content coming soon...</p>
-          </div>
-        </div>;
+        return <Persona2 />;
       }
       if (activeSubTab === "persona-3") {
-        return <div className="space-y-6">
-          <div className="border-b border-border pb-4">
-            <h1 className="text-2xl font-bold text-foreground">Persona 3</h1>
-            <p className="text-muted-foreground mt-2">Create and manage your third customer persona</p>
-          </div>
-          <div className="bg-card rounded-lg border border-border p-6">
-            <p className="text-muted-foreground">Persona 3 content coming soon...</p>
-          </div>
-        </div>;
+        return <Persona3 />;
       }
       return <ProfileSurvey />; // Default to profile survey
     }
