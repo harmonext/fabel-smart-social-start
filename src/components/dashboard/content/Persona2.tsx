@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Linkedin, X, Youtube } from "lucide-react";
+import { Linkedin, Twitter, Youtube } from "lucide-react";
 
 interface PlatformData {
   name: string;
@@ -32,7 +32,7 @@ const Persona2 = () => {
     },
     twitter: {
       name: 'Twitter/X',
-      icon: X,
+      icon: Twitter,
       color: 'text-brand-dark',
       content: `🚀 Ready to level up your career game? Our mentorship programs connect you with top executives who've been where you want to go. Apply now! #CareerGoals #Mentorship #Success`,
     },
@@ -181,7 +181,7 @@ const Persona2 = () => {
                     />
                   </label>
                   <label className="flex flex-col items-center space-y-2 cursor-pointer">
-                    <X className="w-8 h-8 text-brand-dark" />
+                    <Twitter className="w-8 h-8 text-brand-dark" />
                     <input 
                       type="checkbox" 
                       className="h-4 w-4 rounded text-brand-blue focus:ring-brand-blue"
