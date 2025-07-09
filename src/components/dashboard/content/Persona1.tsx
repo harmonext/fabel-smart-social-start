@@ -1,131 +1,320 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { MapPin, User, Brain, Lock, Sparkles } from "lucide-react";
-import { Checkbox } from "@/components/ui/checkbox";
+import { useState } from "react";
+
+interface PlatformData {
+  name: string;
+  icon: string;
+  color: string;
+  content: string;
+}
+
+interface GeneratedContent {
+  platform: string;
+  text: string;
+}
 
 const Persona1 = () => {
-  return (
-    <div className="space-y-6">
-      <div className="border-b border-border pb-4">
-        <h1 className="text-2xl font-bold text-foreground">Persona 1</h1>
-        <p className="text-muted-foreground mt-2">Creative</p>
-      </div>
+  const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
+  const [generatedContent, setGeneratedContent] = useState<GeneratedContent[]>([]);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [currentEditingPlatform, setCurrentEditingPlatform] = useState<string | null>(null);
+  const [modalText, setModalText] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
-      <Card className="max-w-4xl">
-        <CardContent className="p-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+  const platformData: Record<string, PlatformData> = {
+    facebook: {
+      name: 'Facebook',
+      icon: 'fa-brands fa-facebook',
+      color: 'text-[#1877F2]',
+      content: `Transform your space on a budget! ✨ Discover our new collection of affordable home decor that looks anything but. #HomeDesign #BudgetFriendly #LivingSpace`,
+    },
+    instagram: {
+      name: 'Instagram',
+      icon: 'fa-brands fa-instagram',
+      color: 'text-[#E4405F]',
+      content: `Dreaming of a home makeover? 🏡 Our latest pieces are here to make it a reality without breaking the bank. Tap to shop! #HomeDecor #InteriorInspo #AffordableLuxury`,
+    },
+    tiktok: {
+      name: 'TikTok',
+      icon: 'fa-brands fa-tiktok',
+      color: 'text-brand-dark',
+      content: `Watch how we turn a boring room into a cozy paradise with our new budget-friendly decor! 🤩 #HomeDecorHacks #DIY #RoomTransformation`,
+    }
+  };
+
+  const handlePlatformToggle = (platform: string) => {
+    setSelectedPlatforms(prev => 
+      prev.includes(platform) 
+        ? prev.filter(p => p !== platform)
+        : [...prev, platform]
+    );
+  };
+
+  const handleGenerateContent = () => {
+    if (selectedPlatforms.length === 0) {
+      return;
+    }
+
+    setIsGenerating(true);
+    setGeneratedContent([]);
+
+    setTimeout(() => {
+      const content = selectedPlatforms.map(platform => ({
+        platform,
+        text: platformData[platform].content
+      }));
+      setGeneratedContent(content);
+      setIsGenerating(false);
+    }, 1500);
+  };
+
+  const handleEditContent = (platform: string) => {
+    const currentContent = generatedContent.find(c => c.platform === platform);
+    setCurrentEditingPlatform(platform);
+    setModalText(currentContent?.text || '');
+    setImageFile(null);
+    setImagePreview(null);
+    setShowModal(true);
+  };
+
+  const handleSaveChanges = () => {
+    if (currentEditingPlatform) {
+      setGeneratedContent(prev => 
+        prev.map(content => 
+          content.platform === currentEditingPlatform 
+            ? { ...content, text: modalText }
+            : content
+        )
+      );
+      handleCloseModal();
+    }
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setCurrentEditingPlatform(null);
+    setModalText("");
+    setImageFile(null);
+    setImagePreview(null);
+  };
+
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImagePreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  return (
+    <div className="bg-gray-100 flex items-center justify-center p-4 sm:p-6 md:p-8 min-h-screen">
+      <main className="w-full max-w-4xl mx-auto space-y-8">
+        {/* Persona Card */}
+        <div className="bg-brand-gray text-brand-dark rounded-2xl p-6 sm:p-8 shadow-lg">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Left Column */}
             <div className="space-y-6">
-              {/* Location */}
               <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <MapPin className="h-4 w-4 text-muted-foreground" />
-                  <h3 className="font-semibold text-foreground">Location:</h3>
-                </div>
-                <p className="text-sm text-foreground">New York, Los Angeles</p>
-                <p className="text-sm text-muted-foreground">Large, metropolitan coastal city</p>
+                <h1 className="text-2xl font-bold">Persona 1</h1>
+                <p className="text-xl font-medium text-gray-700">Creative</p>
               </div>
 
-              {/* Psychographics */}
               <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <Brain className="h-4 w-4 text-muted-foreground" />
-                  <h3 className="font-semibold text-foreground">Psychographics:</h3>
-                </div>
-                <p className="text-sm text-muted-foreground leading-relaxed">
+                <h2 className="font-bold text-lg mb-1">Location:</h2>
+                <p className="text-base">
+                  New York, Los Angeles<br />
+                  Large, metropolitan coastal city
+                </p>
+              </div>
+
+              <div>
+                <h2 className="font-bold text-lg mb-1">Psychographics:</h2>
+                <p className="text-base">
                   This persona is interested in home design and is looking for budget-friendly solutions to improve their living space.
                 </p>
               </div>
 
-              {/* Demographics */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="flex space-x-12">
                 <div>
-                  <h4 className="font-medium text-foreground mb-1">Age Range:</h4>
-                  <p className="text-sm text-muted-foreground">25-34</p>
+                  <h2 className="font-bold text-lg">Age Range:</h2>
+                  <p className="text-base">25-34</p>
                 </div>
                 <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <User className="h-3 w-3 text-muted-foreground" />
-                    <h4 className="font-medium text-foreground">Gender:</h4>
-                  </div>
-                  <p className="text-sm text-muted-foreground">Female</p>
+                  <h2 className="font-bold text-lg">Gender:</h2>
+                  <p className="text-base">Female</p>
                 </div>
               </div>
 
-              {/* Unlock Section */}
-              <div>
-                <div className="flex items-center gap-2 mb-3">
-                  <Lock className="h-4 w-4 text-muted-foreground" />
-                  <h3 className="font-semibold text-foreground">Unlock for:</h3>
+              <div className="pt-4">
+                <div className="flex items-center space-x-3">
+                  <i className="fa-solid fa-lock text-2xl text-brand-dark"></i>
+                  <h2 className="font-bold text-lg">Unlock for:</h2>
                 </div>
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox id="seo" />
-                    <label htmlFor="seo" className="text-sm text-muted-foreground">SEO Keywords</label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox id="competitor" />
-                    <label htmlFor="competitor" className="text-sm text-muted-foreground">Competitor Analysis</label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox id="cac" />
-                    <label htmlFor="cac" className="text-sm text-muted-foreground">Estimated CAC</label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox id="ltv" />
-                    <label htmlFor="ltv" className="text-sm text-muted-foreground">Estimated LTV</label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox id="appeal" />
-                    <label htmlFor="appeal" className="text-sm text-muted-foreground">How to appeal to persona</label>
-                  </div>
-                </div>
+                <ul className="list-none mt-2 space-y-1 text-base">
+                  <li>SEO Keywords</li>
+                  <li>Competitor Analysis</li>
+                  <li>Estimated CAC</li>
+                  <li>Estimated LTV</li>
+                  <li>How to appeal to persona</li>
+                </ul>
               </div>
             </div>
 
-            {/* Right Column */}
-            <div className="space-y-6">
-              {/* Social Media Platforms */}
+            {/* Right Column - Ad Content Generation */}
+            <div className="bg-gray-300/50 rounded-xl p-6 space-y-6">
               <div>
-                <h3 className="font-semibold text-foreground mb-4">Social Media Platforms:</h3>
-                <div className="flex justify-center gap-8 mb-6">
-                  <div className="text-center">
-                    <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center text-white text-xl font-bold mb-2">
-                      f
-                    </div>
-                    <Checkbox />
-                  </div>
-                  <div className="text-center">
-                    <div className="w-12 h-12 bg-gradient-to-tr from-purple-500 to-pink-500 rounded-lg flex items-center justify-center text-white text-xl font-bold mb-2">
-                      <svg viewBox="0 0 24 24" className="w-6 h-6 fill-current">
-                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-                      </svg>
-                    </div>
-                    <Checkbox />
-                  </div>
-                  <div className="text-center">
-                    <div className="w-12 h-12 bg-black rounded-lg flex items-center justify-center text-white mb-2">
-                      <svg viewBox="0 0 24 24" className="w-6 h-6 fill-current">
-                        <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43V7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.43Z"/>
-                      </svg>
-                    </div>
-                    <Checkbox />
-                  </div>
+                <h2 className="font-bold text-lg mb-3">Social Media Platforms:</h2>
+                <div className="flex items-center justify-around">
+                  <label className="flex flex-col items-center space-y-2 cursor-pointer">
+                    <i className="fa-brands fa-facebook text-3xl text-[#1877F2]"></i>
+                    <input 
+                      type="checkbox" 
+                      className="h-4 w-4 rounded text-brand-blue focus:ring-brand-blue"
+                      checked={selectedPlatforms.includes('facebook')}
+                      onChange={() => handlePlatformToggle('facebook')}
+                    />
+                  </label>
+                  <label className="flex flex-col items-center space-y-2 cursor-pointer">
+                    <i className="fa-brands fa-instagram text-3xl text-[#E4405F]"></i>
+                    <input 
+                      type="checkbox" 
+                      className="h-4 w-4 rounded text-brand-blue focus:ring-brand-blue"
+                      checked={selectedPlatforms.includes('instagram')}
+                      onChange={() => handlePlatformToggle('instagram')}
+                    />
+                  </label>
+                  <label className="flex flex-col items-center space-y-2 cursor-pointer">
+                    <i className="fa-brands fa-tiktok text-3xl text-brand-dark"></i>
+                    <input 
+                      type="checkbox" 
+                      className="h-4 w-4 rounded text-brand-blue focus:ring-brand-blue"
+                      checked={selectedPlatforms.includes('tiktok')}
+                      onChange={() => handlePlatformToggle('tiktok')}
+                    />
+                  </label>
                 </div>
               </div>
 
-              {/* Generate Ad Content Button */}
-              <div className="flex justify-center">
-                <Button className="w-full bg-blue-500 hover:bg-blue-600 text-white">
-                  <Sparkles className="h-4 w-4 mr-2" />
-                  Generate Ad Content
-                </Button>
+              <button 
+                onClick={handleGenerateContent}
+                disabled={isGenerating || selectedPlatforms.length === 0}
+                className="w-full bg-brand-blue text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-600 transition-colors duration-300 flex items-center justify-center space-x-2 disabled:opacity-50"
+              >
+                {isGenerating ? (
+                  <>
+                    <i className="fa-solid fa-spinner fa-spin"></i>
+                    <span>Generating...</span>
+                  </>
+                ) : (
+                  <>
+                    <i className="fa-solid fa-wand-magic-sparkles"></i>
+                    <span>Generate Ad Content</span>
+                  </>
+                )}
+              </button>
+
+              <div className="space-y-4">
+                {selectedPlatforms.length === 0 && generatedContent.length === 0 && (
+                  <p className="text-center text-sm text-red-500">Please select at least one platform.</p>
+                )}
+                {generatedContent.map(content => (
+                  <div key={content.platform} className="bg-white p-4 rounded-lg shadow space-y-3">
+                    <div className="flex items-center space-x-2">
+                      <i className={`${platformData[content.platform].icon} ${platformData[content.platform].color} text-xl`}></i>
+                      <h3 className="font-bold text-md">{platformData[content.platform].name}</h3>
+                    </div>
+                    <p className="text-sm text-gray-700">{content.text}</p>
+                    <div className="flex justify-end">
+                      <button 
+                        onClick={() => handleEditContent(content.platform)}
+                        className="text-sm font-semibold text-brand-blue hover:underline"
+                      >
+                        Edit Content
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </main>
+
+      {/* Edit Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 space-y-4 relative">
+            <button 
+              onClick={handleCloseModal}
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-800"
+            >
+              <i className="fa-solid fa-times text-xl"></i>
+            </button>
+            <h2 className="text-2xl font-bold text-brand-dark">
+              Edit {currentEditingPlatform ? platformData[currentEditingPlatform].name : ''} Ad Content
+            </h2>
+            
+            <div className="space-y-2">
+              <label className="font-semibold text-gray-700">Image</label>
+              <div 
+                className="w-full h-48 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center bg-gray-50 cursor-pointer"
+                onClick={() => document.getElementById('image-input')?.click()}
+              >
+                {imagePreview ? (
+                  <img 
+                    src={imagePreview} 
+                    alt="Preview" 
+                    className="w-full h-full object-cover rounded-lg"
+                  />
+                ) : (
+                  <div className="text-center text-gray-500">
+                    <i className="fa-solid fa-cloud-arrow-up text-4xl"></i>
+                    <p>Click to upload an image</p>
+                  </div>
+                )}
+              </div>
+              <input 
+                id="image-input"
+                type="file" 
+                className="hidden" 
+                accept="image/*"
+                onChange={handleImageUpload}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="content-textarea" className="font-semibold text-gray-700">Ad Copy</label>
+              <textarea 
+                id="content-textarea"
+                rows={6}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-blue focus:border-transparent transition"
+                value={modalText}
+                onChange={(e) => setModalText(e.target.value)}
+              />
+            </div>
+
+            <div className="flex justify-end space-x-3 pt-2">
+              <button 
+                onClick={handleCloseModal}
+                className="px-6 py-2 bg-gray-200 text-gray-800 font-semibold rounded-lg hover:bg-gray-300 transition"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={handleSaveChanges}
+                className="px-6 py-2 bg-brand-blue text-white font-semibold rounded-lg hover:bg-blue-600 transition"
+              >
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -58,7 +58,10 @@ export default {
 					secondary: 'hsl(var(--fabel-secondary))',
 					accent: 'hsl(var(--fabel-accent))',
 					neutral: 'hsl(var(--fabel-neutral))'
-				}
+				},
+				"brand-gray": "#E0E0E0",
+				"brand-dark": "#333333",
+				"brand-blue": "#4A90E2"
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
