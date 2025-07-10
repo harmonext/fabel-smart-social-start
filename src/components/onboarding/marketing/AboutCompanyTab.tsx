@@ -57,8 +57,10 @@ const AboutCompanyTab = ({ formData, onInputChange }: AboutCompanyTabProps) => {
             id="company_name"
             type="text"
             placeholder="Enter your company name"
-            value={formData.company_name}
+            value={formData.company_name || ""}
             onChange={(e) => onInputChange('company_name', e.target.value)}
+            disabled={false}
+            readOnly={false}
             required
           />
         </div>
