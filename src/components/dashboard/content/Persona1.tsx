@@ -119,7 +119,7 @@ const Persona1 = () => {
         <p className="text-sm font-medium text-muted-foreground">Creative</p>
       </div>
 
-      <div>
+      <div className="text-center">
         <h2 className="font-bold text-sm mb-2">Social Media Platforms:</h2>
         <div className="flex items-center justify-center space-x-8">
           <div className="flex flex-col items-center space-y-2">
@@ -137,7 +137,7 @@ const Persona1 = () => {
         </div>
       </div>
 
-      <div>
+      <div className="text-center">
         <h2 className="font-bold text-sm mb-1">Location:</h2>
         <p className="text-xs text-muted-foreground">
           New York, Los Angeles<br />
@@ -145,26 +145,26 @@ const Persona1 = () => {
         </p>
       </div>
 
-      <div>
+      <div className="text-center">
         <h2 className="font-bold text-sm mb-1">Psychographics:</h2>
         <p className="text-xs text-muted-foreground">
           This persona is interested in home design and is looking for budget-friendly solutions to improve their living space.
         </p>
       </div>
 
-      <div className="flex space-x-8">
-        <div>
+      <div className="flex justify-center space-x-8">
+        <div className="text-center">
           <h2 className="font-bold text-sm">Age Range:</h2>
           <p className="text-xs text-muted-foreground">25-34</p>
         </div>
-        <div>
+        <div className="text-center">
           <h2 className="font-bold text-sm">Gender:</h2>
           <p className="text-xs text-muted-foreground">Female</p>
         </div>
       </div>
 
-      <div className="pt-2">
-        <div className="flex items-center space-x-2 mb-2">
+      <div className="pt-2 text-center">
+        <div className="flex items-center justify-center space-x-2 mb-2">
           <i className="fa-solid fa-lock text-lg text-muted-foreground"></i>
           <h2 className="font-bold text-sm">Unlock for:</h2>
         </div>
