@@ -112,32 +112,6 @@ const AboutCustomerTab = ({ formData, onInputChange }: AboutCustomerTabProps) =>
               );
             })}
           </div>
-
-          {/* Selected genders display */}
-          {formData.customer_gender.length > 0 && (
-            <div className="space-y-2">
-              <p className="text-sm text-muted-foreground">Selected genders:</p>
-              <div className="flex flex-wrap gap-2">
-                {formData.customer_gender.map((gender) => (
-                  <Badge
-                    key={gender}
-                    variant="secondary"
-                    className="flex items-center gap-1"
-                    style={{ backgroundColor: '#E3C38A', color: 'white' }}
-                  >
-                    {gender}
-                    <button
-                      type="button"
-                      onClick={() => removeGender(gender)}
-                      className="ml-1 hover:bg-black/20 rounded-full p-0.5"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
 
         <div className="space-y-3">
