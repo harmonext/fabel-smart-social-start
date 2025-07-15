@@ -1,8 +1,10 @@
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { X } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { MarketingOnboardingData } from "@/hooks/useMarketingOnboarding";
+import { useState, KeyboardEvent } from "react";
 
 interface AboutCustomerTabProps {
   formData: MarketingOnboardingData;
@@ -10,11 +12,9 @@ interface AboutCustomerTabProps {
 }
 
 const AboutCustomerTab = ({ formData, onInputChange }: AboutCustomerTabProps) => {
-  const genderOptions = [
-    { value: "Female", label: "Female" },
-    { value: "Male", label: "Male" },
-    { value: "Non-Binary", label: "Non-Binary" }
-  ];
+  const [genderInput, setGenderInput] = useState("");
+  
+  const genderSuggestions = ["Female", "Male", "Non-Binary", "Other"];
 
   const ageRangeOptions = [
     "0-18", "18-25", "25-34", "35-44", "45+"
@@ -43,17 +43,28 @@ const AboutCustomerTab = ({ formData, onInputChange }: AboutCustomerTabProps) =>
     onInputChange('customer_income_ranges', newRanges);
   };
 
-  const handleGenderToggle = (gender: string, checked: boolean) => {
-    const currentGenders = formData.customer_gender;
-    const newGenders = checked
-      ? [...currentGenders, gender]
-      : currentGenders.filter(g => g !== gender);
-    onInputChange('customer_gender', newGenders);
+  const addGender = (gender: string) => {
+    const trimmedGender = gender.trim();
+    if (trimmedGender && !formData.customer_gender.includes(trimmedGender)) {
+      onInputChange('customer_gender', [...formData.customer_gender, trimmedGender]);
+    }
+    setGenderInput("");
   };
 
   const removeGender = (genderToRemove: string) => {
     const newGenders = formData.customer_gender.filter(g => g !== genderToRemove);
     onInputChange('customer_gender', newGenders);
+  };
+
+  const handleGenderKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault();
+      addGender(genderInput);
+    }
+  };
+
+  const handleSuggestionClick = (suggestion: string) => {
+    addGender(suggestion);
   };
 
   return (
@@ -69,22 +80,40 @@ const AboutCustomerTab = ({ formData, onInputChange }: AboutCustomerTabProps) =>
         <div className="space-y-3">
           <Label>What's the Gender of Your Primary Customer? *</Label>
           <p className="text-sm text-muted-foreground">
-            Select all genders that apply to your primary customers.
+            Type and press Enter to add genders that apply to your primary customers.
           </p>
           
-          {/* Checkbox options for selection */}
-          <div className="space-y-2">
-            {genderOptions.map((option) => (
-              <div key={option.value} className="flex items-center space-x-2">
-                <Checkbox
-                  id={`gender-${option.value}`}
-                  checked={formData.customer_gender.includes(option.value)}
-                  onCheckedChange={(checked) => handleGenderToggle(option.value, checked as boolean)}
-                />
-                <Label htmlFor={`gender-${option.value}`}>{option.label}</Label>
-              </div>
-            ))}
-          </div>
+          {/* Tag input field */}
+          <Input
+            type="text"
+            value={genderInput}
+            onChange={(e) => setGenderInput(e.target.value)}
+            onKeyDown={handleGenderKeyDown}
+            placeholder="Type a gender and press Enter (e.g., Female, Male, Non-Binary)"
+            className="w-full"
+          />
+          
+          {/* Suggestions */}
+          {genderInput && (
+            <div className="flex flex-wrap gap-2">
+              {genderSuggestions
+                .filter(suggestion => 
+                  suggestion.toLowerCase().includes(genderInput.toLowerCase()) &&
+                  !formData.customer_gender.includes(suggestion)
+                )
+                .map((suggestion) => (
+                  <button
+                    key={suggestion}
+                    type="button"
+                    onClick={() => handleSuggestionClick(suggestion)}
+                    className="px-2 py-1 text-xs rounded border border-gray-300 hover:bg-gray-50"
+                  >
+                    {suggestion}
+                  </button>
+                ))
+              }
+            </div>
+          )}
 
           {/* Selected tags display */}
           {formData.customer_gender.length > 0 && (
