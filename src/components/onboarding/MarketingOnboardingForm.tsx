@@ -135,7 +135,7 @@ const MarketingOnboardingForm = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
+    <div className="min-h-screen py-8 px-4" style={{ backgroundColor: '#F1EFEF' }}>
       <div className="max-w-2xl mx-auto">
         {/* Progress Steps */}
         <div className="flex items-center justify-center mb-8">
@@ -145,19 +145,21 @@ const MarketingOnboardingForm = () => {
                 <div 
                   className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
                     index <= getCurrentTabIndex() 
-                      ? 'bg-yellow-400 text-white' 
-                      : 'bg-gray-300 text-gray-600'
+                      ? 'text-white' 
+                      : 'text-gray-600'
                   }`}
+                  style={{ 
+                    backgroundColor: index <= getCurrentTabIndex() ? '#E3C38A' : '#BAC5C2'
+                  }}
                 >
                   {index + 1}
                 </div>
                 {index < tabs.length - 1 && (
                   <div 
-                    className={`w-16 h-0.5 mx-2 ${
-                      index < getCurrentTabIndex() 
-                        ? 'bg-yellow-400' 
-                        : 'bg-gray-300'
-                    }`}
+                    className={`w-16 h-0.5 mx-2`}
+                    style={{ 
+                      backgroundColor: index < getCurrentTabIndex() ? '#E3C38A' : '#abbdc6'
+                    }}
                   />
                 )}
               </div>
@@ -166,7 +168,7 @@ const MarketingOnboardingForm = () => {
         </div>
 
         {/* Main Card */}
-        <Card className="bg-white shadow-sm border border-gray-200">
+        <Card className="bg-white shadow-sm" style={{ borderColor: '#abbdc6' }}>
           <CardContent className="p-8">
             <Tabs value={activeTab} onValueChange={setActiveTab}>
               {tabs.map((tab) => {
@@ -183,12 +185,17 @@ const MarketingOnboardingForm = () => {
             </Tabs>
 
             {/* Navigation Buttons */}
-            <div className="flex justify-between mt-8 pt-6 border-t border-gray-100">
+            <div className="flex justify-between mt-8 pt-6 border-t" style={{ borderColor: '#abbdc6' }}>
               <Button
                 variant="outline"
                 onClick={handlePrevious}
                 disabled={getCurrentTabIndex() === 0}
-                className="px-6 py-2 border-gray-300 text-gray-600 hover:bg-gray-50"
+                className="px-6 py-2 text-gray-600"
+                style={{ 
+                  borderColor: '#abbdc6', 
+                  backgroundColor: 'transparent',
+                  color: '#333'
+                }}
               >
                 Previous
               </Button>
@@ -197,7 +204,11 @@ const MarketingOnboardingForm = () => {
                 <Button
                   onClick={handleNext}
                   disabled={!isCurrentTabValid}
-                  className="px-6 py-2 bg-yellow-400 hover:bg-yellow-500 text-white border-0"
+                  className="px-6 py-2 text-white border-0"
+                  style={{ 
+                    backgroundColor: '#E3C38A',
+                    color: 'white'
+                  }}
                 >
                   Next
                 </Button>
@@ -207,7 +218,11 @@ const MarketingOnboardingForm = () => {
                 <Button
                   onClick={handleSubmit}
                   disabled={!isCurrentTabValid || isSaving}
-                  className="px-6 py-2 bg-yellow-400 hover:bg-yellow-500 text-white border-0"
+                  className="px-6 py-2 text-white border-0"
+                  style={{ 
+                    backgroundColor: '#E3C38A',
+                    color: 'white'
+                  }}
                 >
                   {isSaving ? "Saving..." : "Complete Setup"}
                 </Button>

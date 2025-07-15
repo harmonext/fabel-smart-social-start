@@ -37,16 +37,18 @@
 
     --radius: 0.75rem;
 
-    /* Fabel Brand Colors */
-    --soft-gold: 43 35% 72%;
-    --misty-grey-blue: 174 15% 74%;
-    --soft-blush: 355 19% 73%;
-    --muted-teal: 199 23% 72%;
+    /* Custom Color Palette */
+    --warm-cream: 36 33% 94%;      /* #F1EFEF */
+    --golden-beige: 43 45% 73%;    /* #E3C38A */
+    --blue-gray: 203 23% 71%;      /* #abbdc6 */
+    --sage-green: 158 12% 74%;     /* #BAC5C2 */
+    --dusty-pink: 355 19% 74%;     /* #D2ACAD */
     
-    --fabel-primary: var(--soft-gold);
-    --fabel-secondary: var(--misty-grey-blue);
-    --fabel-accent: var(--soft-blush);
-    --fabel-neutral: var(--muted-teal);
+    --fabel-primary: var(--golden-beige);
+    --fabel-secondary: var(--blue-gray);
+    --fabel-accent: var(--dusty-pink);
+    --fabel-neutral: var(--sage-green);
+    --fabel-background: var(--warm-cream);
   }
 
   .dark {
