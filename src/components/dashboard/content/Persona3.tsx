@@ -125,15 +125,15 @@ const Persona3 = () => {
         <div className="flex items-center justify-center space-x-8">
           <div className="flex flex-col items-center space-y-2">
             <Instagram className="w-6 h-6 text-[#E4405F]" />
-            <Checkbox />
+            <Checkbox disabled />
           </div>
           <div className="flex flex-col items-center space-y-2">
             <Twitter className="w-6 h-6 text-brand-dark" />
-            <Checkbox />
+            <Checkbox disabled />
           </div>
           <div className="flex flex-col items-center space-y-2">
             <Tv className="w-6 h-6 text-brand-dark" />
-            <Checkbox />
+            <Checkbox disabled />
           </div>
         </div>
       </div>
