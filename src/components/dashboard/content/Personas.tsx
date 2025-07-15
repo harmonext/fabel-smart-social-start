@@ -128,19 +128,10 @@ const Personas = () => {
           </Card>
 
           {/* Persona Components */}
-          <div className="grid grid-cols-1 gap-6">
-            <div>
-              <h2 className="text-2xl font-bold text-foreground mb-4">Persona 1</h2>
-              <Persona1 />
-            </div>
-            <div>
-              <h2 className="text-2xl font-bold text-foreground mb-4">Persona 2</h2>
-              <Persona2 />
-            </div>
-            <div>
-              <h2 className="text-2xl font-bold text-foreground mb-4">Persona 3</h2>
-              <Persona3 />
-            </div>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <Persona1 />
+            <Persona2 />
+            <Persona3 />
           </div>
         </TabsContent>
       </Tabs>
