@@ -135,62 +135,69 @@ const MarketingOnboardingForm = () => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <Card>
-        <CardHeader className="text-center">
-          <CardTitle className="text-3xl font-bold gradient-text">Marketing Profile Setup</CardTitle>
-          <CardDescription className="text-lg">
-            Help us understand your business and marketing goals to create personalized content for you.
-          </CardDescription>
-          <div className="mt-4">
-            <Progress value={progress} className="w-full" />
-            <p className="text-sm text-muted-foreground mt-2">
-              {completedTabs.length} of {tabs.length} sections completed
-            </p>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-4">
-              {tabs.map((tab, index) => (
-                <TabsTrigger 
-                  key={tab.id} 
-                  value={tab.id}
-                  className={`text-xs ${completedTabs.includes(tab.id) ? 'bg-primary text-primary-foreground' : ''}`}
-                  disabled={index > 0 && !completedTabs.includes(tabs[index - 1].id)}
+    <div className="min-h-screen bg-gray-50 py-8 px-4">
+      <div className="max-w-2xl mx-auto">
+        {/* Progress Steps */}
+        <div className="flex items-center justify-center mb-8">
+          <div className="flex items-center space-x-4">
+            {tabs.map((tab, index) => (
+              <div key={tab.id} className="flex items-center">
+                <div 
+                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                    index <= getCurrentTabIndex() 
+                      ? 'bg-yellow-400 text-white' 
+                      : 'bg-gray-300 text-gray-600'
+                  }`}
                 >
-                  {tab.label}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-
-            {tabs.map((tab) => {
-              const TabComponent = tab.component;
-              return (
-                <TabsContent key={tab.id} value={tab.id} className="mt-6">
-                  <TabComponent 
-                    formData={formData} 
-                    onInputChange={handleInputChange} 
+                  {index + 1}
+                </div>
+                {index < tabs.length - 1 && (
+                  <div 
+                    className={`w-16 h-0.5 mx-2 ${
+                      index < getCurrentTabIndex() 
+                        ? 'bg-yellow-400' 
+                        : 'bg-gray-300'
+                    }`}
                   />
-                </TabsContent>
-              );
-            })}
-          </Tabs>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
 
-          <div className="flex justify-between mt-8">
-            <Button
-              variant="outline"
-              onClick={handlePrevious}
-              disabled={getCurrentTabIndex() === 0}
-            >
-              Previous
-            </Button>
-            
-            <div className="flex space-x-3">
+        {/* Main Card */}
+        <Card className="bg-white shadow-sm border border-gray-200">
+          <CardContent className="p-8">
+            <Tabs value={activeTab} onValueChange={setActiveTab}>
+              {tabs.map((tab) => {
+                const TabComponent = tab.component;
+                return (
+                  <TabsContent key={tab.id} value={tab.id} className="mt-0">
+                    <TabComponent 
+                      formData={formData} 
+                      onInputChange={handleInputChange} 
+                    />
+                  </TabsContent>
+                );
+              })}
+            </Tabs>
+
+            {/* Navigation Buttons */}
+            <div className="flex justify-between mt-8 pt-6 border-t border-gray-100">
+              <Button
+                variant="outline"
+                onClick={handlePrevious}
+                disabled={getCurrentTabIndex() === 0}
+                className="px-6 py-2 border-gray-300 text-gray-600 hover:bg-gray-50"
+              >
+                Previous
+              </Button>
+              
               {canGoNext && (
                 <Button
                   onClick={handleNext}
                   disabled={!isCurrentTabValid}
+                  className="px-6 py-2 bg-yellow-400 hover:bg-yellow-500 text-white border-0"
                 >
                   Next
                 </Button>
@@ -200,15 +207,15 @@ const MarketingOnboardingForm = () => {
                 <Button
                   onClick={handleSubmit}
                   disabled={!isCurrentTabValid || isSaving}
-                  className="gradient-fabel text-white"
+                  className="px-6 py-2 bg-yellow-400 hover:bg-yellow-500 text-white border-0"
                 >
                   {isSaving ? "Saving..." : "Complete Setup"}
                 </Button>
               )}
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };
