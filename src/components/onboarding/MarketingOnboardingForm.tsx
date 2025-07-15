@@ -54,10 +54,10 @@ const MarketingOnboardingForm = () => {
   };
 
   const tabs = [
-    { id: "about-you", label: "About You", component: AboutYouTab },
-    { id: "about-company", label: "About Your Company", component: AboutCompanyTab },
-    { id: "about-goals", label: "About Your Goals", component: AboutGoalsTab },
-    { id: "about-customer", label: "About Your Customer", component: AboutCustomerTab }
+    { id: "about-you", label: "About You", component: AboutYouTab, stepLabel: "You" },
+    { id: "about-company", label: "About Your Company", component: AboutCompanyTab, stepLabel: "Company" },
+    { id: "about-goals", label: "About Your Goals", component: AboutGoalsTab, stepLabel: "Goals" },
+    { id: "about-customer", label: "About Your Customer", component: AboutCustomerTab, stepLabel: "Customer" }
   ];
 
   const getCurrentTabIndex = () => tabs.findIndex(tab => tab.id === activeTab);
@@ -142,17 +142,22 @@ const MarketingOnboardingForm = () => {
           <div className="flex items-center space-x-4">
             {tabs.map((tab, index) => (
               <div key={tab.id} className="flex items-center">
-                <div 
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                    index <= getCurrentTabIndex() 
-                      ? 'text-white' 
-                      : 'text-gray-600'
-                  }`}
-                  style={{ 
-                    backgroundColor: index <= getCurrentTabIndex() ? '#E3C38A' : '#BAC5C2'
-                  }}
-                >
-                  {index + 1}
+                <div className="flex flex-col items-center">
+                  <div 
+                    className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                      index <= getCurrentTabIndex() 
+                        ? 'text-white' 
+                        : 'text-gray-600'
+                    }`}
+                    style={{ 
+                      backgroundColor: index <= getCurrentTabIndex() ? '#E3C38A' : '#BAC5C2'
+                    }}
+                  >
+                    {index + 1}
+                  </div>
+                  <span className="text-xs mt-1 text-gray-600 font-medium">
+                    {tab.stepLabel}
+                  </span>
                 </div>
                 {index < tabs.length - 1 && (
                   <div 
