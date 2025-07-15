@@ -80,42 +80,40 @@ const AboutCustomerTab = ({ formData, onInputChange }: AboutCustomerTabProps) =>
         <div className="space-y-3">
           <Label>What's the Gender of Your Primary Customer? *</Label>
           <p className="text-sm text-muted-foreground">
-            Type and press Enter to add genders that apply to your primary customers.
+            Click on the genders that apply to your primary customers.
           </p>
           
-          {/* Tag input field */}
-          <Input
-            type="text"
-            value={genderInput}
-            onChange={(e) => setGenderInput(e.target.value)}
-            onKeyDown={handleGenderKeyDown}
-            placeholder="Type a gender and press Enter (e.g., Female, Male, Non-Binary)"
-            className="w-full"
-          />
-          
-          {/* Suggestions */}
-          {genderInput && (
-            <div className="flex flex-wrap gap-2">
-              {genderSuggestions
-                .filter(suggestion => 
-                  suggestion.toLowerCase().includes(genderInput.toLowerCase()) &&
-                  !formData.customer_gender.includes(suggestion)
-                )
-                .map((suggestion) => (
-                  <button
-                    key={suggestion}
-                    type="button"
-                    onClick={() => handleSuggestionClick(suggestion)}
-                    className="px-2 py-1 text-xs rounded border border-gray-300 hover:bg-gray-50"
-                  >
-                    {suggestion}
-                  </button>
-                ))
-              }
-            </div>
-          )}
+          {/* Clickable gender tags */}
+          <div className="flex flex-wrap gap-2">
+            {genderSuggestions.map((gender) => {
+              const isSelected = formData.customer_gender.includes(gender);
+              return (
+                <button
+                  key={gender}
+                  type="button"
+                  onClick={() => {
+                    if (isSelected) {
+                      removeGender(gender);
+                    } else {
+                      onInputChange('customer_gender', [...formData.customer_gender, gender]);
+                    }
+                  }}
+                  className={`px-3 py-2 rounded-lg border transition-colors ${
+                    isSelected 
+                      ? 'text-white border-transparent' 
+                      : 'text-gray-600 border-gray-300 hover:border-gray-400'
+                  }`}
+                  style={{
+                    backgroundColor: isSelected ? '#E3C38A' : 'transparent'
+                  }}
+                >
+                  {gender}
+                </button>
+              );
+            })}
+          </div>
 
-          {/* Selected tags display */}
+          {/* Selected genders display */}
           {formData.customer_gender.length > 0 && (
             <div className="space-y-2">
               <p className="text-sm text-muted-foreground">Selected genders:</p>
