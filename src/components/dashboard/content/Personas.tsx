@@ -83,12 +83,7 @@ const Personas = () => {
         </p>
       </div>
 
-      <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-1">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="overview" className="space-y-6">
+      <div className="space-y-6">
 
           <Card>
             <CardHeader>
@@ -133,8 +128,7 @@ const Personas = () => {
             <Persona2 />
             <Persona3 />
           </div>
-        </TabsContent>
-      </Tabs>
+      </div>
     </div>
   );
 };
