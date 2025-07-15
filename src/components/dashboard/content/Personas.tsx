@@ -84,10 +84,8 @@ const Personas = () => {
       </div>
 
       <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="persona1">Persona 1</TabsTrigger>
-          <TabsTrigger value="persona2">Persona 2</TabsTrigger>
           <TabsTrigger value="persona3">Persona 3</TabsTrigger>
         </TabsList>
 
@@ -200,14 +198,18 @@ const Personas = () => {
               </div>
             </CardContent>
           </Card>
-        </TabsContent>
 
-        <TabsContent value="persona1">
-          <Persona1 />
-        </TabsContent>
-
-        <TabsContent value="persona2">
-          <Persona2 />
+          {/* Persona Components Side by Side */}
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            <div>
+              <h2 className="text-2xl font-bold text-foreground mb-4">Persona 1</h2>
+              <Persona1 />
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold text-foreground mb-4">Persona 2</h2>
+              <Persona2 />
+            </div>
+          </div>
         </TabsContent>
 
         <TabsContent value="persona3">
