@@ -116,8 +116,8 @@ const Persona3 = () => {
   return (
     <div className="bg-muted rounded-lg p-6 space-y-4 h-full flex flex-col">
       <div>
-        <h1 className="text-lg font-bold text-foreground line-through">Persona 3</h1>
-        <p className="text-sm font-medium text-muted-foreground line-through">Lorem</p>
+        <h1 className="text-lg font-bold text-muted-foreground">Persona 3</h1>
+        <p className="text-sm font-medium text-muted-foreground">Lorem</p>
       </div>
 
       <div className="text-center">
