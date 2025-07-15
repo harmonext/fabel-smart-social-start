@@ -1,4 +1,12 @@
-import { useState } from "react";
+import React, { useState } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Target, Heart, Briefcase, Edit, Upload, X } from "lucide-react";
 
 interface PlatformData {
   name: string;
@@ -16,30 +24,30 @@ const Persona3 = () => {
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
   const [generatedContent, setGeneratedContent] = useState<GeneratedContent[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [showModal, setShowModal] = useState(false);
-  const [currentEditingPlatform, setCurrentEditingPlatform] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingPlatform, setEditingPlatform] = useState<string>("");
   const [modalText, setModalText] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imagePreview, setImagePreview] = useState<string>("");
 
   const platformData: Record<string, PlatformData> = {
+    facebook: {
+      name: "Facebook",
+      icon: "📘",
+      color: "bg-blue-600",
+      content: "🎯 Ready to take your entrepreneurial journey to the next level? \n\nAs a creative professional, you understand the power of innovation and community. That's why our platform is designed specifically for forward-thinking entrepreneurs like you who value authentic connections and cutting-edge solutions.\n\n✨ Join thousands of creative entrepreneurs who are already transforming their businesses with our innovative tools.\n\n#Entrepreneurship #CreativeInnovation #CommunityDriven"
+    },
     instagram: {
-      name: 'Instagram',
-      icon: 'fa-brands fa-instagram',
-      color: 'text-[#E4405F]',
-      content: `Staying fit has never been easier! 💪 Join thousands who've transformed their health with our 15-minute daily workouts. No gym required! #FitnessMotivation #HealthyLifestyle #WorkoutFromHome`,
+      name: "Instagram", 
+      icon: "📷",
+      color: "bg-gradient-to-r from-purple-500 to-pink-500",
+      content: "🌟 For the creative minds who dare to disrupt! \n\n💡 Innovation meets community in the most beautiful way\n🎨 Designed by creatives, for creatives\n🚀 Your next breakthrough starts here\n\nDouble tap if you're ready to revolutionize your creative business! 👇\n\n#CreativeEntrepreneur #Innovation #Community #CreativeLife #Entrepreneurship"
     },
     tiktok: {
-      name: 'TikTok',
-      icon: 'fa-brands fa-tiktok',
-      color: 'text-brand-dark',
-      content: `POV: You finally found a workout routine that actually fits your busy schedule ✨ Watch Sarah's incredible 90-day transformation! #FitnessJourney #HealthyHabits #Transformation`,
-    },
-    snapchat: {
-      name: 'Snapchat',
-      icon: 'fa-brands fa-snapchat',
-      color: 'text-[#FFFC00]',
-      content: `Quick workout before work? ✅ Feeling energized all day? ✅ Ready to start your fitness journey? Swipe up to get started! 🔥 #MorningWorkout #HealthGoals`,
+      name: "TikTok",
+      icon: "🎵", 
+      color: "bg-black",
+      content: "POV: You're a creative entrepreneur who's tired of cookie-cutter solutions 🎨\n\n✨ Finally, a platform that gets YOUR vibe\n🔥 Built for the rebels and innovators  \n💫 Where creativity meets strategy\n\nComment 'CREATIVE' if you're ready to join the revolution! 👇\n\n#CreativeEntrepreneur #Innovation #Startup #Creative #Entrepreneur #SmallBusiness"
     }
   };
 
@@ -70,33 +78,29 @@ const Persona3 = () => {
   };
 
   const handleEditContent = (platform: string) => {
-    const currentContent = generatedContent.find(c => c.platform === platform);
-    setCurrentEditingPlatform(platform);
-    setModalText(currentContent?.text || '');
-    setImageFile(null);
-    setImagePreview(null);
-    setShowModal(true);
+    const content = generatedContent.find(c => c.platform === platform);
+    setEditingPlatform(platform);
+    setModalText(content?.text || "");
+    setIsModalOpen(true);
   };
 
   const handleSaveChanges = () => {
-    if (currentEditingPlatform) {
-      setGeneratedContent(prev => 
-        prev.map(content => 
-          content.platform === currentEditingPlatform 
-            ? { ...content, text: modalText }
-            : content
-        )
-      );
-      handleCloseModal();
-    }
+    setGeneratedContent(prev => 
+      prev.map(content => 
+        content.platform === editingPlatform 
+          ? { ...content, text: modalText }
+          : content
+      )
+    );
+    handleCloseModal();
   };
 
   const handleCloseModal = () => {
-    setShowModal(false);
-    setCurrentEditingPlatform(null);
+    setIsModalOpen(false);
+    setEditingPlatform("");
     setModalText("");
     setImageFile(null);
-    setImagePreview(null);
+    setImagePreview("");
   };
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -112,209 +116,194 @@ const Persona3 = () => {
   };
 
   return (
-    <div className="bg-gray-100 flex items-center justify-center p-4 sm:p-6 md:p-8 min-h-screen">
-      <main className="w-full max-w-4xl mx-auto space-y-8">
-        {/* Persona Card */}
-        <div className="bg-brand-gray text-brand-dark rounded-2xl p-6 sm:p-8 shadow-lg">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Left Column */}
-            <div className="space-y-6">
+    <div className="max-w-6xl mx-auto space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold text-foreground mb-2">Persona 3: The Digital Native</h1>
+        <p className="text-muted-foreground mb-6">
+          Young entrepreneurs comfortable with digital marketing
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Persona Details */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-purple-500 text-white">
+                <Target className="h-6 w-6" />
+              </div>
               <div>
-                <h1 className="text-2xl font-bold">Persona 3</h1>
-                <p className="text-xl font-medium text-gray-700">Health-Conscious Millennials</p>
-              </div>
-
-              <div>
-                <h2 className="font-bold text-lg mb-1">Location:</h2>
-                <p className="text-base">
-                  Austin, Denver, Portland<br />
-                  Health-focused, active lifestyle cities
-                </p>
-              </div>
-
-              <div>
-                <h2 className="font-bold text-lg mb-1">Psychographics:</h2>
-                <p className="text-base">
-                  This persona prioritizes wellness and fitness but struggles with time constraints. They seek convenient, effective solutions that fit their busy lifestyle.
-                </p>
-              </div>
-
-              <div className="flex space-x-12">
-                <div>
-                  <h2 className="font-bold text-lg">Age Range:</h2>
-                  <p className="text-base">22-35</p>
-                </div>
-                <div>
-                  <h2 className="font-bold text-lg">Gender:</h2>
-                  <p className="text-base">Mixed (60% Female)</p>
-                </div>
-              </div>
-
-              <div className="pt-4">
-                <div className="flex items-center space-x-3">
-                  <i className="fa-solid fa-lock text-2xl text-brand-dark"></i>
-                  <h2 className="font-bold text-lg">Unlock for:</h2>
-                </div>
-                <ul className="list-none mt-2 space-y-1 text-base">
-                  <li>SEO Keywords</li>
-                  <li>Competitor Analysis</li>
-                  <li>Estimated CAC</li>
-                  <li>Estimated LTV</li>
-                  <li>How to appeal to persona</li>
-                </ul>
+                <CardTitle className="text-lg">The Digital Native</CardTitle>
+                <CardDescription className="text-sm">
+                  Young entrepreneurs comfortable with digital marketing
+                </CardDescription>
               </div>
             </div>
-
-            {/* Right Column - Ad Content Generation */}
-            <div className="bg-gray-300/50 rounded-xl p-6 space-y-6">
-              <div>
-                <h2 className="font-bold text-lg mb-3">Social Media Platforms:</h2>
-                <div className="flex items-center justify-around">
-                  <label className="flex flex-col items-center space-y-2 cursor-pointer">
-                    <i className="fa-brands fa-instagram text-3xl text-[#E4405F]"></i>
-                    <input 
-                      type="checkbox" 
-                      className="h-4 w-4 rounded text-brand-blue focus:ring-brand-blue"
-                      checked={selectedPlatforms.includes('instagram')}
-                      onChange={() => handlePlatformToggle('instagram')}
-                    />
-                  </label>
-                  <label className="flex flex-col items-center space-y-2 cursor-pointer">
-                    <i className="fa-brands fa-tiktok text-3xl text-brand-dark"></i>
-                    <input 
-                      type="checkbox" 
-                      className="h-4 w-4 rounded text-brand-blue focus:ring-brand-blue"
-                      checked={selectedPlatforms.includes('tiktok')}
-                      onChange={() => handlePlatformToggle('tiktok')}
-                    />
-                  </label>
-                  <label className="flex flex-col items-center space-y-2 cursor-pointer">
-                    <i className="fa-brands fa-snapchat text-3xl text-[#FFFC00]"></i>
-                    <input 
-                      type="checkbox" 
-                      className="h-4 w-4 rounded text-brand-blue focus:ring-brand-blue"
-                      checked={selectedPlatforms.includes('snapchat')}
-                      onChange={() => handlePlatformToggle('snapchat')}
-                    />
-                  </label>
-                </div>
-              </div>
-
-              <button 
-                onClick={handleGenerateContent}
-                disabled={isGenerating || selectedPlatforms.length === 0}
-                className="w-full bg-brand-blue text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-600 transition-colors duration-300 flex items-center justify-center space-x-2 disabled:opacity-50"
-              >
-                {isGenerating ? (
-                  <>
-                    <i className="fa-solid fa-spinner fa-spin"></i>
-                    <span>Generating...</span>
-                  </>
-                ) : (
-                  <>
-                    <i className="fa-solid fa-wand-magic-sparkles"></i>
-                    <span>Generate Ad Content</span>
-                  </>
-                )}
-              </button>
-
-              <div className="space-y-4">
-                {selectedPlatforms.length === 0 && generatedContent.length === 0 && (
-                  <p className="text-center text-sm text-red-500">Please select at least one platform.</p>
-                )}
-                {generatedContent.map(content => (
-                  <div key={content.platform} className="bg-white p-4 rounded-lg shadow space-y-3">
-                    <div className="flex items-center space-x-2">
-                      <i className={`${platformData[content.platform].icon} ${platformData[content.platform].color} text-xl`}></i>
-                      <h3 className="font-bold text-md">{platformData[content.platform].name}</h3>
-                    </div>
-                    <p className="text-sm text-gray-700">{content.text}</p>
-                    <div className="flex justify-end">
-                      <button 
-                        onClick={() => handleEditContent(content.platform)}
-                        className="text-sm font-semibold text-brand-blue hover:underline"
-                      >
-                        Edit Content
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <h4 className="font-medium text-sm text-foreground mb-2">Demographics</h4>
+              <p className="text-sm text-muted-foreground">Ages 22-35, highly educated, early adopters</p>
             </div>
-          </div>
-        </div>
-      </main>
-
-      {/* Edit Modal */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 space-y-4 relative">
-            <button 
-              onClick={handleCloseModal}
-              className="absolute top-4 right-4 text-gray-500 hover:text-gray-800"
-            >
-              <i className="fa-solid fa-times text-xl"></i>
-            </button>
-            <h2 className="text-2xl font-bold text-brand-dark">
-              Edit {currentEditingPlatform ? platformData[currentEditingPlatform].name : ''} Ad Content
-            </h2>
             
-            <div className="space-y-2">
-              <label className="font-semibold text-gray-700">Image</label>
-              <div 
-                className="w-full h-48 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center bg-gray-50 cursor-pointer"
-                onClick={() => document.getElementById('image-input')?.click()}
-              >
-                {imagePreview ? (
-                  <img 
-                    src={imagePreview} 
-                    alt="Preview" 
-                    className="w-full h-full object-cover rounded-lg"
-                  />
-                ) : (
-                  <div className="text-center text-gray-500">
-                    <i className="fa-solid fa-cloud-arrow-up text-4xl"></i>
-                    <p>Click to upload an image</p>
-                  </div>
-                )}
+            <div>
+              <h4 className="font-medium text-sm text-foreground mb-2">Pain Points</h4>
+              <p className="text-sm text-muted-foreground">Standing out in crowded market, converting followers to customers</p>
+            </div>
+            
+            <div>
+              <h4 className="font-medium text-sm text-foreground mb-2">Goals</h4>
+              <p className="text-sm text-muted-foreground">Viral growth, brand differentiation, customer acquisition</p>
+            </div>
+
+            <div>
+              <h4 className="font-medium text-sm text-foreground mb-2">Preferred Channels</h4>
+              <p className="text-sm text-muted-foreground">Instagram, TikTok, Twitter</p>
+            </div>
+            
+            <div>
+              <h4 className="font-medium text-sm text-foreground mb-2">Buying Motivation</h4>
+              <p className="text-sm text-muted-foreground">Innovation and trends</p>
+            </div>
+            
+            <div>
+              <h4 className="font-medium text-sm text-foreground mb-2">Content Preferences</h4>
+              <p className="text-sm text-muted-foreground">Visual content, behind-the-scenes, trending topics</p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Platform Selection */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Select Platforms for Ad Content</CardTitle>
+            <CardDescription>
+              Choose which social media platforms you'd like to create ad content for
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {Object.entries(platformData).map(([platform, data]) => (
+              <div key={platform} className="flex items-center space-x-3">
+                <Checkbox
+                  id={platform}
+                  checked={selectedPlatforms.includes(platform)}
+                  onCheckedChange={() => handlePlatformToggle(platform)}
+                />
+                <Label 
+                  htmlFor={platform} 
+                  className="flex items-center gap-2 cursor-pointer"
+                >
+                  <span className="text-lg">{data.icon}</span>
+                  <span>{data.name}</span>
+                </Label>
               </div>
-              <input 
-                id="image-input"
-                type="file" 
-                className="hidden" 
-                accept="image/*"
-                onChange={handleImageUpload}
-              />
-            </div>
+            ))}
+            
+            <Button 
+              className="w-full mt-6"
+              onClick={handleGenerateContent}
+              disabled={selectedPlatforms.length === 0 || isGenerating}
+            >
+              {isGenerating ? "Generating Ad Content..." : "Generate Ad Content"}
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
 
-            <div className="space-y-2">
-              <label htmlFor="content-textarea" className="font-semibold text-gray-700">Ad Copy</label>
-              <textarea 
-                id="content-textarea"
-                rows={6}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-blue focus:border-transparent transition"
-                value={modalText}
-                onChange={(e) => setModalText(e.target.value)}
-              />
-            </div>
-
-            <div className="flex justify-end space-x-3 pt-2">
-              <button 
-                onClick={handleCloseModal}
-                className="px-6 py-2 bg-gray-200 text-gray-800 font-semibold rounded-lg hover:bg-gray-300 transition"
-              >
-                Cancel
-              </button>
-              <button 
-                onClick={handleSaveChanges}
-                className="px-6 py-2 bg-brand-blue text-white font-semibold rounded-lg hover:bg-blue-600 transition"
-              >
-                Save Changes
-              </button>
-            </div>
+      {/* Generated Content */}
+      {generatedContent.length > 0 && (
+        <div className="space-y-4">
+          <h2 className="text-2xl font-bold text-foreground">Generated Ad Content</h2>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {generatedContent.map((content) => {
+              const platformInfo = platformData[content.platform];
+              return (
+                <Card key={content.platform}>
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg">{platformInfo.icon}</span>
+                        <CardTitle className="text-lg">{platformInfo.name} Ad</CardTitle>
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleEditContent(content.platform)}
+                      >
+                        <Edit className="h-4 w-4 mr-2" />
+                        Edit
+                      </Button>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="bg-muted p-4 rounded-lg">
+                      <p className="text-sm whitespace-pre-wrap">{content.text}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         </div>
       )}
+
+      {/* Edit Modal */}
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>
+              Edit {editingPlatform && platformData[editingPlatform]?.name} Ad Content
+            </DialogTitle>
+            <DialogDescription>
+              Customize your ad content and upload an image if needed
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="ad-text">Ad Text</Label>
+              <Textarea
+                id="ad-text"
+                value={modalText}
+                onChange={(e) => setModalText(e.target.value)}
+                rows={8}
+                className="mt-1"
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="ad-image">Ad Image (Optional)</Label>
+              <div className="mt-1">
+                <Input
+                  id="ad-image"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="mb-2"
+                />
+                {imagePreview && (
+                  <div className="mt-2">
+                    <img 
+                      src={imagePreview} 
+                      alt="Preview" 
+                      className="max-w-full h-40 object-cover rounded-lg"
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={handleCloseModal}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveChanges}>
+              Save Changes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

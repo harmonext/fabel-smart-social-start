@@ -2,9 +2,6 @@
 import UserProfile from "./content/UserProfile";
 import ProfileSurvey from "./content/ProfileSurvey";
 import Personas from "./content/Personas";
-import Persona1 from "./content/Persona1";
-import Persona2 from "./content/Persona2";
-import Persona3 from "./content/Persona3";
 import SocialConnections from "./content/SocialConnections";
 import ContentScheduling from "./content/ContentScheduling";
 import DashboardSettings from "./content/DashboardSettings";
@@ -30,15 +27,6 @@ const DashboardContent = ({ activeTab, activeSubTab }: DashboardContentProps) =>
       }
       if (activeSubTab === "personas") {
         return <Personas />;
-      }
-      if (activeSubTab === "persona-1") {
-        return <Persona1 />;
-      }
-      if (activeSubTab === "persona-2") {
-        return <Persona2 />;
-      }
-      if (activeSubTab === "persona-3") {
-        return <Persona3 />;
       }
       return <ProfileSurvey />; // Default to profile survey
     }
