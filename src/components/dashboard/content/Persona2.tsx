@@ -115,21 +115,21 @@ const Persona2 = () => {
 
   return (
     <div className="bg-muted rounded-lg p-6 space-y-4 h-full flex flex-col">
-      <div className="flex items-center justify-between">
-        <div>
+      <div>
+        <div className="flex items-center gap-3 mb-1">
           <h1 className="text-lg font-bold text-foreground line-through">Persona 2</h1>
-          <p className="text-sm font-medium text-muted-foreground line-through">Lorem</p>
+          <button 
+            className="px-3 py-1 text-sm font-medium text-white rounded-md transition-colors hover:opacity-90"
+            style={{ backgroundColor: '#D2ACAD' }}
+            onClick={() => {
+              // Mock upgrade workflow trigger
+              console.log('Upgrade button clicked for Persona 2');
+            }}
+          >
+            Upgrade
+          </button>
         </div>
-        <button 
-          className="px-3 py-1 text-sm font-medium text-white rounded-md transition-colors hover:opacity-90"
-          style={{ backgroundColor: '#D2ACAD' }}
-          onClick={() => {
-            // Mock upgrade workflow trigger
-            console.log('Upgrade button clicked for Persona 2');
-          }}
-        >
-          Upgrade
-        </button>
+        <p className="text-sm font-medium text-muted-foreground line-through">Lorem</p>
       </div>
 
       <div className="text-center">
