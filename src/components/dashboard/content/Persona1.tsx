@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface PlatformData {
   name: string;
@@ -120,10 +121,19 @@ const Persona1 = () => {
 
       <div>
         <h2 className="font-bold text-sm mb-2">Social Media Platforms:</h2>
-        <div className="flex items-center justify-center space-x-4">
-          <i className="fa-brands fa-facebook text-2xl text-[#1877F2]"></i>
-          <i className="fa-brands fa-instagram text-2xl text-[#E4405F]"></i>
-          <i className="fa-brands fa-tiktok text-2xl text-brand-dark"></i>
+        <div className="flex items-center justify-center space-x-8">
+          <div className="flex flex-col items-center space-y-2">
+            <i className="fa-brands fa-facebook text-2xl text-[#1877F2]"></i>
+            <Checkbox />
+          </div>
+          <div className="flex flex-col items-center space-y-2">
+            <i className="fa-brands fa-instagram text-2xl text-[#E4405F]"></i>
+            <Checkbox />
+          </div>
+          <div className="flex flex-col items-center space-y-2">
+            <i className="fa-brands fa-tiktok text-2xl text-brand-dark"></i>
+            <Checkbox />
+          </div>
         </div>
       </div>
 

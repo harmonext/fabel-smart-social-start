@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Instagram, Twitter, Tv } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface PlatformData {
   name: string;
@@ -121,10 +122,19 @@ const Persona3 = () => {
 
       <div>
         <h2 className="font-bold text-sm mb-2">Social Media Platforms:</h2>
-        <div className="flex items-center justify-center space-x-4">
-          <Instagram className="w-6 h-6 text-[#E4405F]" />
-          <Twitter className="w-6 h-6 text-brand-dark" />
-          <Tv className="w-6 h-6 text-brand-dark" />
+        <div className="flex items-center justify-center space-x-8">
+          <div className="flex flex-col items-center space-y-2">
+            <Instagram className="w-6 h-6 text-[#E4405F]" />
+            <Checkbox />
+          </div>
+          <div className="flex flex-col items-center space-y-2">
+            <Twitter className="w-6 h-6 text-brand-dark" />
+            <Checkbox />
+          </div>
+          <div className="flex flex-col items-center space-y-2">
+            <Tv className="w-6 h-6 text-brand-dark" />
+            <Checkbox />
+          </div>
         </div>
       </div>
 
