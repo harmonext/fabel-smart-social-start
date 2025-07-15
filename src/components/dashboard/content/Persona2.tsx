@@ -119,7 +119,7 @@ const Persona2 = () => {
         <div className="flex items-center gap-3 mb-1">
           <h1 className="text-lg font-bold text-muted-foreground">Persona 2</h1>
           <button 
-            className="px-3 py-1 text-sm font-medium text-white rounded-md transition-colors hover:opacity-90"
+            className="px-3 py-1 text-sm font-medium text-white rounded-md transition-colors hover:bg-[#B8969A]"
             style={{ backgroundColor: '#D2ACAD' }}
             onClick={() => {
               // Mock upgrade workflow trigger
