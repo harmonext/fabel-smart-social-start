@@ -26,7 +26,7 @@ const MarketingOnboardingForm = () => {
     store_type: "",
     monthly_revenue: "",
     goals: [],
-    customer_gender: "",
+    customer_gender: [],
     customer_age_ranges: [],
     customer_income_ranges: []
   });
@@ -77,7 +77,7 @@ const MarketingOnboardingForm = () => {
       case "about-goals":
         return formData.goals.length > 0;
       case "about-customer":
-        return formData.customer_gender !== "" &&
+        return formData.customer_gender.length > 0 &&
                formData.customer_age_ranges.length > 0 &&
                formData.customer_income_ranges.length > 0;
       default:

@@ -20,7 +20,7 @@ export interface MarketingOnboardingData {
   goals: string[];
   
   // Tab 4: About Your Customer
-  customer_gender: string;
+  customer_gender: string[];
   customer_age_ranges: string[];
   customer_income_ranges: string[];
 }

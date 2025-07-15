@@ -1,6 +1,7 @@
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
+import { X } from "lucide-react";
 import { MarketingOnboardingData } from "@/hooks/useMarketingOnboarding";
 
 interface AboutCustomerTabProps {
@@ -42,6 +43,19 @@ const AboutCustomerTab = ({ formData, onInputChange }: AboutCustomerTabProps) =>
     onInputChange('customer_income_ranges', newRanges);
   };
 
+  const handleGenderToggle = (gender: string, checked: boolean) => {
+    const currentGenders = formData.customer_gender;
+    const newGenders = checked
+      ? [...currentGenders, gender]
+      : currentGenders.filter(g => g !== gender);
+    onInputChange('customer_gender', newGenders);
+  };
+
+  const removeGender = (genderToRemove: string) => {
+    const newGenders = formData.customer_gender.filter(g => g !== genderToRemove);
+    onInputChange('customer_gender', newGenders);
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -54,17 +68,49 @@ const AboutCustomerTab = ({ formData, onInputChange }: AboutCustomerTabProps) =>
       <div className="space-y-6">
         <div className="space-y-3">
           <Label>What's the Gender of Your Primary Customer? *</Label>
-          <RadioGroup 
-            value={formData.customer_gender} 
-            onValueChange={(value) => onInputChange('customer_gender', value)}
-          >
+          <p className="text-sm text-muted-foreground">
+            Select all genders that apply to your primary customers.
+          </p>
+          
+          {/* Checkbox options for selection */}
+          <div className="space-y-2">
             {genderOptions.map((option) => (
               <div key={option.value} className="flex items-center space-x-2">
-                <RadioGroupItem value={option.value} id={`gender-${option.value}`} />
+                <Checkbox
+                  id={`gender-${option.value}`}
+                  checked={formData.customer_gender.includes(option.value)}
+                  onCheckedChange={(checked) => handleGenderToggle(option.value, checked as boolean)}
+                />
                 <Label htmlFor={`gender-${option.value}`}>{option.label}</Label>
               </div>
             ))}
-          </RadioGroup>
+          </div>
+
+          {/* Selected tags display */}
+          {formData.customer_gender.length > 0 && (
+            <div className="space-y-2">
+              <p className="text-sm text-muted-foreground">Selected genders:</p>
+              <div className="flex flex-wrap gap-2">
+                {formData.customer_gender.map((gender) => (
+                  <Badge
+                    key={gender}
+                    variant="secondary"
+                    className="flex items-center gap-1"
+                    style={{ backgroundColor: '#E3C38A', color: 'white' }}
+                  >
+                    {gender}
+                    <button
+                      type="button"
+                      onClick={() => removeGender(gender)}
+                      className="ml-1 hover:bg-black/20 rounded-full p-0.5"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="space-y-3">

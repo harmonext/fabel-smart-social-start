@@ -50,7 +50,7 @@ export type Database = {
           company_name: string
           created_at: string
           customer_age_ranges: string[]
-          customer_gender: string
+          customer_gender: string[]
           customer_income_ranges: string[]
           goals: string[]
           id: string
@@ -68,7 +68,7 @@ export type Database = {
           company_name: string
           created_at?: string
           customer_age_ranges?: string[]
-          customer_gender: string
+          customer_gender?: string[]
           customer_income_ranges?: string[]
           goals?: string[]
           id?: string
@@ -86,7 +86,7 @@ export type Database = {
           company_name?: string
           created_at?: string
           customer_age_ranges?: string[]
-          customer_gender?: string
+          customer_gender?: string[]
           customer_income_ranges?: string[]
           goals?: string[]
           id?: string
