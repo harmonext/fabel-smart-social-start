@@ -98,9 +98,9 @@ const AboutCustomerTab = ({ formData, onInputChange }: AboutCustomerTabProps) =>
                       onInputChange('customer_gender', [...formData.customer_gender, gender]);
                     }
                   }}
-                  className={`px-3 py-2 rounded-lg border transition-colors ${
+                  className={`relative px-3 py-2 rounded-lg border transition-colors ${
                     isSelected 
-                      ? 'text-white border-transparent' 
+                      ? 'text-white border-transparent pr-8' 
                       : 'text-gray-600 border-gray-300 hover:border-gray-400'
                   }`}
                   style={{
@@ -108,6 +108,9 @@ const AboutCustomerTab = ({ formData, onInputChange }: AboutCustomerTabProps) =>
                   }}
                 >
                   {gender}
+                  {isSelected && (
+                    <X className="absolute top-1 right-1 h-3 w-3 text-white opacity-70 hover:opacity-100" />
+                  )}
                 </button>
               );
             })}
