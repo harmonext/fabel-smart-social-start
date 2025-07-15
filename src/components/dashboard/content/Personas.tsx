@@ -84,9 +84,8 @@ const Personas = () => {
       </div>
 
       <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-1">
           <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="persona3">Persona 3</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
@@ -128,8 +127,8 @@ const Personas = () => {
             </CardContent>
           </Card>
 
-          {/* Persona Components Side by Side */}
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          {/* Persona Components */}
+          <div className="grid grid-cols-1 gap-6">
             <div>
               <h2 className="text-2xl font-bold text-foreground mb-4">Persona 1</h2>
               <Persona1 />
@@ -138,11 +137,11 @@ const Personas = () => {
               <h2 className="text-2xl font-bold text-foreground mb-4">Persona 2</h2>
               <Persona2 />
             </div>
+            <div>
+              <h2 className="text-2xl font-bold text-foreground mb-4">Persona 3</h2>
+              <Persona3 />
+            </div>
           </div>
-        </TabsContent>
-
-        <TabsContent value="persona3">
-          <Persona3 />
         </TabsContent>
       </Tabs>
     </div>
