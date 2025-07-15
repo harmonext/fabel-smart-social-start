@@ -123,7 +123,7 @@ const Personas = () => {
           </Card>
 
           {/* Persona Components */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
             <Persona1 />
             <Persona2 />
             <Persona3 />
