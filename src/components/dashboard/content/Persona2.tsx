@@ -119,8 +119,7 @@ const Persona2 = () => {
         <div className="flex items-center gap-3 mb-1">
           <h1 className="text-lg font-bold text-muted-foreground">Persona 2</h1>
           <button 
-            className="px-3 py-1 text-sm font-medium text-white rounded-md transition-colors hover:bg-[#b77a7c]"
-            style={{ backgroundColor: '#D2ACAD' }}
+            className="px-3 py-1 text-sm font-medium text-white rounded-md transition-colors bg-[#D2ACAD] hover:bg-[#b77a7c]"
             onClick={() => {
               // Mock upgrade workflow trigger
               console.log('Upgrade button clicked for Persona 2');
