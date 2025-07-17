@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar, Clock, Plus, Edit, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
+import { Facebook, Instagram, Linkedin, Twitter } from "lucide-react";
 import { useState } from "react";
 
 const CalendarView = ({ posts, currentDate, setCurrentDate }: {
@@ -11,21 +12,31 @@ const CalendarView = ({ posts, currentDate, setCurrentDate }: {
   setCurrentDate: (date: Date) => void;
 }) => {
   const getSocialIcon = (platform: string) => {
+    const iconProps = { className: "h-3 w-3" };
     switch (platform) {
-      case 'Facebook': return '📘';
-      case 'Instagram': return '📷';
-      case 'LinkedIn': return '💼';
-      case 'Twitter': return '🐦';
-      default: return '📱';
+      case 'Facebook': return <Facebook {...iconProps} className="h-3 w-3 text-blue-600" />;
+      case 'Instagram': return <Instagram {...iconProps} className="h-3 w-3 text-pink-600" />;
+      case 'LinkedIn': return <Linkedin {...iconProps} className="h-3 w-3 text-blue-700" />;
+      case 'Twitter': return <Twitter {...iconProps} className="h-3 w-3 text-blue-400" />;
+      default: return <div className="h-3 w-3 bg-gray-400 rounded"></div>;
     }
   };
 
   const getPersonaColor = (persona: string) => {
     switch (persona) {
-      case 'Ambitious Entrepreneur': return 'bg-blue-100 text-blue-800';
-      case 'Community Builder': return 'bg-green-100 text-green-800';
-      case 'Digital Native': return 'bg-purple-100 text-purple-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'Ambitious Entrepreneur': return 'bg-blue-100 text-blue-800 border border-blue-200';
+      case 'Community Builder': return 'bg-green-100 text-green-800 border border-green-200';
+      case 'Digital Native': return 'bg-purple-100 text-purple-800 border border-purple-200';
+      default: return 'bg-gray-100 text-gray-800 border border-gray-200';
+    }
+  };
+
+  const getPersonaAvatar = (persona: string) => {
+    switch (persona) {
+      case 'Ambitious Entrepreneur': return '🚀';
+      case 'Community Builder': return '🤝';
+      case 'Digital Native': return '💻';
+      default: return '👤';
     }
   };
 
@@ -130,11 +141,14 @@ const CalendarView = ({ posts, currentDate, setCurrentDate }: {
                   {postsForDay.map((post, index) => (
                     <div
                       key={post.id}
-                      className={`text-xs p-1 rounded flex items-center gap-1 ${getPersonaColor(post.persona)}`}
+                      className={`text-xs p-1.5 rounded-md flex items-center gap-1.5 ${getPersonaColor(post.persona)} hover:shadow-sm transition-shadow cursor-pointer`}
                       title={`${post.title} - ${post.platform}`}
                     >
-                      <span>{getSocialIcon(post.platform)}</span>
-                      <span className="truncate">{post.persona}</span>
+                      <div className="flex items-center gap-1">
+                        {getSocialIcon(post.platform)}
+                        <span className="text-xs">{getPersonaAvatar(post.persona)}</span>
+                      </div>
+                      <span className="truncate font-medium">{post.persona.split(' ')[0]}</span>
                     </div>
                   ))}
                 </div>
@@ -145,19 +159,53 @@ const CalendarView = ({ posts, currentDate, setCurrentDate }: {
         
         {/* Legend */}
         <div className="mt-6 pt-4 border-t">
-          <h4 className="text-sm font-medium mb-3">Persona Legend</h4>
-          <div className="flex flex-wrap gap-3">
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded bg-blue-100"></div>
-              <span className="text-sm text-muted-foreground">Ambitious Entrepreneur</span>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <h4 className="text-sm font-medium mb-3">Persona Legend</h4>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1">
+                    <div className="w-3 h-3 rounded bg-blue-100 border border-blue-200"></div>
+                    <span className="text-xs">🚀</span>
+                  </div>
+                  <span className="text-sm text-muted-foreground">Ambitious Entrepreneur</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1">
+                    <div className="w-3 h-3 rounded bg-green-100 border border-green-200"></div>
+                    <span className="text-xs">🤝</span>
+                  </div>
+                  <span className="text-sm text-muted-foreground">Community Builder</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1">
+                    <div className="w-3 h-3 rounded bg-purple-100 border border-purple-200"></div>
+                    <span className="text-xs">💻</span>
+                  </div>
+                  <span className="text-sm text-muted-foreground">Digital Native</span>
+                </div>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded bg-green-100"></div>
-              <span className="text-sm text-muted-foreground">Community Builder</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded bg-purple-100"></div>
-              <span className="text-sm text-muted-foreground">Digital Native</span>
+            <div>
+              <h4 className="text-sm font-medium mb-3">Platform Icons</h4>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <Facebook className="h-3 w-3 text-blue-600" />
+                  <span className="text-sm text-muted-foreground">Facebook</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Instagram className="h-3 w-3 text-pink-600" />
+                  <span className="text-sm text-muted-foreground">Instagram</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Linkedin className="h-3 w-3 text-blue-700" />
+                  <span className="text-sm text-muted-foreground">LinkedIn</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Twitter className="h-3 w-3 text-blue-400" />
+                  <span className="text-sm text-muted-foreground">Twitter</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
