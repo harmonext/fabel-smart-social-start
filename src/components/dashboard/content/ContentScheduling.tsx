@@ -215,8 +215,8 @@ const CalendarView = ({ posts, currentDate, setCurrentDate }: {
 };
 
 const ContentScheduling = () => {
-  const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const [viewMode, setViewMode] = useState<'list' | 'calendar'>('calendar'); // Start with calendar view
+  const [currentDate, setCurrentDate] = useState(new Date(2025, 0, 1)); // Start with January 2025
   const scheduledPosts = [
     {
       id: 1,
