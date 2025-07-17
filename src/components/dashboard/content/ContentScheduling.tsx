@@ -280,6 +280,79 @@ const ContentScheduling = () => {
       status: "scheduled",
       persona: "Community Builder",
       date: new Date(2025, 0, 31) // January 31, 2025
+    },
+    // Additional posts for better calendar visualization
+    {
+      id: 8,
+      title: "Tech Tuesday: AI Tools",
+      platform: "Twitter",
+      scheduledTime: "Jan 21, 11:00 AM",
+      status: "scheduled",
+      persona: "Digital Native",
+      date: new Date(2025, 0, 21) // January 21, 2025
+    },
+    {
+      id: 9,
+      title: "Success Stories Friday",
+      platform: "LinkedIn",
+      scheduledTime: "Jan 24, 3:00 PM",
+      status: "scheduled",
+      persona: "Ambitious Entrepreneur",
+      date: new Date(2025, 0, 24) // January 24, 2025
+    },
+    {
+      id: 10,
+      title: "Community Event Reminder",
+      platform: "Facebook",
+      scheduledTime: "Jan 19, 9:00 AM",
+      status: "scheduled",
+      persona: "Community Builder",
+      date: new Date(2025, 0, 19) // January 19, 2025
+    },
+    {
+      id: 11,
+      title: "Behind the Scenes",
+      platform: "Instagram",
+      scheduledTime: "Jan 23, 4:00 PM",
+      status: "scheduled",
+      persona: "Ambitious Entrepreneur",
+      date: new Date(2025, 0, 23) // January 23, 2025
+    },
+    {
+      id: 12,
+      title: "Weekly Wisdom",
+      platform: "Twitter",
+      scheduledTime: "Jan 26, 7:00 AM",
+      status: "scheduled",
+      persona: "Digital Native",
+      date: new Date(2025, 0, 26) // January 26, 2025
+    },
+    {
+      id: 13,
+      title: "Local Business Feature",
+      platform: "Facebook",
+      scheduledTime: "Jan 28, 2:00 PM",
+      status: "scheduled",
+      persona: "Community Builder",
+      date: new Date(2025, 0, 28) // January 28, 2025
+    },
+    {
+      id: 14,
+      title: "Innovation Spotlight",
+      platform: "LinkedIn",
+      scheduledTime: "Jan 29, 10:00 AM",
+      status: "scheduled",
+      persona: "Digital Native",
+      date: new Date(2025, 0, 29) // January 29, 2025
+    },
+    {
+      id: 15,
+      title: "Thursday Thoughts",
+      platform: "Twitter",
+      scheduledTime: "Jan 30, 1:00 PM",
+      status: "scheduled",
+      persona: "Ambitious Entrepreneur",
+      date: new Date(2025, 0, 30) // January 30, 2025
     }
   ];
 
