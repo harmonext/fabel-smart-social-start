@@ -82,21 +82,6 @@ const AboutCompanyTab = ({ formData, onInputChange }: AboutCompanyTabProps) => {
           </Select>
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="stage">What stage are you in? *</Label>
-          <Select value={formData.stage} onValueChange={(value) => onInputChange('stage', value)}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select your stage" />
-            </SelectTrigger>
-            <SelectContent>
-              {stageOptions.map((option) => (
-                <SelectItem key={option} value={option}>
-                  {option}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
 
         <div className="space-y-2">
           <Label>Types of product Sold? *</Label>
