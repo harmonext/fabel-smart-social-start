@@ -88,7 +88,7 @@ export const useMarketingOnboarding = () => {
           category: data.category,
           stage: data.stage,
           product_types: data.product_types,
-          store_type: data.store_type || [],
+          store_type: Array.isArray(data.store_type) ? data.store_type : [],
           monthly_revenue: data.monthly_revenue,
           goals: data.goals,
           customer_gender: data.customer_gender,

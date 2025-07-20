@@ -58,7 +58,7 @@ export type Database = {
           name: string
           product_types: string[]
           stage: string
-          store_type: string
+          store_type: string[]
           title: string
           updated_at: string
           user_id: string
@@ -76,7 +76,7 @@ export type Database = {
           name: string
           product_types?: string[]
           stage: string
-          store_type: string
+          store_type: string[]
           title: string
           updated_at?: string
           user_id: string
@@ -94,7 +94,7 @@ export type Database = {
           name?: string
           product_types?: string[]
           stage?: string
-          store_type?: string
+          store_type?: string[]
           title?: string
           updated_at?: string
           user_id?: string
