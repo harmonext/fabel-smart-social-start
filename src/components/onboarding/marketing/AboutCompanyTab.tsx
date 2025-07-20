@@ -1,3 +1,4 @@
+
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -105,7 +106,15 @@ const AboutCompanyTab = ({ formData, onInputChange }: AboutCompanyTabProps) => {
                 <Badge
                   key={productType}
                   variant={formData.product_types.includes(productType) ? "default" : "outline"}
-                  className="cursor-pointer"
+                  className={`cursor-pointer ${
+                    formData.product_types.includes(productType)
+                      ? 'text-white border-0'
+                      : 'text-foreground'
+                  }`}
+                  style={{
+                    backgroundColor: formData.product_types.includes(productType) ? '#E3C38A' : 'transparent',
+                    color: formData.product_types.includes(productType) ? 'white' : undefined
+                  }}
                   onClick={() => handleProductTypeToggle(productType)}
                 >
                   {productType}
