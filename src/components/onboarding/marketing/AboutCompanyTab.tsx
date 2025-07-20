@@ -22,7 +22,7 @@ const AboutCompanyTab = ({
   const revenueOptions = ["$0-$5,000", "$5,000-$25,000", "$25,000-$50,000", "$50,000+"];
 
   const handleProductTypeToggle = (productType: string) => {
-    const currentTypes = formData.product_types;
+    const currentTypes = formData.product_types || [];
     const newTypes = currentTypes.includes(productType) 
       ? currentTypes.filter(type => type !== productType) 
       : [...currentTypes, productType];
@@ -30,15 +30,10 @@ const AboutCompanyTab = ({
   };
 
   const handleStoreTypeToggle = (storeType: string) => {
-    console.log('Store type clicked:', storeType);
-    console.log('Current store_type:', formData.store_type);
-    
     const currentTypes = formData.store_type || [];
     const newTypes = currentTypes.includes(storeType) 
       ? currentTypes.filter(type => type !== storeType) 
       : [...currentTypes, storeType];
-    
-    console.log('New store_type:', newTypes);
     onInputChange('store_type', newTypes);
   };
 
@@ -86,21 +81,25 @@ const AboutCompanyTab = ({
           <Label>Types of product Sold? *</Label>
           <div className="space-y-2">
             <div className="flex flex-wrap gap-2">
-              {productTypeOptions.map(productType => (
-                <Badge 
-                  key={productType} 
-                  variant={formData.product_types.includes(productType) ? "default" : "outline"} 
-                  className={`cursor-pointer ${formData.product_types.includes(productType) ? 'text-white border-0' : 'text-foreground'}`} 
-                  style={{
-                    backgroundColor: formData.product_types.includes(productType) ? '#E3C38A' : 'transparent',
-                    color: formData.product_types.includes(productType) ? 'white' : undefined
-                  }} 
-                  onClick={() => handleProductTypeToggle(productType)}
-                >
-                  {productType}
-                  {formData.product_types.includes(productType) && <X className="h-3 w-3 ml-1" />}
-                </Badge>
-              ))}
+              {productTypeOptions.map(productType => {
+                const currentProductTypes = formData.product_types || [];
+                const isSelected = currentProductTypes.includes(productType);
+                return (
+                  <Badge 
+                    key={productType} 
+                    variant={isSelected ? "default" : "outline"} 
+                    className={`cursor-pointer ${isSelected ? 'text-white border-0' : 'text-foreground'}`} 
+                    style={{
+                      backgroundColor: isSelected ? '#E3C38A' : 'transparent',
+                      color: isSelected ? 'white' : undefined
+                    }} 
+                    onClick={() => handleProductTypeToggle(productType)}
+                  >
+                    {productType}
+                    {isSelected && <X className="h-3 w-3 ml-1" />}
+                  </Badge>
+                );
+              })}
             </div>
           </div>
         </div>
