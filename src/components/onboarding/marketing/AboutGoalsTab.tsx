@@ -40,21 +40,26 @@ const AboutGoalsTab = ({ formData, onInputChange }: AboutGoalsTabProps) => {
           <p className="text-sm text-muted-foreground mb-3">
             Select all that apply to your current business objectives.
           </p>
-          <div className="flex flex-wrap gap-2">
-            {goalOptions.map((goal) => (
-              <Badge
-                key={goal}
-                variant={formData.goals.includes(goal) ? "default" : "outline"}
-                className="cursor-pointer py-2 px-3"
-                onClick={() => handleGoalToggle(goal)}
-              >
-                {goal}
-                {formData.goals.includes(goal) && (
-                  <X className="h-3 w-3 ml-1" />
-                )}
-              </Badge>
-            ))}
-          </div>
+           <div className="flex flex-wrap gap-2">
+             {goalOptions.map((goal) => {
+               const isSelected = formData.goals.includes(goal);
+               return (
+                 <Badge
+                   key={goal}
+                   variant={isSelected ? "default" : "outline"}
+                   className={`cursor-pointer ${isSelected ? 'text-white border-0' : 'text-foreground'}`}
+                   style={{
+                     backgroundColor: isSelected ? '#E3C38A' : 'transparent',
+                     color: isSelected ? 'white' : undefined
+                   }}
+                   onClick={() => handleGoalToggle(goal)}
+                 >
+                   {goal}
+                   {isSelected && <X className="h-3 w-3 ml-1" />}
+                 </Badge>
+               );
+             })}
+           </div>
           {formData.goals.length > 0 && (
             <p className="text-sm text-muted-foreground mt-2">
               Selected: {formData.goals.length} goal{formData.goals.length !== 1 ? 's' : ''}
