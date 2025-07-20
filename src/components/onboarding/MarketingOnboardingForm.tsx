@@ -56,8 +56,8 @@ const MarketingOnboardingForm = () => {
   const tabs = [
     { id: "about-you", label: "About You", component: AboutYouTab, stepLabel: "You" },
     { id: "about-company", label: "About Your Company", component: AboutCompanyTab, stepLabel: "Company" },
-    { id: "about-goals", label: "About Your Goals", component: AboutGoalsTab, stepLabel: "Goals" },
-    { id: "about-customer", label: "About Your Customer", component: AboutCustomerTab, stepLabel: "Customer" }
+    { id: "about-customer", label: "About Your Customer", component: AboutCustomerTab, stepLabel: "Customer" },
+    { id: "about-goals", label: "About Your Goals", component: AboutGoalsTab, stepLabel: "Goals" }
   ];
 
   const getCurrentTabIndex = () => tabs.findIndex(tab => tab.id === activeTab);
