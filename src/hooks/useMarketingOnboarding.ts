@@ -81,19 +81,43 @@ export const useMarketingOnboarding = () => {
       }
 
       if (data) {
+        // Helper function to parse array fields that might be stringified
+        const parseArrayField = (field: any): string[] => {
+          if (!field) return [];
+          if (Array.isArray(field)) {
+            // If it's an array, check if the first element is a stringified JSON
+            if (field.length > 0 && typeof field[0] === 'string' && field[0].startsWith('[')) {
+              try {
+                return JSON.parse(field[0]);
+              } catch {
+                return field;
+              }
+            }
+            return field;
+          }
+          if (typeof field === 'string') {
+            try {
+              return JSON.parse(field);
+            } catch {
+              return [field];
+            }
+          }
+          return [];
+        };
+
         return {
           name: data.name,
           title: data.title,
           company_name: data.company_name,
           category: data.category,
           stage: data.stage,
-          product_types: data.product_types,
-          store_type: Array.isArray(data.store_type) ? data.store_type : [],
+          product_types: parseArrayField(data.product_types),
+          store_type: parseArrayField(data.store_type),
           monthly_revenue: data.monthly_revenue,
-          goals: data.goals,
-          customer_gender: data.customer_gender,
-          customer_age_ranges: data.customer_age_ranges,
-          customer_income_ranges: data.customer_income_ranges
+          goals: parseArrayField(data.goals),
+          customer_gender: parseArrayField(data.customer_gender),
+          customer_age_ranges: parseArrayField(data.customer_age_ranges),
+          customer_income_ranges: parseArrayField(data.customer_income_ranges)
         };
       }
 
