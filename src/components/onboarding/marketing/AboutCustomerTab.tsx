@@ -88,9 +88,14 @@ const AboutCustomerTab = ({ formData, onInputChange }: AboutCustomerTabProps) =>
             {genderSuggestions.map((gender) => {
               const isSelected = formData.customer_gender.includes(gender);
               return (
-                <button
+                <Badge
                   key={gender}
-                  type="button"
+                  variant={isSelected ? "default" : "outline"}
+                  className={`cursor-pointer ${isSelected ? 'text-white border-0' : 'text-foreground'}`}
+                  style={{
+                    backgroundColor: isSelected ? '#E3C38A' : 'transparent',
+                    color: isSelected ? 'white' : undefined
+                  }}
                   onClick={() => {
                     if (isSelected) {
                       removeGender(gender);
@@ -98,20 +103,10 @@ const AboutCustomerTab = ({ formData, onInputChange }: AboutCustomerTabProps) =>
                       onInputChange('customer_gender', [...formData.customer_gender, gender]);
                     }
                   }}
-                  className={`relative px-3 py-2 rounded-lg border transition-colors ${
-                    isSelected 
-                      ? 'text-white border-transparent pr-8' 
-                      : 'text-gray-600 border-gray-300 hover:border-gray-400'
-                  }`}
-                  style={{
-                    backgroundColor: isSelected ? '#E3C38A' : 'transparent'
-                  }}
                 >
                   {gender}
-                  {isSelected && (
-                    <X className="absolute top-1 right-1 h-3 w-3 text-white opacity-70 hover:opacity-100" />
-                  )}
-                </button>
+                  {isSelected && <X className="h-3 w-3 ml-1" />}
+                </Badge>
               );
             })}
           </div>
