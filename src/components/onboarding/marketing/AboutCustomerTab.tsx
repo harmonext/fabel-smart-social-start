@@ -144,23 +144,26 @@ const AboutCustomerTab = ({ formData, onInputChange }: AboutCustomerTabProps) =>
           <p className="text-sm text-muted-foreground">
             Select all income ranges that apply to your customers.
           </p>
-          <div className="space-y-2">
-            {incomeRangeOptions.map((incomeRange) => (
-              <div key={incomeRange} className="flex items-center space-x-2">
-                <Checkbox
-                  id={`income-${incomeRange}`}
-                  checked={formData.customer_income_ranges.includes(incomeRange)}
-                  onCheckedChange={(checked) => handleIncomeRangeToggle(incomeRange, checked as boolean)}
-                />
-                <Label htmlFor={`income-${incomeRange}`}>{incomeRange}</Label>
-              </div>
-            ))}
+          <div className="flex flex-wrap gap-2">
+            {incomeRangeOptions.map((incomeRange) => {
+              const isSelected = formData.customer_income_ranges.includes(incomeRange);
+              return (
+                <Badge
+                  key={incomeRange}
+                  variant={isSelected ? "default" : "outline"}
+                  className={`cursor-pointer ${isSelected ? 'text-white border-0' : 'text-foreground'}`}
+                  style={{
+                    backgroundColor: isSelected ? '#E3C38A' : 'transparent',
+                    color: isSelected ? 'white' : undefined
+                  }}
+                  onClick={() => handleIncomeRangeToggle(incomeRange, !isSelected)}
+                >
+                  {incomeRange}
+                  {isSelected && <X className="h-3 w-3 ml-1" />}
+                </Badge>
+              );
+            })}
           </div>
-          {formData.customer_income_ranges.length > 0 && (
-            <p className="text-sm text-muted-foreground">
-              Selected: {formData.customer_income_ranges.length} income range{formData.customer_income_ranges.length !== 1 ? 's' : ''}
-            </p>
-          )}
         </div>
       </div>
     </div>
