@@ -38,7 +38,7 @@ const AboutGoalsTab = ({ formData, onInputChange }: AboutGoalsTabProps) => {
         <div className="space-y-2">
           <Label>Tell Us About Your Current Goals *</Label>
           <p className="text-sm text-muted-foreground mb-3">
-            Select 2 that apply to your current business objectives.
+            Select up to 2 that apply to your current business objectives.
           </p>
            <div className="flex flex-wrap gap-2">
              {goalOptions.map((goal) => {
