@@ -117,23 +117,26 @@ const AboutCustomerTab = ({ formData, onInputChange }: AboutCustomerTabProps) =>
           <p className="text-sm text-muted-foreground">
             Select all age ranges that apply to your customers.
           </p>
-          <div className="space-y-2">
-            {ageRangeOptions.map((ageRange) => (
-              <div key={ageRange} className="flex items-center space-x-2">
-                <Checkbox
-                  id={`age-${ageRange}`}
-                  checked={formData.customer_age_ranges.includes(ageRange)}
-                  onCheckedChange={(checked) => handleAgeRangeToggle(ageRange, checked as boolean)}
-                />
-                <Label htmlFor={`age-${ageRange}`}>{ageRange}</Label>
-              </div>
-            ))}
+          <div className="flex flex-wrap gap-2">
+            {ageRangeOptions.map((ageRange) => {
+              const isSelected = formData.customer_age_ranges.includes(ageRange);
+              return (
+                <Badge
+                  key={ageRange}
+                  variant={isSelected ? "default" : "outline"}
+                  className={`cursor-pointer ${isSelected ? 'text-white border-0' : 'text-foreground'}`}
+                  style={{
+                    backgroundColor: isSelected ? '#E3C38A' : 'transparent',
+                    color: isSelected ? 'white' : undefined
+                  }}
+                  onClick={() => handleAgeRangeToggle(ageRange, !isSelected)}
+                >
+                  {ageRange}
+                  {isSelected && <X className="h-3 w-3 ml-1" />}
+                </Badge>
+              );
+            })}
           </div>
-          {formData.customer_age_ranges.length > 0 && (
-            <p className="text-sm text-muted-foreground">
-              Selected: {formData.customer_age_ranges.length} age range{formData.customer_age_ranges.length !== 1 ? 's' : ''}
-            </p>
-          )}
         </div>
 
         <div className="space-y-3">
