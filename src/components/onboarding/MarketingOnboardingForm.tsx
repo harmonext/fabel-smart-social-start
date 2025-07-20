@@ -19,12 +19,9 @@ const MarketingOnboardingForm = () => {
   const [formData, setFormData] = useState<MarketingOnboardingData>({
     name: "",
     title: "",
-    company_name: "",
     category: "",
-    stage: "",
     product_types: [],
     store_type: [],
-    monthly_revenue: "",
     goals: [],
     customer_gender: [],
     customer_age_ranges: [],

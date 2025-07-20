@@ -9,12 +9,9 @@ export interface MarketingOnboardingData {
   title: string;
   
   // Tab 2: About Your Company
-  company_name: string;
   category: string;
-  stage: string;
   product_types: string[];
   store_type: string[];
-  monthly_revenue: string;
   
   // Tab 3: About Your Goals
   goals: string[];
@@ -108,12 +105,9 @@ export const useMarketingOnboarding = () => {
         return {
           name: data.name,
           title: data.title,
-          company_name: data.company_name,
           category: data.category,
-          stage: data.stage,
           product_types: parseArrayField(data.product_types),
           store_type: parseArrayField(data.store_type),
-          monthly_revenue: data.monthly_revenue,
           goals: parseArrayField(data.goals),
           customer_gender: parseArrayField(data.customer_gender),
           customer_age_ranges: parseArrayField(data.customer_age_ranges),

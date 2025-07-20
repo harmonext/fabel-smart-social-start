@@ -1,21 +1,21 @@
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import CompanyDetailsForm from "./CompanyDetailsForm";
-import OnboardingForm from "./OnboardingForm";
 import { useCompanyDetails } from "@/hooks/useCompanyDetails";
 
 const OnboardingFlow = () => {
-  const [currentStep, setCurrentStep] = useState<'company-details' | 'onboarding'>('company-details');
+  const navigate = useNavigate();
   const { isCompleted: companyDetailsCompleted, isLoading } = useCompanyDetails();
 
   useEffect(() => {
     if (!isLoading && companyDetailsCompleted) {
-      setCurrentStep('onboarding');
+      navigate('/marketing-onboarding');
     }
-  }, [companyDetailsCompleted, isLoading]);
+  }, [companyDetailsCompleted, isLoading, navigate]);
 
   const handleContinueToOnboarding = () => {
-    setCurrentStep('onboarding');
+    navigate('/marketing-onboarding');
   };
 
   if (isLoading) {
@@ -28,11 +28,7 @@ const OnboardingFlow = () => {
 
   return (
     <div className="p-6">
-      {currentStep === 'company-details' ? (
-        <CompanyDetailsForm onContinue={handleContinueToOnboarding} />
-      ) : (
-        <OnboardingForm />
-      )}
+      <CompanyDetailsForm onContinue={handleContinueToOnboarding} />
     </div>
   );
 };
