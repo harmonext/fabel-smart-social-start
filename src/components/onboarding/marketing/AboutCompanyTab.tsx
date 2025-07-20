@@ -22,6 +22,12 @@ const AboutCompanyTab = ({
     const newTypes = currentTypes.includes(productType) ? currentTypes.filter(type => type !== productType) : [...currentTypes, productType];
     onInputChange('product_types', newTypes);
   };
+
+  const handleStoreTypeToggle = (storeType: string) => {
+    const currentTypes = Array.isArray(formData.store_type) ? formData.store_type : [];
+    const newTypes = currentTypes.includes(storeType) ? currentTypes.filter(type => type !== storeType) : [...currentTypes, storeType];
+    onInputChange('store_type', newTypes);
+  };
   return <div className="space-y-6">
       <div>
         <h3 className="text-lg font-semibold mb-4">Tell us about your company</h3>
@@ -67,17 +73,30 @@ const AboutCompanyTab = ({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="store_type">And Where Do You Sell Them? *</Label>
-          <Select value={formData.store_type} onValueChange={value => onInputChange('store_type', value)}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select your store type" />
-            </SelectTrigger>
-            <SelectContent>
-              {storeTypeOptions.map(option => <SelectItem key={option} value={option}>
-                  {option}
-                </SelectItem>)}
-            </SelectContent>
-          </Select>
+          <Label>And Where Do You Sell Them? *</Label>
+          <div className="space-y-2">
+            <div className="flex flex-wrap gap-2">
+              {storeTypeOptions.map(storeType => {
+                const currentStoreTypes = Array.isArray(formData.store_type) ? formData.store_type : [];
+                const isSelected = currentStoreTypes.includes(storeType);
+                return (
+                  <Badge 
+                    key={storeType} 
+                    variant={isSelected ? "default" : "outline"} 
+                    className={`cursor-pointer ${isSelected ? 'text-white border-0' : 'text-foreground'}`}
+                    style={{
+                      backgroundColor: isSelected ? '#E3C38A' : 'transparent',
+                      color: isSelected ? 'white' : undefined
+                    }}
+                    onClick={() => handleStoreTypeToggle(storeType)}
+                  >
+                    {storeType}
+                    {isSelected && <X className="h-3 w-3 ml-1" />}
+                  </Badge>
+                );
+              })}
+            </div>
+          </div>
         </div>
 
         <div className="space-y-2">
