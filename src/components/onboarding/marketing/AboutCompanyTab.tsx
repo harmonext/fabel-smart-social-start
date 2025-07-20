@@ -23,7 +23,7 @@ const AboutCompanyTab = ({
     onInputChange('product_types', newTypes);
   };
   const handleStoreTypeToggle = (storeType: string) => {
-    const currentTypes = Array.isArray(formData.store_type) ? formData.store_type : [];
+    const currentTypes = formData.store_type;
     const newTypes = currentTypes.includes(storeType) ? currentTypes.filter(type => type !== storeType) : [...currentTypes, storeType];
     onInputChange('store_type', newTypes);
   };
@@ -76,8 +76,7 @@ const AboutCompanyTab = ({
           <div className="space-y-2">
             <div className="flex flex-wrap gap-2">
               {storeTypeOptions.map(storeType => {
-              const currentStoreTypes = Array.isArray(formData.store_type) ? formData.store_type : [];
-              const isSelected = currentStoreTypes.includes(storeType);
+              const isSelected = formData.store_type.includes(storeType);
               return <Badge key={storeType} variant={isSelected ? "default" : "outline"} className={`cursor-pointer ${isSelected ? 'text-white border-0' : 'text-foreground'}`} style={{
                 backgroundColor: isSelected ? '#E3C38A' : 'transparent',
                 color: isSelected ? 'white' : undefined
