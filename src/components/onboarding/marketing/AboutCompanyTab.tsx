@@ -22,21 +22,27 @@ const AboutCompanyTab = ({
   const revenueOptions = ["$0-$5,000", "$5,000-$25,000", "$25,000-$50,000", "$50,000+"];
 
   const handleProductTypeToggle = (productType: string) => {
-    const currentTypes = formData.product_types || [];
+    const currentTypes = Array.isArray(formData.product_types) ? formData.product_types : [];
+    console.log('Product type clicked:', productType, 'Current types:', currentTypes);
     const newTypes = currentTypes.includes(productType) 
       ? currentTypes.filter(type => type !== productType) 
       : [...currentTypes, productType];
+    console.log('New product types:', newTypes);
     onInputChange('product_types', newTypes);
   };
 
   const handleStoreTypeToggle = (storeType: string) => {
-    const currentTypes = formData.store_type || [];
+    const currentTypes = Array.isArray(formData.store_type) ? formData.store_type : [];
+    console.log('Store type clicked:', storeType, 'Current types:', currentTypes);
     const newTypes = currentTypes.includes(storeType) 
       ? currentTypes.filter(type => type !== storeType) 
       : [...currentTypes, storeType];
+    console.log('New store types:', newTypes);
     onInputChange('store_type', newTypes);
   };
 
+  console.log('AboutCompanyTab formData:', formData);
+  
   return (
     <div className="space-y-6">
       <div>
@@ -82,7 +88,7 @@ const AboutCompanyTab = ({
           <div className="space-y-2">
             <div className="flex flex-wrap gap-2">
               {productTypeOptions.map(productType => {
-                const currentProductTypes = formData.product_types || [];
+                const currentProductTypes = Array.isArray(formData.product_types) ? formData.product_types : [];
                 const isSelected = currentProductTypes.includes(productType);
                 return (
                   <Badge 
@@ -109,7 +115,7 @@ const AboutCompanyTab = ({
           <div className="space-y-2">
             <div className="flex flex-wrap gap-2">
               {storeTypeOptions.map(storeType => {
-                const currentStoreTypes = formData.store_type || [];
+                const currentStoreTypes = Array.isArray(formData.store_type) ? formData.store_type : [];
                 const isSelected = currentStoreTypes.includes(storeType);
                 return (
                   <Badge 
