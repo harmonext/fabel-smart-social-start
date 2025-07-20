@@ -70,10 +70,8 @@ const MarketingOnboardingForm = () => {
       case "about-company":
         return formData.company_name.trim() !== "" && 
                formData.category !== "" && 
-               formData.stage !== "" &&
                formData.product_types.length > 0 &&
-               formData.store_type !== "" &&
-               formData.monthly_revenue !== "";
+               Array.isArray(formData.store_type) ? formData.store_type.length > 0 : formData.store_type !== "";
       case "about-goals":
         return formData.goals.length > 0;
       case "about-customer":
