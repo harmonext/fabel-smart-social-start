@@ -23,7 +23,7 @@ const MarketingOnboardingForm = () => {
     category: "",
     stage: "",
     product_types: [],
-    store_type: "",
+    store_type: [],
     monthly_revenue: "",
     goals: [],
     customer_gender: [],
@@ -71,7 +71,7 @@ const MarketingOnboardingForm = () => {
         return formData.company_name.trim() !== "" && 
                formData.category !== "" && 
                formData.product_types.length > 0 &&
-               Array.isArray(formData.store_type) ? formData.store_type.length > 0 : formData.store_type !== "";
+               formData.store_type.length > 0;
       case "about-goals":
         return formData.goals.length > 0;
       case "about-customer":

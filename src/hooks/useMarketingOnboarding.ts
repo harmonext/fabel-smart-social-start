@@ -13,7 +13,7 @@ export interface MarketingOnboardingData {
   category: string;
   stage: string;
   product_types: string[];
-  store_type: string;
+  store_type: string[];
   monthly_revenue: string;
   
   // Tab 3: About Your Goals
@@ -88,7 +88,7 @@ export const useMarketingOnboarding = () => {
           category: data.category,
           stage: data.stage,
           product_types: data.product_types,
-          store_type: data.store_type,
+          store_type: data.store_type || [],
           monthly_revenue: data.monthly_revenue,
           goals: data.goals,
           customer_gender: data.customer_gender,
