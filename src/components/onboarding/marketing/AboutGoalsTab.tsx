@@ -19,10 +19,18 @@ const AboutGoalsTab = ({ formData, onInputChange }: AboutGoalsTabProps) => {
 
   const handleGoalToggle = (goal: string) => {
     const currentGoals = formData.goals;
-    const newGoals = currentGoals.includes(goal)
-      ? currentGoals.filter(g => g !== goal)
-      : [...currentGoals, goal];
-    onInputChange('goals', newGoals);
+    const isSelected = currentGoals.includes(goal);
+    
+    if (isSelected) {
+      // Allow deselecting
+      const newGoals = currentGoals.filter(g => g !== goal);
+      onInputChange('goals', newGoals);
+    } else if (currentGoals.length < 2) {
+      // Only allow selecting if less than 2 are already selected
+      const newGoals = [...currentGoals, goal];
+      onInputChange('goals', newGoals);
+    }
+    // If 2 are already selected and trying to select a new one, do nothing
   };
 
   return (
