@@ -22,7 +22,6 @@ const AboutCompanyTab = ({
     const newTypes = currentTypes.includes(productType) ? currentTypes.filter(type => type !== productType) : [...currentTypes, productType];
     onInputChange('product_types', newTypes);
   };
-
   const handleStoreTypeToggle = (storeType: string) => {
     const currentTypes = Array.isArray(formData.store_type) ? formData.store_type : [];
     const newTypes = currentTypes.includes(storeType) ? currentTypes.filter(type => type !== storeType) : [...currentTypes, storeType];
@@ -77,41 +76,21 @@ const AboutCompanyTab = ({
           <div className="space-y-2">
             <div className="flex flex-wrap gap-2">
               {storeTypeOptions.map(storeType => {
-                const currentStoreTypes = Array.isArray(formData.store_type) ? formData.store_type : [];
-                const isSelected = currentStoreTypes.includes(storeType);
-                return (
-                  <Badge 
-                    key={storeType} 
-                    variant={isSelected ? "default" : "outline"} 
-                    className={`cursor-pointer ${isSelected ? 'text-white border-0' : 'text-foreground'}`}
-                    style={{
-                      backgroundColor: isSelected ? '#E3C38A' : 'transparent',
-                      color: isSelected ? 'white' : undefined
-                    }}
-                    onClick={() => handleStoreTypeToggle(storeType)}
-                  >
+              const currentStoreTypes = Array.isArray(formData.store_type) ? formData.store_type : [];
+              const isSelected = currentStoreTypes.includes(storeType);
+              return <Badge key={storeType} variant={isSelected ? "default" : "outline"} className={`cursor-pointer ${isSelected ? 'text-white border-0' : 'text-foreground'}`} style={{
+                backgroundColor: isSelected ? '#E3C38A' : 'transparent',
+                color: isSelected ? 'white' : undefined
+              }} onClick={() => handleStoreTypeToggle(storeType)}>
                     {storeType}
                     {isSelected && <X className="h-3 w-3 ml-1" />}
-                  </Badge>
-                );
-              })}
+                  </Badge>;
+            })}
             </div>
           </div>
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="monthly_revenue">How Much $$ Does It Bring in Monthly? *</Label>
-          <Select value={formData.monthly_revenue} onValueChange={value => onInputChange('monthly_revenue', value)}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select your monthly revenue" />
-            </SelectTrigger>
-            <SelectContent>
-              {revenueOptions.map(option => <SelectItem key={option} value={option}>
-                  {option}
-                </SelectItem>)}
-            </SelectContent>
-          </Select>
-        </div>
+        
       </div>
     </div>;
 };
