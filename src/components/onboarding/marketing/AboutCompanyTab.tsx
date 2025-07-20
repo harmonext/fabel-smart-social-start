@@ -54,20 +54,6 @@ const AboutCompanyTab = ({
 
       <div className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="company_name">Company Name *</Label>
-          <Input 
-            id="company_name" 
-            type="text" 
-            placeholder="Enter your company name" 
-            value={formData.company_name || ""} 
-            onChange={e => onInputChange('company_name', e.target.value)} 
-            disabled={false} 
-            readOnly={false} 
-            required 
-          />
-        </div>
-
-        <div className="space-y-2">
           <Label htmlFor="category">Category *</Label>
           <Select value={formData.category} onValueChange={value => onInputChange('category', value)}>
             <SelectTrigger>
