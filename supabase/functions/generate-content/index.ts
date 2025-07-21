@@ -44,10 +44,30 @@ serve(async (req) => {
       .select('*')
       .eq('name', personaName)
       .eq('user_id', user.id)
-      .single();
+      .maybeSingle();
 
-    if (personaError || !persona) {
-      throw new Error('Persona not found');
+    console.log('Persona query result:', { persona, personaError, personaName, userId: user.id });
+
+    if (personaError) {
+      console.error('Error fetching persona:', personaError);
+      throw new Error('Failed to fetch persona: ' + personaError.message);
+    }
+
+    if (!persona) {
+      console.log('No persona found, creating default content generation');
+      // If no saved persona found, create a basic one for content generation
+      const defaultPersona = {
+        name: personaName,
+        description: "Default persona for content generation",
+        social_media_top_1: "LinkedIn",
+        social_media_top_2: "Twitter", 
+        social_media_top_3: "Instagram",
+        location: "Global",
+        psychographics: "Professional, growth-focused",
+        age_ranges: "25-45",
+        genders: "All"
+      };
+      console.log('Using default persona:', defaultPersona);
     }
 
     // Get company details and goals
@@ -55,28 +75,43 @@ serve(async (req) => {
       .from('marketing_onboarding')
       .select('goals')
       .eq('user_id', user.id)
-      .single();
+      .maybeSingle();
 
-    if (companyError || !companyDetails) {
-      throw new Error('Company details not found');
+    console.log('Company details query result:', { companyDetails, companyError });
+
+    if (companyError) {
+      console.error('Error fetching company details:', companyError);
+      throw new Error('Failed to fetch company details: ' + companyError.message);
     }
 
+    const actualPersona = persona || {
+      name: personaName,
+      description: "Default persona for content generation",
+      social_media_top_1: "LinkedIn",
+      social_media_top_2: "Twitter", 
+      social_media_top_3: "Instagram",
+      location: "Global",
+      psychographics: "Professional, growth-focused",
+      age_ranges: "25-45",
+      genders: "All"
+    };
+
     const socialPlatforms = [
-      persona.social_media_top_1,
-      persona.social_media_top_2, 
-      persona.social_media_top_3
+      actualPersona.social_media_top_1,
+      actualPersona.social_media_top_2, 
+      actualPersona.social_media_top_3
     ].filter(Boolean);
 
-    const goals = companyDetails.goals || [];
+    const goals = companyDetails?.goals || ['Brand Awareness', 'Customer Engagement'];
 
     // Create prompt for OpenAI
     const prompt = `Generate social media content for the following persona and goals:
 
-Persona: ${persona.name}
-Description: ${persona.description}
-Demographics: ${persona.age_ranges}, ${persona.genders}
-Location: ${persona.location}
-Psychographics: ${persona.psychographics}
+Persona: ${actualPersona.name}
+Description: ${actualPersona.description}
+Demographics: ${actualPersona.age_ranges}, ${actualPersona.genders}
+Location: ${actualPersona.location}
+Psychographics: ${actualPersona.psychographics}
 
 Social Media Platforms: ${socialPlatforms.join(', ')}
 Company Goals: ${goals.join(', ')}
@@ -93,7 +128,7 @@ Return the response as a JSON array with this exact structure:
     "title": "Caption title here",
     "content": "Full caption content here with hashtags and platform-specific formatting",
     "platform": "linkedin", 
-    "persona_name": "${persona.name}",
+    "persona_name": "${actualPersona.name}",
     "scheduled_at": "2025-01-XX 10:00:00"
   }
 ]
