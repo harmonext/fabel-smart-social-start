@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Persona } from "@/hooks/usePersonas";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 interface PlatformData {
   name: string;
   icon: React.ComponentType<any>;
@@ -136,6 +138,36 @@ const Persona1 = ({ persona }: Persona1Props) => {
       reader.readAsDataURL(file);
     }
   };
+
+  const handleGenerateContentClick = async () => {
+    if (!persona?.id) {
+      toast.error("No persona selected");
+      return;
+    }
+
+    setIsGenerating(true);
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-content', {
+        body: { personaId: persona.id }
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      if (data.success) {
+        toast.success(`Generated ${data.contentGenerated} social media posts!`);
+      } else {
+        throw new Error(data.error || 'Failed to generate content');
+      }
+    } catch (error) {
+      console.error('Error generating content:', error);
+      toast.error(error.message || 'Failed to generate content');
+    } finally {
+      setIsGenerating(false);
+    }
+  };
   return <div className="bg-muted rounded-lg p-6 space-y-4 h-full flex flex-col">
       <div>
         <div className="flex items-center gap-3 mb-1">
@@ -226,8 +258,12 @@ const Persona1 = ({ persona }: Persona1Props) => {
       </div>
 
       <div className="mt-auto pt-4">
-        <Button className="bg-fabel-primary hover:bg-fabel-primary/90 w-full">
-          Generate Content
+        <Button 
+          className="bg-fabel-primary hover:bg-fabel-primary/90 w-full"
+          onClick={handleGenerateContentClick}
+          disabled={isGenerating}
+        >
+          {isGenerating ? "Generating..." : "Generate Content"}
         </Button>
       </div>
     </div>;
