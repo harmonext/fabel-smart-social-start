@@ -94,8 +94,8 @@ const Persona1 = () => {
   };
   return <div className="bg-muted rounded-lg p-6 space-y-4 h-full flex flex-col">
       <div>
-        <h1 className="text-lg font-bold text-foreground">[[persona_name]]</h1>
-        <p className="text-sm font-medium text-muted-foreground">[[description]]</p>
+        <h1 className="text-lg font-bold text-foreground">Persona Name</h1>
+        <p className="text-sm font-medium text-muted-foreground">Description</p>
       </div>
 
       <div className="text-center">
@@ -119,25 +119,24 @@ const Persona1 = () => {
       <div className="text-center">
         <h2 className="font-bold text-sm mb-1">Location:</h2>
         <p className="text-xs text-muted-foreground">
-          [[location]]
+          New York, Los Angeles<br />
+          Large, metropolitan coastal city
         </p>
       </div>
 
       <div className="text-center">
-        <h2 className="font-bold text-sm mb-1">Psychographics:</h2>
-        <p className="text-xs text-muted-foreground">
-          [[psychographics]]
-        </p>
+        
+        
       </div>
 
       <div className="flex justify-center space-x-8">
         <div className="text-center">
           <h2 className="font-bold text-sm">Age Range:</h2>
-          <p className="text-xs text-muted-foreground">[[age_ranges]]</p>
+          <p className="text-xs text-muted-foreground">25-34</p>
         </div>
         <div className="text-center">
           <h2 className="font-bold text-sm">Gender:</h2>
-          <p className="text-xs text-muted-foreground">[[genders]]</p>
+          <p className="text-xs text-muted-foreground">Female</p>
         </div>
       </div>
 
@@ -148,7 +147,7 @@ const Persona1 = () => {
         </div>
         <ul className="list-none space-y-1 text-xs text-muted-foreground">
           <li>SEO Keywords</li>
-          <li>Major Competitors</li>
+          <li>Competitor Analysis</li>
           <li>Estimated CAC</li>
           <li>Estimated LTV</li>
           <li>How to appeal to persona</li>
