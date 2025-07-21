@@ -126,25 +126,25 @@ export const usePersonas = () => {
           const { data: { user }, error: userError } = await supabase.auth.getUser();
           console.log('Auto-save user:', user?.id, 'Error:', userError);
           
-          if (userError) {
-            console.error('Auto-save failed - user error:', userError);
-            toast({
-              title: "Auto-save Warning",
-              description: "Personas generated but not saved automatically. Please use the Save button.",
-              variant: "destructive"
-            });
-            return;
-          }
+           if (userError) {
+             console.error('Auto-save failed - user error:', userError);
+             toast({
+               title: "Auto-save Warning",
+               description: "Personas generated but not saved automatically. Please use the Save button.",
+               variant: "destructive"
+             });
+             return true; // Still return true as personas were generated
+           }
 
-          if (!user) {
-            console.error('Auto-save failed - no user found');
-            toast({
-              title: "Auto-save Warning", 
-              description: "Personas generated but not saved automatically. Please use the Save button.",
-              variant: "destructive"
-            });
-            return;
-          }
+           if (!user) {
+             console.error('Auto-save failed - no user found');
+             toast({
+               title: "Auto-save Warning", 
+               description: "Personas generated but not saved automatically. Please use the Save button.",
+               variant: "destructive"
+             });
+             return true; // Still return true as personas were generated
+           }
 
           // Delete existing saved personas for this user
           console.log('Deleting existing personas for user:', user.id);
@@ -203,20 +203,16 @@ export const usePersonas = () => {
             });
           }
           console.log('=== AUTO-SAVE PERSONAS END ===');
-        } catch (error) {
-          console.error('Error auto-saving personas:', error);
-          toast({
-            title: "Auto-save Error",
-            description: "Personas generated but auto-save failed. Please use the Save button.",
-            variant: "destructive"
-          });
-        }
-        
-        toast({
-          title: "Success",
-          description: "Marketing personas have been generated and saved successfully!",
-        });
-        return true;
+         } catch (error) {
+           console.error('Error auto-saving personas:', error);
+           toast({
+             title: "Auto-save Error",
+             description: "Personas generated but auto-save failed. Please use the Save button.",
+             variant: "destructive"
+           });
+         }
+         
+         return true;
       } else {
         console.error('Invalid response format:', data);
         toast({
