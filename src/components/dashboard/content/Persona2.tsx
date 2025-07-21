@@ -156,6 +156,9 @@ const Persona2 = () => {
           <h2 className="font-bold text-sm">Unlock for:</h2>
         </div>
         <p className="text-xs text-muted-foreground">[[top_competitors]]</p>
+        <p className="text-xs text-muted-foreground">[[cac_estimate]]</p>
+        <p className="text-xs text-muted-foreground">[[ltv_estimate]]</p>
+        <p className="text-xs text-muted-foreground">[[appeal_howto]]</p>
       </div>
     </div>;
 };
