@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { MarketingOnboardingData, useMarketingOnboarding } from "@/hooks/useMarketingOnboarding";
+import { usePersonas } from "@/hooks/usePersonas";
 import AboutYouTab from "./marketing/AboutYouTab";
 import AboutCompanyTab from "./marketing/AboutCompanyTab";
 import AboutGoalsTab from "./marketing/AboutGoalsTab";
@@ -13,6 +14,7 @@ import AboutCustomerTab from "./marketing/AboutCustomerTab";
 const MarketingOnboardingForm = () => {
   const navigate = useNavigate();
   const { saveOnboarding, isSaving, fetchOnboardingData } = useMarketingOnboarding();
+  const { generatePersonas } = usePersonas();
   const [activeTab, setActiveTab] = useState("about-you");
   const [completedTabs, setCompletedTabs] = useState<string[]>([]);
   
@@ -108,20 +110,12 @@ const MarketingOnboardingForm = () => {
     const result = await saveOnboarding(formData);
     if (result.success && result.shouldGeneratePersonas) {
       setIsGeneratingPersonas(true);
-      // Generate personas using the saved prompt
       try {
-        // Call the generate-personas edge function
-        const response = await fetch('https://wsqshdjljgejrrbthjha.functions.supabase.co/functions/v1/generate-personas', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-
-        if (response.ok) {
+        // Use the usePersonas hook which includes auto-saving functionality
+        const success = await generatePersonas();
+        if (success) {
           navigate('/dashboard?tab=company-profile&subtab=personas');
         } else {
-          console.error('Failed to generate personas');
           // Still navigate to personas page so user can manually generate
           navigate('/dashboard?tab=company-profile&subtab=personas');
         }
