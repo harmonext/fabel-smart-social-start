@@ -149,12 +149,13 @@ const Persona2 = () => {
           <p className="text-xs text-muted-foreground">[[genders]]</p>
         </div>
       </div>
-
+        
       <div className="pt-2 text-center">
         <div className="flex items-center justify-center space-x-2 mb-2">
           <i className="fa-solid fa-lock text-lg text-muted-foreground"></i>
           <h2 className="font-bold text-sm">Unlock for:</h2>
         </div>
+        <p className="text-xs text-muted-foreground">[[top_competitors]]</p>
       </div>
     </div>;
 };
