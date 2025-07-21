@@ -125,7 +125,18 @@ export const useMarketingOnboarding = () => {
   const generatePersonaPrompt = (template: string, data: MarketingOnboardingData): string => {
     let prompt = template;
     
-    // Replace template variables with actual values
+    // Replace template variables with actual values using marketing_onboarding prefix
+    prompt = prompt.replace(/\{\{marketing_onboarding\.name\}\}/g, data.name);
+    prompt = prompt.replace(/\{\{marketing_onboarding\.title\}\}/g, data.title);
+    prompt = prompt.replace(/\{\{marketing_onboarding\.category\}\}/g, data.category);
+    prompt = prompt.replace(/\{\{marketing_onboarding\.product_types\}\}/g, data.product_types.join(', '));
+    prompt = prompt.replace(/\{\{marketing_onboarding\.store_type\}\}/g, data.store_type.join(', '));
+    prompt = prompt.replace(/\{\{marketing_onboarding\.goals\}\}/g, data.goals.join(', '));
+    prompt = prompt.replace(/\{\{marketing_onboarding\.customer_gender\}\}/g, data.customer_gender.join(', '));
+    prompt = prompt.replace(/\{\{marketing_onboarding\.customer_age_ranges\}\}/g, data.customer_age_ranges.join(', '));
+    prompt = prompt.replace(/\{\{marketing_onboarding\.customer_income_ranges\}\}/g, data.customer_income_ranges.join(', '));
+    
+    // Also support legacy format for backward compatibility
     prompt = prompt.replace(/\{\{name\}\}/g, data.name);
     prompt = prompt.replace(/\{\{title\}\}/g, data.title);
     prompt = prompt.replace(/\{\{category\}\}/g, data.category);
