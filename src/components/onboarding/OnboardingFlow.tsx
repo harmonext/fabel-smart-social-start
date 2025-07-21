@@ -3,16 +3,20 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import CompanyDetailsForm from "./CompanyDetailsForm";
 import { useCompanyDetails } from "@/hooks/useCompanyDetails";
+import { useOnboarding } from "@/hooks/useOnboarding";
 
 const OnboardingFlow = () => {
   const navigate = useNavigate();
   const { isCompleted: companyDetailsCompleted, isLoading } = useCompanyDetails();
+  const { isCompleted: fullOnboardingCompleted } = useOnboarding();
 
   useEffect(() => {
-    if (!isLoading && companyDetailsCompleted) {
+    // Only redirect to marketing-onboarding if company details are completed 
+    // but full onboarding is not yet completed
+    if (!isLoading && companyDetailsCompleted && !fullOnboardingCompleted) {
       navigate('/marketing-onboarding');
     }
-  }, [companyDetailsCompleted, isLoading, navigate]);
+  }, [companyDetailsCompleted, isLoading, navigate, fullOnboardingCompleted]);
 
   const handleContinueToOnboarding = () => {
     navigate('/marketing-onboarding');
