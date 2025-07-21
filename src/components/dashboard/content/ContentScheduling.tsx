@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar, Clock, Plus, Edit, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
 import { Facebook, Instagram, Linkedin, Twitter } from "lucide-react";
+import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { useState } from "react";
 import { useScheduledContent, ScheduledContent } from "@/hooks/useScheduledContent";
 
@@ -14,31 +15,48 @@ const CalendarView = ({ posts, currentDate, setCurrentDate }: {
 }) => {
   const getSocialIcon = (platform: string) => {
     const iconProps = { className: "h-3 w-3" };
-    switch (platform) {
-      case 'Facebook': return <Facebook {...iconProps} className="h-3 w-3 text-blue-600" />;
-      case 'Instagram': return <Instagram {...iconProps} className="h-3 w-3 text-pink-600" />;
-      case 'LinkedIn': return <Linkedin {...iconProps} className="h-3 w-3 text-blue-700" />;
-      case 'Twitter': return <Twitter {...iconProps} className="h-3 w-3 text-blue-400" />;
+    switch (platform.toLowerCase()) {
+      case 'facebook': return <Facebook {...iconProps} className="h-3 w-3 text-blue-600" />;
+      case 'instagram': return <Instagram {...iconProps} className="h-3 w-3 text-pink-600" />;
+      case 'linkedin': return <Linkedin {...iconProps} className="h-3 w-3 text-blue-700" />;
+      case 'twitter': return <Twitter {...iconProps} className="h-3 w-3 text-blue-400" />;
+      case 'pinterest': return <div className="h-3 w-3 bg-red-600 rounded-full flex items-center justify-center">
+        <span className="text-white text-xs font-bold">P</span>
+      </div>;
       default: return <div className="h-3 w-3 bg-gray-400 rounded"></div>;
     }
   };
 
   const getPersonaColor = (persona: string) => {
-    switch (persona) {
-      case 'Ambitious Entrepreneur': return 'bg-blue-100 text-blue-800 border border-blue-200';
-      case 'Community Builder': return 'bg-green-100 text-green-800 border border-green-200';
-      case 'Digital Native': return 'bg-purple-100 text-purple-800 border border-purple-200';
-      default: return 'bg-gray-100 text-gray-800 border border-gray-200';
+    // Generate color based on persona name for dynamic personas
+    if (!persona) return 'bg-gray-100 text-gray-800 border border-gray-200';
+    
+    // Hash the persona name to get consistent colors
+    let hash = 0;
+    for (let i = 0; i < persona.length; i++) {
+      hash = persona.charCodeAt(i) + ((hash << 5) - hash);
     }
+    
+    const colors = [
+      'bg-blue-100 text-blue-800 border border-blue-200',
+      'bg-green-100 text-green-800 border border-green-200',
+      'bg-purple-100 text-purple-800 border border-purple-200',
+      'bg-pink-100 text-pink-800 border border-pink-200',
+      'bg-yellow-100 text-yellow-800 border border-yellow-200',
+      'bg-indigo-100 text-indigo-800 border border-indigo-200',
+      'bg-red-100 text-red-800 border border-red-200',
+      'bg-orange-100 text-orange-800 border border-orange-200'
+    ];
+    
+    return colors[Math.abs(hash) % colors.length];
   };
 
   const getPersonaAvatar = (persona: string) => {
-    switch (persona) {
-      case 'Ambitious Entrepreneur': return '🚀';
-      case 'Community Builder': return '🤝';
-      case 'Digital Native': return '💻';
-      default: return '👤';
-    }
+    if (!persona) return '👤';
+    
+    // Generate avatar based on first letter of persona name
+    const firstLetter = persona.charAt(0).toUpperCase();
+    return firstLetter;
   };
 
   const getDaysInMonth = (date: Date) => {
@@ -140,19 +158,44 @@ const CalendarView = ({ posts, currentDate, setCurrentDate }: {
                   {day}
                 </div>
                 <div className="space-y-1">
-                  {postsForDay.map((post, index) => (
-                    <div
-                      key={post.id}
-                      className={`text-xs p-1.5 rounded-md flex items-center gap-1.5 ${getPersonaColor(post.persona_name || '')} hover:shadow-sm transition-shadow cursor-pointer`}
-                      title={`${post.title} - ${post.platform}`}
-                    >
-                      <div className="flex items-center gap-1">
-                        {getSocialIcon(post.platform)}
-                        <span className="text-xs">{getPersonaAvatar(post.persona_name || '')}</span>
-                      </div>
-                      <span className="truncate font-medium">{post.persona_name?.split(' ')[0] || 'Unknown'}</span>
-                    </div>
+                  {postsForDay.slice(0, 3).map((post, index) => (
+                    <TooltipProvider key={post.id}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div
+                            className={`text-xs p-1.5 rounded-md flex items-center gap-1.5 ${getPersonaColor(post.persona_name || '')} hover:shadow-sm transition-shadow cursor-pointer`}
+                          >
+                            <div className="flex items-center gap-1 flex-shrink-0">
+                              {getSocialIcon(post.platform)}
+                              <div className="w-4 h-4 rounded-full bg-white flex items-center justify-center text-xs font-medium">
+                                {getPersonaAvatar(post.persona_name || '')}
+                              </div>
+                            </div>
+                            <div className="truncate text-xs font-medium min-w-0">
+                              {post.title.length > 20 ? `${post.title.substring(0, 20)}...` : post.title}
+                            </div>
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <div className="max-w-xs">
+                            <div className="font-medium">{post.title}</div>
+                            <div className="text-sm text-muted-foreground mt-1">
+                              <div>Platform: {post.platform}</div>
+                              <div>Persona: {post.persona_name || 'Unknown'}</div>
+                              {post.scheduled_at && (
+                                <div>Scheduled: {new Date(post.scheduled_at).toLocaleTimeString()}</div>
+                              )}
+                            </div>
+                          </div>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   ))}
+                  {postsForDay.length > 3 && (
+                    <div className="text-xs text-muted-foreground font-medium px-1.5">
+                      +{postsForDay.length - 3} more
+                    </div>
+                  )}
                 </div>
               </div>
             );
@@ -162,32 +205,6 @@ const CalendarView = ({ posts, currentDate, setCurrentDate }: {
         {/* Legend */}
         <div className="mt-6 pt-4 border-t">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <h4 className="text-sm font-medium mb-3">Persona Legend</h4>
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-1">
-                    <div className="w-3 h-3 rounded bg-blue-100 border border-blue-200"></div>
-                    <span className="text-xs">🚀</span>
-                  </div>
-                  <span className="text-sm text-muted-foreground">Ambitious Entrepreneur</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-1">
-                    <div className="w-3 h-3 rounded bg-green-100 border border-green-200"></div>
-                    <span className="text-xs">🤝</span>
-                  </div>
-                  <span className="text-sm text-muted-foreground">Community Builder</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-1">
-                    <div className="w-3 h-3 rounded bg-purple-100 border border-purple-200"></div>
-                    <span className="text-xs">💻</span>
-                  </div>
-                  <span className="text-sm text-muted-foreground">Digital Native</span>
-                </div>
-              </div>
-            </div>
             <div>
               <h4 className="text-sm font-medium mb-3">Platform Icons</h4>
               <div className="space-y-2">
@@ -207,6 +224,22 @@ const CalendarView = ({ posts, currentDate, setCurrentDate }: {
                   <Twitter className="h-3 w-3 text-blue-400" />
                   <span className="text-sm text-muted-foreground">Twitter</span>
                 </div>
+                <div className="flex items-center gap-2">
+                  <div className="h-3 w-3 bg-red-600 rounded-full flex items-center justify-center">
+                    <span className="text-white text-xs font-bold">P</span>
+                  </div>
+                  <span className="text-sm text-muted-foreground">Pinterest</span>
+                </div>
+              </div>
+            </div>
+            <div>
+              <h4 className="text-sm font-medium mb-3">How to Read Calendar</h4>
+              <div className="space-y-2 text-sm text-muted-foreground">
+                <div>• Each colored box represents a persona</div>
+                <div>• Icons show the platform (Facebook, Instagram, etc.)</div>
+                <div>• Letters show persona initials</div>
+                <div>• Hover over items to see full details</div>
+                <div>• Up to 3 posts shown per day, with count for more</div>
               </div>
             </div>
           </div>
