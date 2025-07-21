@@ -22,6 +22,7 @@ export interface Persona {
 export const usePersonas = () => {
   const { toast } = useToast();
   const [personas, setPersonas] = useState<Persona[]>([]);
+  const [rawPersonaData, setRawPersonaData] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -96,6 +97,11 @@ export const usePersonas = () => {
 
       if (data.personas && Array.isArray(data.personas)) {
         console.log('Setting personas:', data.personas);
+        
+        // Store the raw JSON response
+        const rawJson = JSON.stringify(data);
+        setRawPersonaData(rawJson);
+        
         // Map AI response fields to our interface
         const mappedPersonas = data.personas.map((persona: any) => ({
           name: persona.name || '',
@@ -140,6 +146,7 @@ export const usePersonas = () => {
               cac_estimate: persona.cac_estimate,
               ltv_estimate: persona.ltv_estimate,
               appeal_howto: persona.appeal_howto,
+              raw_persona_generated: rawJson,
               user_id: user.id,
             }));
 
@@ -233,6 +240,7 @@ export const usePersonas = () => {
         cac_estimate: persona.cac_estimate,
         ltv_estimate: persona.ltv_estimate,
         appeal_howto: persona.appeal_howto,
+        raw_persona_generated: rawPersonaData,
         user_id: user.id,
       }));
 
