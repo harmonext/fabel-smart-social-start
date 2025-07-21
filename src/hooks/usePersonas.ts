@@ -16,7 +16,7 @@ export interface Persona {
   social_media_top_3?: string;
   cac_estimate?: number;
   ltv_estimate?: number;
-  appeal_howto: string;
+  appeal_how_to: string;
 }
 
 export const usePersonas = () => {
@@ -57,7 +57,7 @@ export const usePersonas = () => {
           social_media_top_3: persona.social_media_top_3,
           cac_estimate: persona.cac_estimate,
           ltv_estimate: persona.ltv_estimate,
-          appeal_howto: persona.appeal_howto || '',
+          appeal_how_to: persona.appeal_how_to || '',
         }));
         setPersonas(loadedPersonas);
       }
@@ -116,7 +116,7 @@ export const usePersonas = () => {
           social_media_top_3: persona.social_media_top_3 || persona.preferredChannels?.split(',')[2]?.trim() || null,
           cac_estimate: persona.cac_estimate || persona.cacEstimate,
           ltv_estimate: persona.ltv_estimate || persona.ltvEstimate,
-          appeal_howto: persona.appeal_howto || persona.appealHowto || '',
+          appeal_how_to: persona.appeal_how_to || persona.appeal_howto || '',
         }));
         setPersonas(mappedPersonas);
         
@@ -145,7 +145,7 @@ export const usePersonas = () => {
               social_media_top_3: persona.social_media_top_3,
               cac_estimate: persona.cac_estimate,
               ltv_estimate: persona.ltv_estimate,
-              appeal_howto: persona.appeal_howto,
+          appeal_how_to: persona.appeal_how_to,
               raw_persona_generated: rawJson,
               user_id: user.id,
             }));
@@ -239,7 +239,7 @@ export const usePersonas = () => {
         social_media_top_3: persona.social_media_top_3,
         cac_estimate: persona.cac_estimate,
         ltv_estimate: persona.ltv_estimate,
-        appeal_howto: persona.appeal_howto,
+        appeal_how_to: persona.appeal_how_to,
         raw_persona_generated: rawPersonaData,
         user_id: user.id,
       }));

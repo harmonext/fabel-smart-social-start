@@ -98,7 +98,7 @@ export type Database = {
       saved_personas: {
         Row: {
           age_ranges: string
-          appeal_howto: string
+          appeal_how_to: string
           cac_estimate: number | null
           created_at: string
           description: string
@@ -118,7 +118,7 @@ export type Database = {
         }
         Insert: {
           age_ranges?: string
-          appeal_howto?: string
+          appeal_how_to?: string
           cac_estimate?: number | null
           created_at?: string
           description: string
@@ -138,7 +138,7 @@ export type Database = {
         }
         Update: {
           age_ranges?: string
-          appeal_howto?: string
+          appeal_how_to?: string
           cac_estimate?: number | null
           created_at?: string
           description?: string

@@ -86,7 +86,7 @@ const normalizePersona = (persona: any) => {
   // Map other required fields
   normalized.location = normalized.location || normalized.demographics || '';
   normalized.psychographics = normalized.psychographics || normalized.goals || '';
-  normalized.appeal_howto = normalized.appeal_howto || normalized.buyingMotivation || '';
+  normalized.appeal_how_to = normalized.appeal_how_to || normalized.buyingMotivation || '';
   normalized.social_media_top_1 = normalized.social_media_top_1 || normalized.preferredChannels || 'LinkedIn';
   normalized.social_media_top_2 = normalized.social_media_top_2 || null;
   normalized.social_media_top_3 = normalized.social_media_top_3 || null;
