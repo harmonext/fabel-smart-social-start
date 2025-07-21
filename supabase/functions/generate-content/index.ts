@@ -115,6 +115,12 @@ serve(async (req) => {
     const goals = companyDetails?.goals || ['Brand Awareness', 'Customer Engagement'];
 
     // Create prompt for OpenAI
+    const currentDate = new Date();
+    const tomorrowDate = new Date(currentDate);
+    tomorrowDate.setDate(currentDate.getDate() + 1);
+    const nextWeekDate = new Date(currentDate);
+    nextWeekDate.setDate(currentDate.getDate() + 7);
+    
     const prompt = `Generate social media content for the following persona and goals:
 
 Persona: ${actualPersona.name}
@@ -131,6 +137,8 @@ Create engaging social media captions for each platform and each goal combinatio
 - Engaging content appropriate for the platform (LinkedIn: professional tone, Twitter: casual/trending, etc.)
 - Platform-specific best practices (hashtags, mentions, etc.)
 - Schedule the content over the next 7 days with optimal posting times for each platform
+
+IMPORTANT: All scheduled_at dates must be in the future. Start from tomorrow (${tomorrowDate.toISOString().split('T')[0]}) and schedule up to one week from now (${nextWeekDate.toISOString().split('T')[0]}). Do not use past dates or today's date.
 
 Return the response as a JSON array with this exact structure:
 [
@@ -151,6 +159,7 @@ Make sure to:
 - Include relevant hashtags and calls-to-action
 - Schedule posts at optimal times (LinkedIn: weekdays 8-10am, Twitter: weekdays 9am-3pm, etc.)
 - Spread content over 7 days to avoid overwhelming followers
+- ENSURE ALL scheduled_at dates are FUTURE dates only, starting from tomorrow
 - DO NOT include any emojis in the generated content`;
 
     console.log('Sending request to OpenAI with prompt length:', prompt.length);
