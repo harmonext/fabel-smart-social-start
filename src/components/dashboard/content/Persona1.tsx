@@ -137,7 +137,7 @@ const Persona1 = () => {
         </div>
         <div className="text-center">
           <h2 className="font-bold text-sm">Gender:</h2>
-          <p className="text-xs text-muted-foreground">Female</p>
+          <p className="text-xs text-muted-foreground">[[genders]]</p>
         </div>
       </div>
 
