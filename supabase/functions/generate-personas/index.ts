@@ -66,6 +66,31 @@ const normalizePersona = (persona: any) => {
     normalized.contentPreferences = persona.contentPreferences.join(', ');
   }
   
+  // Map OpenAI response fields to database schema
+  // age_ranges, top_competitors, and genders are now strings in the database
+  if (persona.demographics && !normalized.age_ranges) {
+    // Extract age range from demographics string
+    const ageMatch = persona.demographics.match(/[Aa]ges?\s+(\d+[-–]\d+)/);
+    normalized.age_ranges = ageMatch ? ageMatch[1] : '';
+  }
+  
+  if (persona.demographics && !normalized.genders) {
+    // Extract gender info from demographics or default to 'All genders'
+    normalized.genders = 'All genders';
+  }
+  
+  if (!normalized.top_competitors) {
+    normalized.top_competitors = 'Industry leaders, established brands';
+  }
+  
+  // Map other required fields
+  normalized.location = normalized.location || normalized.demographics || '';
+  normalized.psychographics = normalized.psychographics || normalized.goals || '';
+  normalized.appeal_howto = normalized.appeal_howto || normalized.buyingMotivation || '';
+  normalized.social_media_top_1 = normalized.social_media_top_1 || normalized.preferredChannels || 'LinkedIn';
+  normalized.social_media_top_2 = normalized.social_media_top_2 || null;
+  normalized.social_media_top_3 = normalized.social_media_top_3 || null;
+  
   return normalized;
 };
 

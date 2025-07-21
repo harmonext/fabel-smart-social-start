@@ -8,9 +8,9 @@ export interface Persona {
   description: string;
   location: string;
   psychographics: string;
-  age_ranges: string[];
-  genders: string[];
-  top_competitors: string[];
+  age_ranges: string;
+  genders: string;
+  top_competitors: string;
   social_media_top_1: string;
   social_media_top_2?: string;
   social_media_top_3?: string;
@@ -49,9 +49,9 @@ export const usePersonas = () => {
           description: persona.description,
           location: persona.location || '',
           psychographics: persona.psychographics || '',
-          age_ranges: persona.age_ranges || [],
-          genders: persona.genders || [],
-          top_competitors: persona.top_competitors || [],
+          age_ranges: persona.age_ranges || '',
+          genders: persona.genders || '',
+          top_competitors: persona.top_competitors || '',
           social_media_top_1: persona.social_media_top_1 || '',
           social_media_top_2: persona.social_media_top_2,
           social_media_top_3: persona.social_media_top_3,
@@ -108,12 +108,12 @@ export const usePersonas = () => {
           description: persona.description || '',
           location: persona.location || '',
           psychographics: persona.psychographics || persona.demographics || '',
-          age_ranges: persona.age_ranges || persona.ageRanges || [],
-          genders: persona.genders || [],
-          top_competitors: persona.top_competitors || persona.competitors || [],
-          social_media_top_1: persona.social_media_top_1 || persona.preferredChannels?.split(',')[0] || '',
-          social_media_top_2: persona.social_media_top_2 || persona.preferredChannels?.split(',')[1],
-          social_media_top_3: persona.social_media_top_3 || persona.preferredChannels?.split(',')[2],
+          age_ranges: persona.age_ranges || '',
+          genders: persona.genders || '',
+          top_competitors: persona.top_competitors || '',
+          social_media_top_1: persona.social_media_top_1 || persona.preferredChannels?.split(',')[0]?.trim() || '',
+          social_media_top_2: persona.social_media_top_2 || persona.preferredChannels?.split(',')[1]?.trim() || null,
+          social_media_top_3: persona.social_media_top_3 || persona.preferredChannels?.split(',')[2]?.trim() || null,
           cac_estimate: persona.cac_estimate || persona.cacEstimate,
           ltv_estimate: persona.ltv_estimate || persona.ltvEstimate,
           appeal_howto: persona.appeal_howto || persona.appealHowto || '',
