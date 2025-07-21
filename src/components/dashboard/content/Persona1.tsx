@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Share2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Persona } from "@/hooks/usePersonas";
@@ -222,6 +223,12 @@ const Persona1 = ({ persona }: Persona1Props) => {
           <i className="fa-solid fa-heart mr-0.5"></i>
           Appeal: {persona?.appeal_how_to || "Appeal strategies"}
         </p>
+      </div>
+
+      <div className="mt-auto pt-4">
+        <Button className="bg-fabel-primary hover:bg-fabel-primary/90 w-full">
+          Generate Content
+        </Button>
       </div>
     </div>;
 };
