@@ -16,6 +16,7 @@ const Personas = () => {
     savePersonas
   } = usePersonas();
   const [hasGenerated, setHasGenerated] = useState(false);
+  const [hasSaved, setHasSaved] = useState(false);
 
   // Default placeholder personas to show initially
   const defaultPersonas = [{
@@ -52,10 +53,14 @@ const Personas = () => {
     const success = await generatePersonas();
     if (success) {
       setHasGenerated(true);
+      setHasSaved(false); // Reset saved state when new personas are generated
     }
   };
   const handleSavePersonas = async () => {
-    await savePersonas();
+    const success = await savePersonas();
+    if (success) {
+      setHasSaved(true);
+    }
   };
   const getPersonaIcon = (index: number) => {
     const icons = [<Briefcase className="h-6 w-6" />, <Heart className="h-6 w-6" />, <Target className="h-6 w-6" />];
@@ -85,9 +90,14 @@ const Personas = () => {
                 <Button className="bg-fabel-primary hover:bg-fabel-primary/90" onClick={handleRegeneratePersonas} disabled={isLoading}>
                   {isLoading ? "Generating..." : isUsingAIPersonas ? "Regenerate Personas" : "Generate Personas"}
                 </Button>
-                {isUsingAIPersonas && <Button variant="outline" onClick={handleSavePersonas} disabled={isSaving} className="flex items-center gap-2">
+                {isUsingAIPersonas && <Button 
+                    variant="outline" 
+                    onClick={handleSavePersonas} 
+                    disabled={isSaving || !hasGenerated || hasSaved} 
+                    className="flex items-center gap-2"
+                  >
                     <Save className="h-4 w-4" />
-                    {isSaving ? "Saving..." : "Save Personas"}
+                    {isSaving ? "Saving..." : hasSaved ? "Saved" : "Save Personas"}
                   </Button>}
               </div>
             </CardContent>
