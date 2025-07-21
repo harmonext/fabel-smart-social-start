@@ -158,43 +158,63 @@ const CalendarView = ({ posts, allContent, currentDate, setCurrentDate }: {
                 }`}>
                   {day}
                 </div>
-                <div className="space-y-1">
+                <div className="space-y-1 overflow-hidden">
                   {postsForDay.slice(0, 3).map((post, index) => (
                     <TooltipProvider key={post.id}>
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <div
-                            className={`text-xs p-1.5 rounded-md flex items-center gap-1.5 ${getPersonaColor(post.persona_name || '')} hover:shadow-sm transition-shadow cursor-pointer`}
+                            className={`text-xs p-1.5 rounded-md flex items-center gap-1.5 min-h-[24px] ${getPersonaColor(post.persona_name || '')} hover:shadow-sm transition-all duration-200 cursor-pointer border`}
                           >
                             <div className="flex items-center gap-1 flex-shrink-0">
-                              {getSocialIcon(post.platform)}
-                              <div className="w-4 h-4 rounded-full bg-white flex items-center justify-center text-xs font-medium">
+                              <div className="flex-shrink-0">
+                                {getSocialIcon(post.platform)}
+                              </div>
+                              <div className="w-4 h-4 rounded-full bg-white/90 flex items-center justify-center text-xs font-bold shadow-sm">
                                 {getPersonaAvatar(post.persona_name || '')}
                               </div>
                             </div>
-                            <div className="truncate text-xs font-medium min-w-0">
-                              {post.title.length > 20 ? `${post.title.substring(0, 20)}...` : post.title}
+                            <div className="truncate text-xs font-medium min-w-0 flex-1">
+                              {post.title.length > 15 ? `${post.title.substring(0, 15)}...` : post.title}
                             </div>
                           </div>
                         </TooltipTrigger>
-                        <TooltipContent>
-                          <div className="max-w-xs">
-                            <div className="font-medium">{post.title}</div>
-                            <div className="text-sm text-muted-foreground mt-1">
-                              <div>Platform: {post.platform}</div>
-                              <div>Persona: {post.persona_name || 'Unknown'}</div>
-                              {post.scheduled_at && (
-                                <div>Scheduled: {new Date(post.scheduled_at).toLocaleTimeString()}</div>
-                              )}
+                        <TooltipContent side="right" align="start" className="max-w-sm">
+                          <div className="space-y-2">
+                            <div className="font-semibold text-sm">{post.title}</div>
+                            <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
+                              <div className="flex items-center gap-1">
+                                <span className="font-medium">Platform:</span>
+                                <div className="flex items-center gap-1">
+                                  {getSocialIcon(post.platform)}
+                                  <span className="capitalize">{post.platform}</span>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <span className="font-medium">Persona:</span>
+                                <div className={`px-1.5 py-0.5 rounded-full text-xs font-medium ${getPersonaColor(post.persona_name || '')}`}>
+                                  {getPersonaAvatar(post.persona_name || '')} {post.persona_name || 'Unknown'}
+                                </div>
+                              </div>
                             </div>
+                            {post.scheduled_at && (
+                              <div className="text-xs text-muted-foreground border-t pt-2">
+                                <span className="font-medium">Scheduled:</span> {new Date(post.scheduled_at).toLocaleString()}
+                              </div>
+                            )}
+                            {post.goal && (
+                              <div className="text-xs text-muted-foreground">
+                                <span className="font-medium">Goal:</span> {post.goal}
+                              </div>
+                            )}
                           </div>
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
                   ))}
                   {postsForDay.length > 3 && (
-                    <div className="text-xs text-muted-foreground font-medium px-1.5">
-                      +{postsForDay.length - 3} more
+                    <div className="text-xs text-muted-foreground font-medium px-1.5 py-1 bg-muted/30 rounded text-center">
+                      +{postsForDay.length - 3} more posts
                     </div>
                   )}
                 </div>
