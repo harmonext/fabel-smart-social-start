@@ -8,8 +8,9 @@ import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from "@/comp
 import { useState } from "react";
 import { useScheduledContent, ScheduledContent } from "@/hooks/useScheduledContent";
 
-const CalendarView = ({ posts, currentDate, setCurrentDate }: {
+const CalendarView = ({ posts, allContent, currentDate, setCurrentDate }: {
   posts: ScheduledContent[];
+  allContent: ScheduledContent[];
   currentDate: Date;
   setCurrentDate: (date: Date) => void;
 }) => {
@@ -235,7 +236,7 @@ const CalendarView = ({ posts, currentDate, setCurrentDate }: {
             <div>
               <h4 className="text-sm font-medium mb-3">Persona Icons</h4>
               <div className="space-y-2">
-                {Array.from(new Set(posts.map(post => post.persona_name).filter(Boolean))).map((persona) => (
+                {Array.from(new Set(allContent.map(post => post.persona_name).filter(Boolean))).map((persona) => (
                   <div key={persona as string} className="flex items-center gap-2">
                     <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium ${getPersonaColor(persona as string)}`}>
                       {getPersonaAvatar(persona as string)}
@@ -405,6 +406,7 @@ const ContentScheduling = () => {
       ) : (
         <CalendarView 
           posts={content.filter(post => post.status === "scheduled")} 
+          allContent={content}
           currentDate={currentDate}
           setCurrentDate={setCurrentDate}
         />
