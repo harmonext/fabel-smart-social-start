@@ -20,7 +20,7 @@ serve(async (req) => {
   }
 
   try {
-    const { personaId } = await req.json();
+    const { personaName } = await req.json();
     
     // Get authorization header
     const authHeader = req.headers.get('authorization');
@@ -36,13 +36,13 @@ serve(async (req) => {
       throw new Error('Unauthorized');
     }
 
-    console.log('Generating content for persona:', personaId, 'user:', user.id);
+    console.log('Generating content for persona:', personaName, 'user:', user.id);
 
     // Get persona data
     const { data: persona, error: personaError } = await supabase
       .from('saved_personas')
       .select('*')
-      .eq('id', personaId)
+      .eq('name', personaName)
       .eq('user_id', user.id)
       .single();
 

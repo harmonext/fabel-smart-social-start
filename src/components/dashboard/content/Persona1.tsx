@@ -140,16 +140,13 @@ const Persona1 = ({ persona }: Persona1Props) => {
   };
 
   const handleGenerateContentClick = async () => {
-    if (!persona?.id) {
-      toast.error("No persona selected");
-      return;
-    }
-
+    const personaName = persona?.name || "The Ambitious Entrepreneur";
+    
     setIsGenerating(true);
     
     try {
       const { data, error } = await supabase.functions.invoke('generate-content', {
-        body: { personaId: persona.id }
+        body: { personaName }
       });
 
       if (error) {
