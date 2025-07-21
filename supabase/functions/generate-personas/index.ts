@@ -363,15 +363,22 @@ Return the response as a JSON array with exactly 3 personas. Make sure the JSON 
               console.log('Cleaned content:', cleanedContent);
               
               const rawPersonas = JSON.parse(cleanedContent);
+              console.log('Parsed rawPersonas:', JSON.stringify(rawPersonas, null, 2));
+              console.log('Is rawPersonas an array?', Array.isArray(rawPersonas));
+              console.log('rawPersonas length:', rawPersonas?.length);
+              
               if (Array.isArray(rawPersonas) && rawPersonas.length === 3) {
                 // Normalize personas to ensure consistent string format
                 const personas = rawPersonas.map(normalizePersona);
                 console.log('Successfully generated and normalized personas with OpenAI');
+                console.log('Final normalized personas:', JSON.stringify(personas, null, 2));
                 return new Response(JSON.stringify({ personas }), {
                   headers: { ...corsHeaders, 'Content-Type': 'application/json' },
                 });
               } else {
                 console.error('Invalid personas array structure:', rawPersonas);
+                console.error('Expected: Array with length 3, got:', typeof rawPersonas, 'with length:', rawPersonas?.length);
+                // Fall through to fallback personas
               }
             } catch (parseError) {
               console.error('Error parsing OpenAI response:', parseError);
