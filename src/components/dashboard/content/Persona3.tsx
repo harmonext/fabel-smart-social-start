@@ -150,7 +150,7 @@ const Persona3 = () => {
         </div>
         <ul className="list-none space-y-1 text-xs text-muted-foreground">
           <li>SEO Keywords</li>
-          <li>Competitor Analysis</li>
+          <li>Major Competitors</li>
           <li>Estimated CAC</li>
           <li>Estimated LTV</li>
           <li>How to appeal to persona</li>
