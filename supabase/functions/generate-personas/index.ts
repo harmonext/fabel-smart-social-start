@@ -204,7 +204,28 @@ serve(async (req) => {
       console.log('Onboarding data found:', !!onboardingData);
     }
 
-    const hasData = !!(companyDetails || onboardingData);
+    console.log('Fetching marketing onboarding data...');
+    const { data: marketingOnboardingData, error: marketingOnboardingError } = await supabase
+      .from('marketing_onboarding')
+      .select('*')
+      .eq('user_id', user.id)
+      .maybeSingle();
+
+    if (marketingOnboardingError) {
+      console.error('Error fetching marketing onboarding data:', marketingOnboardingError);
+    } else {
+      console.log('Marketing onboarding data found:', !!marketingOnboardingData);
+      if (marketingOnboardingData) {
+        console.log('Marketing onboarding data:', {
+          category: marketingOnboardingData.category,
+          customer_gender: marketingOnboardingData.customer_gender,
+          customer_age_ranges: marketingOnboardingData.customer_age_ranges,
+          customer_income_ranges: marketingOnboardingData.customer_income_ranges
+        });
+      }
+    }
+
+    const hasData = !!(companyDetails || onboardingData || marketingOnboardingData);
     const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
 
     // Try OpenAI first if API key is available
@@ -242,6 +263,19 @@ serve(async (req) => {
 - Top Customer Questions: ${onboardingData.top_customer_questions || 'Not provided'}
 - Target Segments: ${onboardingData.target_segments || 'Not provided'}
 - Customer Values: ${onboardingData.customer_values || 'Not provided'}`;
+          }
+
+          if (marketingOnboardingData) {
+            prompt += `\n\nMarketing Details:
+- Title: ${marketingOnboardingData.title || 'Not provided'}
+- Name: ${marketingOnboardingData.name || 'Not provided'}
+- Category: ${marketingOnboardingData.category || 'Not provided'}
+- Product Types: ${marketingOnboardingData.product_types?.join(', ') || 'Not provided'}
+- Store Type: ${marketingOnboardingData.store_type?.join(', ') || 'Not provided'}
+- Goals: ${marketingOnboardingData.goals?.join(', ') || 'Not provided'}
+- Customer Gender: ${marketingOnboardingData.customer_gender?.join(', ') || 'Not provided'}
+- Customer Age Ranges: ${marketingOnboardingData.customer_age_ranges?.join(', ') || 'Not provided'}
+- Customer Income Ranges: ${marketingOnboardingData.customer_income_ranges?.join(', ') || 'Not provided'}`;
           }
 
           if (!hasData) {
