@@ -513,7 +513,7 @@ const ContentScheduling = () => {
         </Tabs>
       ) : (
         <CalendarView 
-          posts={content.filter(post => post.status === "scheduled")} 
+          posts={content.filter(post => post.scheduled_at)} 
           allContent={content}
           currentDate={currentDate}
           setCurrentDate={setCurrentDate}
