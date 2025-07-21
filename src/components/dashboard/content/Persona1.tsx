@@ -133,7 +133,7 @@ const Persona1 = () => {
       <div className="flex justify-center space-x-8">
         <div className="text-center">
           <h2 className="font-bold text-sm">Age Range:</h2>
-          <p className="text-xs text-muted-foreground">25-34</p>
+          <p className="text-xs text-muted-foreground">[[age_ranges]]</p>
         </div>
         <div className="text-center">
           <h2 className="font-bold text-sm">Gender:</h2>
