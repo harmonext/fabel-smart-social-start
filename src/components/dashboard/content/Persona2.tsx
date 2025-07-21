@@ -128,7 +128,7 @@ const Persona2 = () => {
       <div className="text-center">
         <h2 className="font-bold text-sm mb-1">Location:</h2>
         <p className="text-xs text-muted-foreground">
-          Lorem ipsum, lorem ipsum<br />
+          Lorem ipsum, lorem ipsum
           Lorem ipsum lorem ipsum
         </p>
       </div>
