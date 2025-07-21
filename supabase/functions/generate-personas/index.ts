@@ -362,14 +362,40 @@ Return the response as a JSON array with exactly 3 personas. Make sure the JSON 
               const cleanedContent = cleanJsonResponse(generatedContent);
               console.log('Cleaned content:', cleanedContent);
               
-              const rawPersonas = JSON.parse(cleanedContent);
+              let rawPersonas;
+              try {
+                rawPersonas = JSON.parse(cleanedContent);
+              } catch (jsonError) {
+                console.error('JSON parsing failed, trying to extract JSON from response:', jsonError);
+                // Try to find JSON array in the response
+                const jsonMatch = cleanedContent.match(/\[\s*{[\s\S]*}\s*\]/);
+                if (jsonMatch) {
+                  rawPersonas = JSON.parse(jsonMatch[0]);
+                  console.log('Extracted JSON from response:', rawPersonas);
+                } else {
+                  throw new Error('Could not find valid JSON in response');
+                }
+              }
+              
               console.log('Parsed rawPersonas:', JSON.stringify(rawPersonas, null, 2));
               console.log('Is rawPersonas an array?', Array.isArray(rawPersonas));
               console.log('rawPersonas length:', rawPersonas?.length);
               
-              if (Array.isArray(rawPersonas) && rawPersonas.length === 3) {
+              // Check if it's an object with personas array inside
+              if (rawPersonas && typeof rawPersonas === 'object' && rawPersonas.personas && Array.isArray(rawPersonas.personas)) {
+                rawPersonas = rawPersonas.personas;
+                console.log('Found personas array inside object, using that:', rawPersonas.length);
+              }
+              
+              if (Array.isArray(rawPersonas) && rawPersonas.length >= 1) {
+                // Take up to 3 personas, pad with duplicates if needed
+                const personasToUse = rawPersonas.slice(0, 3);
+                while (personasToUse.length < 3) {
+                  personasToUse.push(personasToUse[0]); // Duplicate first persona if we don't have enough
+                }
+                
                 // Normalize personas to ensure consistent string format
-                const personas = rawPersonas.map(normalizePersona);
+                const personas = personasToUse.map(normalizePersona);
                 console.log('Successfully generated and normalized personas with OpenAI');
                 console.log('Final normalized personas:', JSON.stringify(personas, null, 2));
                 return new Response(JSON.stringify({ personas }), {
@@ -377,7 +403,7 @@ Return the response as a JSON array with exactly 3 personas. Make sure the JSON 
                 });
               } else {
                 console.error('Invalid personas array structure:', rawPersonas);
-                console.error('Expected: Array with length 3, got:', typeof rawPersonas, 'with length:', rawPersonas?.length);
+                console.error('Expected: Array with at least 1 item, got:', typeof rawPersonas, 'with length:', rawPersonas?.length);
                 // Fall through to fallback personas
               }
             } catch (parseError) {
