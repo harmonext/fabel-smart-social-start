@@ -155,14 +155,6 @@ const Persona2 = () => {
           <i className="fa-solid fa-lock text-lg text-muted-foreground"></i>
           <h2 className="font-bold text-sm">Unlock for:</h2>
         </div>
-        <ul className="list-none space-y-1 text-xs text-muted-foreground">
-          <li>SEO Keywords</li>
-          <li>Major Competitors</li>
-          <li>[[top_competitors]]</li>
-          <li>Estimated CAC</li>
-          <li>Estimated LTV</li>
-          <li>How to appeal to persona</li>
-        </ul>
       </div>
     </div>;
 };
