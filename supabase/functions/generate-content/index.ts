@@ -20,20 +20,30 @@ serve(async (req) => {
   }
 
   try {
+    console.log('=== GENERATE CONTENT FUNCTION START ===');
+    
     const { personaName } = await req.json();
+    console.log('Request body parsed:', { personaName });
     
     // Get authorization header
     const authHeader = req.headers.get('authorization');
+    console.log('Auth header present:', !!authHeader);
+    
     if (!authHeader) {
+      console.error('No authorization header found');
       throw new Error('No authorization header');
     }
 
     // Extract user from JWT
     const jwt = authHeader.replace('Bearer ', '');
+    console.log('JWT extracted, length:', jwt.length);
+    
     const { data: { user }, error: authError } = await supabase.auth.getUser(jwt);
+    console.log('User auth result:', { user: user?.id, authError });
     
     if (authError || !user) {
-      throw new Error('Unauthorized');
+      console.error('Authentication failed:', authError);
+      throw new Error('Unauthorized: ' + (authError?.message || 'No user found'));
     }
 
     console.log('Generating content for persona:', personaName, 'user:', user.id);
@@ -141,7 +151,12 @@ Make sure to:
 - Schedule posts at optimal times (LinkedIn: weekdays 8-10am, Twitter: weekdays 9am-3pm, etc.)
 - Spread content over 7 days to avoid overwhelming followers`;
 
-    console.log('Sending request to OpenAI...');
+    console.log('Sending request to OpenAI with prompt length:', prompt.length);
+    
+    if (!openAIApiKey) {
+      console.error('OpenAI API key not found in environment');
+      throw new Error('OpenAI API key not configured');
+    }
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -163,8 +178,12 @@ Make sure to:
       }),
     });
 
+    console.log('OpenAI response status:', response.status);
+    
     if (!response.ok) {
-      throw new Error(`OpenAI API error: ${response.status}`);
+      const errorText = await response.text();
+      console.error('OpenAI API error:', response.status, errorText);
+      throw new Error(`OpenAI API error: ${response.status} - ${errorText}`);
     }
 
     const data = await response.json();
@@ -222,10 +241,15 @@ Make sure to:
     });
 
   } catch (error) {
-    console.error('Error in generate-content function:', error);
+    console.error('=== ERROR IN GENERATE-CONTENT FUNCTION ===');
+    console.error('Error details:', error);
+    console.error('Error message:', error.message);
+    console.error('Error stack:', error.stack);
+    
     return new Response(JSON.stringify({ 
       error: error.message,
-      success: false 
+      success: false,
+      details: 'Check function logs for more information'
     }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
