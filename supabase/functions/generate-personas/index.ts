@@ -204,18 +204,26 @@ serve(async (req) => {
       try {
         console.log('Attempting OpenAI persona generation...');
         
-        // Create a comprehensive prompt for persona generation
-        let prompt = `Generate 3 detailed marketing personas in JSON format for a business. `;
+        // Get the persona prompt from company_details or create a default one
+        let prompt = '';
+        
+        if (companyDetails?.onboarding_persona_prompt) {
+          console.log('Using stored persona prompt from company_details');
+          prompt = companyDetails.onboarding_persona_prompt;
+        } else {
+          console.log('No stored persona prompt found, creating default prompt');
+          // Create a comprehensive prompt for persona generation
+          prompt = `Generate 3 detailed marketing personas in JSON format for a business. `;
 
-        if (companyDetails) {
-          prompt += `\n\nCompany Information:
+          if (companyDetails) {
+            prompt += `\n\nCompany Information:
 - Company Name: ${companyDetails.company_name || 'Not provided'}
 - Industry: ${companyDetails.company_industry || 'Not provided'}
 - Location: ${companyDetails.company_address || 'Not provided'}`;
-        }
+          }
 
-        if (onboardingData) {
-          prompt += `\n\nBusiness Details:
+          if (onboardingData) {
+            prompt += `\n\nBusiness Details:
 - Business Description: ${onboardingData.business_name_description || 'Not provided'}
 - Customer Profile: ${onboardingData.customer_profile || 'Not provided'}
 - Customer Problem: ${onboardingData.customer_problem || 'Not provided'}
@@ -226,13 +234,13 @@ serve(async (req) => {
 - Top Customer Questions: ${onboardingData.top_customer_questions || 'Not provided'}
 - Target Segments: ${onboardingData.target_segments || 'Not provided'}
 - Customer Values: ${onboardingData.customer_values || 'Not provided'}`;
-        }
+          }
 
-        if (!hasData) {
-          prompt = `Generate 3 detailed marketing personas in JSON format for a general business. Create diverse personas that could apply to various types of businesses.`;
-        }
+          if (!hasData) {
+            prompt = `Generate 3 detailed marketing personas in JSON format for a general business. Create diverse personas that could apply to various types of businesses.`;
+          }
 
-        prompt += `\n\nPlease generate 3 distinct marketing personas that would be ideal customers for this business. For each persona, provide:
+          prompt += `\n\nPlease generate 3 distinct marketing personas that would be ideal customers for this business. For each persona, provide:
 - name: A descriptive persona name
 - description: A brief description of who they are
 - demographics: A single string with age range, education, location, occupation details (e.g., "Ages 30-45, college-educated, urban/suburban, professionals")
@@ -243,6 +251,7 @@ serve(async (req) => {
 - contentPreferences: A single string describing what type of content resonates with them
 
 Return the response as a JSON array with exactly 3 personas. Make sure the JSON is valid and properly formatted. Do not include any markdown formatting or code blocks in your response. Keep all field values as strings, not arrays or objects.`;
+        }
 
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
           method: 'POST',
