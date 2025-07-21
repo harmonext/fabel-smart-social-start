@@ -122,6 +122,23 @@ export const useMarketingOnboarding = () => {
     }
   };
 
+  const generatePersonaPrompt = (template: string, data: MarketingOnboardingData): string => {
+    let prompt = template;
+    
+    // Replace template variables with actual values
+    prompt = prompt.replace(/\{\{name\}\}/g, data.name);
+    prompt = prompt.replace(/\{\{title\}\}/g, data.title);
+    prompt = prompt.replace(/\{\{category\}\}/g, data.category);
+    prompt = prompt.replace(/\{\{product_types\}\}/g, data.product_types.join(', '));
+    prompt = prompt.replace(/\{\{store_type\}\}/g, data.store_type.join(', '));
+    prompt = prompt.replace(/\{\{goals\}\}/g, data.goals.join(', '));
+    prompt = prompt.replace(/\{\{customer_gender\}\}/g, data.customer_gender.join(', '));
+    prompt = prompt.replace(/\{\{customer_age_ranges\}\}/g, data.customer_age_ranges.join(', '));
+    prompt = prompt.replace(/\{\{customer_income_ranges\}\}/g, data.customer_income_ranges.join(', '));
+    
+    return prompt;
+  };
+
   const saveOnboarding = async (data: MarketingOnboardingData): Promise<boolean> => {
     if (!user) {
       toast({
@@ -135,21 +152,50 @@ export const useMarketingOnboarding = () => {
     setIsSaving(true);
 
     try {
-      const { error } = await supabase
+      // Save marketing onboarding data
+      const { error: onboardingError } = await supabase
         .from('marketing_onboarding')
         .upsert({
           user_id: user.id,
           ...data
         });
 
-      if (error) {
-        console.error('Error saving marketing onboarding:', error);
+      if (onboardingError) {
+        console.error('Error saving marketing onboarding:', onboardingError);
         toast({
           title: "Error",
           description: "Failed to save your responses. Please try again.",
           variant: "destructive"
         });
         return false;
+      }
+
+      // Fetch the persona prompt template
+      const { data: templateData, error: templateError } = await supabase
+        .from('prompt_template')
+        .select('value')
+        .eq('name', 'persona_prompt')
+        .maybeSingle();
+
+      if (templateError) {
+        console.error('Error fetching prompt template:', templateError);
+        // Continue without updating persona prompt
+      } else if (templateData) {
+        // Generate the persona prompt using the template
+        const generatedPrompt = generatePersonaPrompt(templateData.value, data);
+        
+        // Update the company details with the generated persona prompt
+        const { error: companyError } = await supabase
+          .from('company_details')
+          .update({
+            onboarding_persona_prompt: generatedPrompt
+          })
+          .eq('user_id', user.id);
+
+        if (companyError) {
+          console.error('Error updating company details:', companyError);
+          // Continue without showing error to user as main onboarding was successful
+        }
       }
 
       setIsCompleted(true);
