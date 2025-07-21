@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Share2 } from "lucide-react";
+import { Share2, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -168,7 +168,39 @@ const Persona1 = ({ persona }: Persona1Props) => {
       setIsGenerating(false);
     }
   };
-  return <div className="bg-muted rounded-lg p-6 space-y-4 h-full flex flex-col">
+  return (
+    <div className="relative bg-muted rounded-lg p-6 space-y-4 h-full flex flex-col">
+      {/* Progress Overlay */}
+      {isGenerating && (
+        <div className="absolute inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center rounded-lg">
+          <div className="bg-card/95 backdrop-blur-md border border-border rounded-2xl p-6 shadow-2xl max-w-sm mx-4">
+            <div className="flex flex-col items-center space-y-4">
+              {/* Animated Icon */}
+              <div className="relative">
+                <div className="w-12 h-12 bg-fabel-primary rounded-full flex items-center justify-center animate-pulse-gentle">
+                  <Sparkles className="h-6 w-6 text-white animate-spin-slow" />
+                </div>
+                <div className="absolute inset-0 w-12 h-12 border-4 border-fabel-primary/30 rounded-full animate-spin-slow"></div>
+              </div>
+              
+              {/* Progress Text */}
+              <div className="text-center space-y-1">
+                <h3 className="text-sm font-semibold text-foreground">
+                  Generating Content
+                </h3>
+                <p className="text-xs text-muted-foreground">
+                  Creating social media posts for {persona?.name || "this persona"}...
+                </p>
+              </div>
+              
+              {/* Progress Bar */}
+              <div className="w-full bg-secondary rounded-full h-1.5 overflow-hidden">
+                <div className="h-full bg-fabel-primary rounded-full animate-pulse"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       <div>
         <div className="flex items-center gap-3 mb-1">
           <h1 className="text-lg font-bold text-muted-foreground">{persona?.name || "The Ambitious Entrepreneur"}</h1>
@@ -266,6 +298,7 @@ const Persona1 = ({ persona }: Persona1Props) => {
           {isGenerating ? "Generating..." : "Generate Content"}
         </Button>
       </div>
-    </div>;
+    </div>
+  );
 };
 export default Persona1;
