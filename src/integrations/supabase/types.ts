@@ -21,6 +21,7 @@ export type Database = {
           company_name: string
           created_at: string
           id: string
+          onboarded: boolean
           onboarding_persona_prompt: string | null
           updated_at: string
           user_id: string
@@ -31,6 +32,7 @@ export type Database = {
           company_name: string
           created_at?: string
           id?: string
+          onboarded?: boolean
           onboarding_persona_prompt?: string | null
           updated_at?: string
           user_id: string
@@ -41,6 +43,7 @@ export type Database = {
           company_name?: string
           created_at?: string
           id?: string
+          onboarded?: boolean
           onboarding_persona_prompt?: string | null
           updated_at?: string
           user_id?: string
