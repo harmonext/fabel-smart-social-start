@@ -99,13 +99,13 @@ export type Database = {
         Row: {
           age_ranges: string
           appeal_how_to: string
-          cac_estimate: number | null
+          cac_estimate: string | null
           created_at: string
           description: string
           genders: string
           id: string
           location: string
-          ltv_estimate: number | null
+          ltv_estimate: string | null
           name: string
           psychographics: string
           raw_persona_generated: string | null
@@ -119,13 +119,13 @@ export type Database = {
         Insert: {
           age_ranges?: string
           appeal_how_to?: string
-          cac_estimate?: number | null
+          cac_estimate?: string | null
           created_at?: string
           description: string
           genders?: string
           id?: string
           location?: string
-          ltv_estimate?: number | null
+          ltv_estimate?: string | null
           name: string
           psychographics?: string
           raw_persona_generated?: string | null
@@ -139,13 +139,13 @@ export type Database = {
         Update: {
           age_ranges?: string
           appeal_how_to?: string
-          cac_estimate?: number | null
+          cac_estimate?: string | null
           created_at?: string
           description?: string
           genders?: string
           id?: string
           location?: string
-          ltv_estimate?: number | null
+          ltv_estimate?: string | null
           name?: string
           psychographics?: string
           raw_persona_generated?: string | null
