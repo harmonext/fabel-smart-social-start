@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Linkedin, Twitter, Youtube, Facebook, Instagram, MessageCircle, Share2, Video, Pin } from "lucide-react";
+import { Share2 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Persona } from "@/hooks/usePersonas";
@@ -28,26 +28,31 @@ const Persona1 = ({ persona }: Persona1Props) => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const getSocialMediaIcon = (platform: string) => {
     const platformName = platform?.toLowerCase();
+    
+    const SocialIcon = ({ className }: { className: string }) => (
+      <i className={`${className}`} />
+    );
+
     switch (platformName) {
       case 'linkedin':
-        return { icon: Linkedin, color: 'text-[#0077B5]', name: 'LinkedIn' };
+        return { icon: () => <SocialIcon className="fab fa-linkedin text-[#0077B5]" />, color: 'text-[#0077B5]', name: 'LinkedIn' };
       case 'twitter':
       case 'x':
-        return { icon: Twitter, color: 'text-brand-dark', name: 'Twitter/X' };
+        return { icon: () => <SocialIcon className="fab fa-x-twitter text-brand-dark" />, color: 'text-brand-dark', name: 'Twitter/X' };
       case 'youtube':
-        return { icon: Youtube, color: 'text-[#FF0000]', name: 'YouTube' };
+        return { icon: () => <SocialIcon className="fab fa-youtube text-[#FF0000]" />, color: 'text-[#FF0000]', name: 'YouTube' };
       case 'facebook':
-        return { icon: Facebook, color: 'text-[#1877F2]', name: 'Facebook' };
+        return { icon: () => <SocialIcon className="fab fa-facebook text-[#1877F2]" />, color: 'text-[#1877F2]', name: 'Facebook' };
       case 'instagram':
-        return { icon: Instagram, color: 'text-[#E4405F]', name: 'Instagram' };
+        return { icon: () => <SocialIcon className="fab fa-instagram text-[#E4405F]" />, color: 'text-[#E4405F]', name: 'Instagram' };
       case 'whatsapp':
-        return { icon: MessageCircle, color: 'text-[#25D366]', name: 'WhatsApp' };
+        return { icon: () => <SocialIcon className="fab fa-whatsapp text-[#25D366]" />, color: 'text-[#25D366]', name: 'WhatsApp' };
       case 'tiktok':
-        return { icon: Video, color: 'text-brand-dark', name: 'TikTok' };
+        return { icon: () => <SocialIcon className="fab fa-tiktok text-brand-dark" />, color: 'text-brand-dark', name: 'TikTok' };
       case 'pinterest':
-        return { icon: Pin, color: 'text-[#BD081C]', name: 'Pinterest' };
+        return { icon: () => <SocialIcon className="fab fa-pinterest text-[#BD081C]" />, color: 'text-[#BD081C]', name: 'Pinterest' };
       default:
-        return { icon: Share2, color: 'text-muted-foreground', name: 'Social Media' };
+        return { icon: () => <SocialIcon className="fas fa-share-alt text-muted-foreground" />, color: 'text-muted-foreground', name: 'Social Media' };
     }
   };
 
@@ -60,19 +65,19 @@ const Persona1 = ({ persona }: Persona1Props) => {
   const platformData: Record<string, PlatformData> = {
     linkedin: {
       name: 'LinkedIn',
-      icon: Linkedin,
+      icon: () => <i className="fab fa-linkedin" />,
       color: 'text-[#0077B5]',
       content: `Looking to advance your career? Our professional development programs help ambitious professionals like you reach the next level. Connect with industry leaders and unlock your potential. #CareerGrowth #ProfessionalDevelopment #Leadership`
     },
     twitter: {
       name: 'Twitter/X',
-      icon: Twitter,
+      icon: () => <i className="fab fa-x-twitter" />,
       color: 'text-brand-dark',
       content: `🚀 Ready to level up your career game? Our mentorship programs connect you with top executives who've been where you want to go. Apply now! #CareerGoals #Mentorship #Success`
     },
     youtube: {
       name: 'YouTube',
-      icon: Youtube,
+      icon: () => <i className="fab fa-youtube" />,
       color: 'text-[#FF0000]',
       content: `Watch how our alumni went from entry-level to C-suite in just 5 years! Get the insider strategies that transformed their careers. Subscribe for more success stories! #CareerTransformation #ExecutiveCoaching`
     }
@@ -148,8 +153,8 @@ const Persona1 = ({ persona }: Persona1Props) => {
                 <div key={index} className="flex flex-col items-center space-y-2">
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <div>
-                        <Icon className={`w-6 h-6 ${color}`} />
+                      <div className="text-xl">
+                        <Icon />
                       </div>
                     </TooltipTrigger>
                     <TooltipContent>
