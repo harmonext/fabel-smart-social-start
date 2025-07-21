@@ -379,7 +379,11 @@ Return the response as a JSON array with exactly 3 personas. Make sure the JSON 
               
               console.log('Parsed rawPersonas:', JSON.stringify(rawPersonas, null, 2));
               console.log('Is rawPersonas an array?', Array.isArray(rawPersonas));
-              console.log('rawPersonas length:', rawPersonas?.length);
+              if (rawPersonas) {
+                console.log('rawPersonas length:', Array.isArray(rawPersonas) ? rawPersonas.length : 'not an array');
+              } else {
+                console.log('rawPersonas is null/undefined');
+              }
               
               // Check if it's an object with personas array inside
               if (rawPersonas && typeof rawPersonas === 'object' && rawPersonas.personas && Array.isArray(rawPersonas.personas)) {
