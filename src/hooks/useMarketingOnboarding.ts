@@ -150,14 +150,14 @@ export const useMarketingOnboarding = () => {
     return prompt;
   };
 
-  const saveOnboarding = async (data: MarketingOnboardingData): Promise<boolean> => {
+  const saveOnboarding = async (data: MarketingOnboardingData): Promise<{ success: boolean; shouldGeneratePersonas?: boolean }> => {
     if (!user) {
       toast({
         title: "Error",
         description: "You must be logged in to save onboarding data.",
         variant: "destructive"
       });
-      return false;
+      return { success: false };
     }
 
     setIsSaving(true);
@@ -178,7 +178,7 @@ export const useMarketingOnboarding = () => {
           description: "Failed to save your responses. Please try again.",
           variant: "destructive"
         });
-        return false;
+        return { success: false };
       }
 
       // Fetch the persona prompt template
@@ -214,7 +214,7 @@ export const useMarketingOnboarding = () => {
         title: "Success",
         description: "Your marketing profile has been saved successfully!",
       });
-      return true;
+      return { success: true, shouldGeneratePersonas: true };
     } catch (error) {
       console.error('Error saving marketing onboarding:', error);
       toast({
@@ -222,7 +222,7 @@ export const useMarketingOnboarding = () => {
         description: "An unexpected error occurred. Please try again.",
         variant: "destructive"
       });
-      return false;
+      return { success: false };
     } finally {
       setIsSaving(false);
     }

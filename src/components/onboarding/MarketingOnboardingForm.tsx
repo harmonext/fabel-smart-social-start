@@ -28,6 +28,7 @@ const MarketingOnboardingForm = () => {
     customer_income_ranges: []
   });
   const [isLoadingData, setIsLoadingData] = useState(true);
+  const [isGeneratingPersonas, setIsGeneratingPersonas] = useState(false);
 
   useEffect(() => {
     const loadExistingData = async () => {
@@ -104,9 +105,33 @@ const MarketingOnboardingForm = () => {
       return;
     }
 
-    const success = await saveOnboarding(formData);
-    if (success) {
-      navigate('/dashboard?tab=company-profile&subtab=personas');
+    const result = await saveOnboarding(formData);
+    if (result.success && result.shouldGeneratePersonas) {
+      setIsGeneratingPersonas(true);
+      // Generate personas using the saved prompt
+      try {
+        // Call the generate-personas edge function
+        const response = await fetch('https://wsqshdjljgejrrbthjha.functions.supabase.co/functions/v1/generate-personas', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (response.ok) {
+          navigate('/dashboard?tab=company-profile&subtab=personas');
+        } else {
+          console.error('Failed to generate personas');
+          // Still navigate to personas page so user can manually generate
+          navigate('/dashboard?tab=company-profile&subtab=personas');
+        }
+      } catch (error) {
+        console.error('Error generating personas:', error);
+        // Still navigate to personas page so user can manually generate
+        navigate('/dashboard?tab=company-profile&subtab=personas');
+      } finally {
+        setIsGeneratingPersonas(false);
+      }
     }
   };
 
@@ -124,6 +149,24 @@ const MarketingOnboardingForm = () => {
             <span className="ml-2">Loading your onboarding data...</span>
           </CardContent>
         </Card>
+      </div>
+    );
+  }
+
+  if (isGeneratingPersonas) {
+    return (
+      <div className="min-h-screen py-8 px-4" style={{ backgroundColor: '#F1EFEF' }}>
+        <div className="max-w-2xl mx-auto">
+          <Card className="bg-white shadow-sm" style={{ borderColor: '#abbdc6' }}>
+            <CardContent className="flex flex-col items-center justify-center py-16">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4"></div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">Generating Your Personas</h3>
+              <p className="text-sm text-gray-600 text-center max-w-md">
+                We're creating personalized customer personas based on your responses. This may take a few moments...
+              </p>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     );
   }
