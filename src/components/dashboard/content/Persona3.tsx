@@ -154,19 +154,19 @@ const Persona3 = ({ persona }: Persona3Props) => {
           <i className="fa-solid fa-lock text-lg text-muted-foreground"></i>
           <h2 className="font-bold text-sm">Unlock for:</h2>
         </div>
-        <p className="text-xs text-muted-foreground flex items-center justify-center gap-2">
+        <p className="text-xs text-muted-foreground flex items-center justify-center gap-1">
           <i className="fa-solid fa-users"></i>
           Top Competitors: {persona?.top_competitors || "Competitors analysis"}
         </p>
-        <p className="text-xs text-muted-foreground flex items-center justify-center gap-2">
+        <p className="text-xs text-muted-foreground flex items-center justify-center gap-1">
           <i className="fa-solid fa-dollar-sign"></i>
           CAC: {persona?.cac_estimate || "$20-50"}
         </p>
-        <p className="text-xs text-muted-foreground flex items-center justify-center gap-2">
+        <p className="text-xs text-muted-foreground flex items-center justify-center gap-1">
           <i className="fa-solid fa-infinity"></i>
           LTV: {persona?.ltv_estimate || "$200-600"}
         </p>
-        <p className="text-xs text-muted-foreground flex items-center justify-center gap-2">
+        <p className="text-xs text-muted-foreground flex items-center justify-center gap-1">
           <i className="fa-solid fa-heart"></i>
           Appeal: {persona?.appeal_how_to || "Appeal strategies"}
         </p>
