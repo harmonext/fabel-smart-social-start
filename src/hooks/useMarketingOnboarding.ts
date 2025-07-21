@@ -172,7 +172,7 @@ export const useMarketingOnboarding = () => {
 
       // Fetch the persona prompt template
       const { data: templateData, error: templateError } = await supabase
-        .from('prompt_template')
+        .from('system_prompt_template')
         .select('value')
         .eq('name', 'persona_prompt')
         .maybeSingle();

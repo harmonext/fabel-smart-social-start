@@ -95,30 +95,6 @@ export type Database = {
         }
         Relationships: []
       }
-      prompt_template: {
-        Row: {
-          created_at: string
-          id: string
-          name: string
-          updated_at: string
-          value: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          name: string
-          updated_at?: string
-          value: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          name?: string
-          updated_at?: string
-          value?: string
-        }
-        Relationships: []
-      }
       saved_personas: {
         Row: {
           age_ranges: string[]
@@ -194,6 +170,30 @@ export type Database = {
           top_competitors?: string[]
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      system_prompt_template: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          updated_at: string
+          value: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          updated_at?: string
+          value: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          updated_at?: string
+          value?: string
         }
         Relationships: []
       }
