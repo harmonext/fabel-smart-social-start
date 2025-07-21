@@ -95,9 +95,9 @@ const Personas = () => {
 
           {/* Persona Components */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
-            <Persona1 />
-            <Persona2 />
-            <Persona3 />
+            <Persona1 persona={displayPersonas[0]} />
+            <Persona2 persona={displayPersonas[1]} />
+            <Persona3 persona={displayPersonas[2]} />
           </div>
       </div>
     </div>;

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Linkedin, Twitter, Youtube } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Persona } from "@/hooks/usePersonas";
 interface PlatformData {
   name: string;
   icon: React.ComponentType<any>;
@@ -11,7 +12,11 @@ interface GeneratedContent {
   platform: string;
   text: string;
 }
-const Persona1 = () => {
+interface Persona1Props {
+  persona?: Persona | any; // Allow fallback default personas
+}
+
+const Persona1 = ({ persona }: Persona1Props) => {
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
   const [generatedContent, setGeneratedContent] = useState<GeneratedContent[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -96,9 +101,9 @@ const Persona1 = () => {
   return <div className="bg-muted rounded-lg p-6 space-y-4 h-full flex flex-col">
       <div>
         <div className="flex items-center gap-3 mb-1">
-          <h1 className="text-lg font-bold text-muted-foreground">[[persona_name]]</h1>
+          <h1 className="text-lg font-bold text-muted-foreground">{persona?.name || "The Ambitious Entrepreneur"}</h1>
         </div>
-        <p className="text-sm font-medium text-muted-foreground">[[description]]</p>
+        <p className="text-sm font-medium text-muted-foreground">{persona?.description || "Small business owners who are growth-focused and tech-savvy"}</p>
       </div>
 
       <div className="text-center">
@@ -122,25 +127,25 @@ const Persona1 = () => {
       <div className="text-center">
         <h2 className="font-bold text-sm mb-1">Location:</h2>
         <p className="text-xs text-muted-foreground">
-          [[location]]
+          {persona?.location || "Urban/Suburban"}
         </p>
       </div>
 
       <div className="text-center">
         <h2 className="font-bold text-sm mb-1">Psychographics:</h2>
         <p className="text-xs text-muted-foreground">
-          [[psychographics]]
+          {persona?.psychographics || "Growth-focused, tech-savvy, efficiency-oriented"}
         </p>
       </div>
 
       <div className="flex justify-center space-x-8">
         <div className="text-center">
           <h2 className="font-bold text-sm">Age Range:</h2>
-          <p className="text-xs text-muted-foreground">[[age_ranges]]</p>
+          <p className="text-xs text-muted-foreground">{persona?.age_ranges || "28-45"}</p>
         </div>
         <div className="text-center">
           <h2 className="font-bold text-sm">Gender:</h2>
-          <p className="text-xs text-muted-foreground">[[genders]]</p>
+          <p className="text-xs text-muted-foreground">{persona?.genders || "All"}</p>
         </div>
       </div>
         
@@ -149,10 +154,10 @@ const Persona1 = () => {
           <i className="fa-solid fa-lock text-lg text-muted-foreground"></i>
           <h2 className="font-bold text-sm">Unlock for:</h2>
         </div>
-        <p className="text-xs text-muted-foreground">[[top_competitors]]</p>
-        <p className="text-xs text-muted-foreground">[[cac_estimate]]</p>
-        <p className="text-xs text-muted-foreground">[[ltv_estimate]]</p>
-        <p className="text-xs text-muted-foreground">[[appeal_how_to]]</p>
+        <p className="text-xs text-muted-foreground">{persona?.top_competitors || "Competitors analysis"}</p>
+        <p className="text-xs text-muted-foreground">CAC: {persona?.cac_estimate || "$50-100"}</p>
+        <p className="text-xs text-muted-foreground">LTV: {persona?.ltv_estimate || "$500-1000"}</p>
+        <p className="text-xs text-muted-foreground">{persona?.appeal_how_to || "Appeal strategies"}</p>
       </div>
     </div>;
 };

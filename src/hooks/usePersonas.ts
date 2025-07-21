@@ -14,8 +14,8 @@ export interface Persona {
   social_media_top_1: string;
   social_media_top_2?: string;
   social_media_top_3?: string;
-  cac_estimate?: number;
-  ltv_estimate?: number;
+  cac_estimate?: string;
+  ltv_estimate?: string;
   appeal_how_to: string;
 }
 

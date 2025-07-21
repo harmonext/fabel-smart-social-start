@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Linkedin, Twitter, Youtube } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Persona } from "@/hooks/usePersonas";
 interface PlatformData {
   name: string;
   icon: React.ComponentType<any>;
@@ -11,7 +12,11 @@ interface GeneratedContent {
   platform: string;
   text: string;
 }
-const Persona2 = () => {
+interface Persona2Props {
+  persona?: Persona | any; // Allow fallback default personas
+}
+
+const Persona2 = ({ persona }: Persona2Props) => {
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
   const [generatedContent, setGeneratedContent] = useState<GeneratedContent[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -96,7 +101,7 @@ const Persona2 = () => {
   return <div className="bg-muted rounded-lg p-6 space-y-4 h-full flex flex-col">
       <div>
         <div className="flex items-center gap-3 mb-1">
-          <h1 className="text-lg font-bold text-muted-foreground">[[persona_name]]</h1>
+          <h1 className="text-lg font-bold text-muted-foreground">{persona?.name || "The Community Builder"}</h1>
           <button className="px-3 py-1 text-sm font-medium text-white rounded-md transition-colors bg-[#D2ACAD] hover:bg-[#b77a7c]" onClick={() => {
           // Mock upgrade workflow trigger
           console.log('Upgrade button clicked for Persona 2');
@@ -104,7 +109,7 @@ const Persona2 = () => {
             Upgrade
           </button>
         </div>
-        <p className="text-sm font-medium text-muted-foreground">[[description]]</p>
+        <p className="text-sm font-medium text-muted-foreground">{persona?.description || "Local business owners focused on community engagement"}</p>
       </div>
 
       <div className="text-center">
@@ -128,25 +133,25 @@ const Persona2 = () => {
       <div className="text-center">
         <h2 className="font-bold text-sm mb-1">Location:</h2>
         <p className="text-xs text-muted-foreground">
-          [[location]]
+          {persona?.location || "Local Communities"}
         </p>
       </div>
 
       <div className="text-center">
         <h2 className="font-bold text-sm mb-1">Psychographics:</h2>
         <p className="text-xs text-muted-foreground">
-          [[psychographics]]
+          {persona?.psychographics || "Community-focused, family-oriented, relationship-driven"}
         </p>
       </div>
 
       <div className="flex justify-center space-x-8">
         <div className="text-center">
           <h2 className="font-bold text-sm">Age Range:</h2>
-          <p className="text-xs text-muted-foreground">[[age_ranges]]</p>
+          <p className="text-xs text-muted-foreground">{persona?.age_ranges || "35-55"}</p>
         </div>
         <div className="text-center">
           <h2 className="font-bold text-sm">Gender:</h2>
-          <p className="text-xs text-muted-foreground">[[genders]]</p>
+          <p className="text-xs text-muted-foreground">{persona?.genders || "All"}</p>
         </div>
       </div>
         
@@ -155,10 +160,10 @@ const Persona2 = () => {
           <i className="fa-solid fa-lock text-lg text-muted-foreground"></i>
           <h2 className="font-bold text-sm">Unlock for:</h2>
         </div>
-        <p className="text-xs text-muted-foreground">[[top_competitors]]</p>
-        <p className="text-xs text-muted-foreground">[[cac_estimate]]</p>
-        <p className="text-xs text-muted-foreground">[[ltv_estimate]]</p>
-        <p className="text-xs text-muted-foreground">[[appeal_how_to]]</p>
+        <p className="text-xs text-muted-foreground">{persona?.top_competitors || "Competitors analysis"}</p>
+        <p className="text-xs text-muted-foreground">CAC: {persona?.cac_estimate || "$30-70"}</p>
+        <p className="text-xs text-muted-foreground">LTV: {persona?.ltv_estimate || "$300-800"}</p>
+        <p className="text-xs text-muted-foreground">{persona?.appeal_how_to || "Appeal strategies"}</p>
       </div>
     </div>;
 };
