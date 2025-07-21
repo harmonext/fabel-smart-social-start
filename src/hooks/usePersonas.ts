@@ -122,44 +122,94 @@ export const usePersonas = () => {
         
         // Auto-save the generated personas to the database
         try {
+          console.log('=== AUTO-SAVE PERSONAS START ===');
           const { data: { user }, error: userError } = await supabase.auth.getUser();
+          console.log('Auto-save user:', user?.id, 'Error:', userError);
           
-          if (!userError && user) {
-            // Delete existing saved personas for this user
-            await supabase
-              .from('saved_personas')
-              .delete()
-              .eq('user_id', user.id);
-
-            // Insert the new personas
-            const personasToSave = mappedPersonas.map(persona => ({
-              name: persona.name,
-              description: persona.description,
-              location: persona.location,
-              psychographics: persona.psychographics,
-              age_ranges: persona.age_ranges,
-              genders: persona.genders,
-              top_competitors: persona.top_competitors,
-              social_media_top_1: persona.social_media_top_1,
-              social_media_top_2: persona.social_media_top_2,
-              social_media_top_3: persona.social_media_top_3,
-              cac_estimate: persona.cac_estimate,
-              ltv_estimate: persona.ltv_estimate,
-          appeal_how_to: persona.appeal_how_to,
-              raw_persona_generated: rawJson,
-              user_id: user.id,
-            }));
-
-            const { error: insertError } = await supabase
-              .from('saved_personas')
-              .insert(personasToSave);
-
-            if (!insertError) {
-              console.log('Personas auto-saved successfully');
-            }
+          if (userError) {
+            console.error('Auto-save failed - user error:', userError);
+            toast({
+              title: "Auto-save Warning",
+              description: "Personas generated but not saved automatically. Please use the Save button.",
+              variant: "destructive"
+            });
+            return;
           }
+
+          if (!user) {
+            console.error('Auto-save failed - no user found');
+            toast({
+              title: "Auto-save Warning", 
+              description: "Personas generated but not saved automatically. Please use the Save button.",
+              variant: "destructive"
+            });
+            return;
+          }
+
+          // Delete existing saved personas for this user
+          console.log('Deleting existing personas for user:', user.id);
+          const { error: deleteError } = await supabase
+            .from('saved_personas')
+            .delete() 
+            .eq('user_id', user.id);
+
+          if (deleteError) {
+            console.error('Auto-save delete error:', deleteError);
+          } else {
+            console.log('Successfully deleted existing personas');
+          }
+
+          // Insert the new personas
+          console.log('Preparing personas for auto-save insert...');
+          const personasToSave = mappedPersonas.map(persona => ({
+            name: persona.name,
+            description: persona.description,
+            location: persona.location,
+            psychographics: persona.psychographics,
+            age_ranges: persona.age_ranges,
+            genders: persona.genders,
+            top_competitors: persona.top_competitors,
+            social_media_top_1: persona.social_media_top_1,
+            social_media_top_2: persona.social_media_top_2,
+            social_media_top_3: persona.social_media_top_3,
+            cac_estimate: persona.cac_estimate,
+            ltv_estimate: persona.ltv_estimate,
+            appeal_how_to: persona.appeal_how_to,
+            raw_persona_generated: rawJson,
+            user_id: user.id,
+          }));
+
+          console.log('Auto-save personas to insert:', JSON.stringify(personasToSave, null, 2));
+
+          const { data: insertData, error: insertError } = await supabase
+            .from('saved_personas')
+            .insert(personasToSave)
+            .select();
+
+          console.log('Auto-save insert result:', { insertData, insertError });
+
+          if (insertError) {
+            console.error('Auto-save insert error:', insertError);
+            toast({
+              title: "Auto-save Failed",
+              description: `Personas generated but auto-save failed: ${insertError.message}. Please use the Save button.`,
+              variant: "destructive"
+            });
+          } else {
+            console.log('Personas auto-saved successfully!', insertData);
+            toast({
+              title: "Success",
+              description: "Personas generated and auto-saved successfully!",
+            });
+          }
+          console.log('=== AUTO-SAVE PERSONAS END ===');
         } catch (error) {
           console.error('Error auto-saving personas:', error);
+          toast({
+            title: "Auto-save Error",
+            description: "Personas generated but auto-save failed. Please use the Save button.",
+            variant: "destructive"
+          });
         }
         
         toast({
