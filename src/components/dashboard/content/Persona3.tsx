@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Linkedin, Twitter, Youtube, Facebook, Instagram, MessageCircle, Share2 } from "lucide-react";
+import { Linkedin, Twitter, Youtube, Facebook, Instagram, MessageCircle, Share2, Video, Pin } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Persona } from "@/hooks/usePersonas";
@@ -42,6 +42,10 @@ const Persona3 = ({ persona }: Persona3Props) => {
         return { icon: Instagram, color: 'text-[#E4405F]', name: 'Instagram' };
       case 'whatsapp':
         return { icon: MessageCircle, color: 'text-[#25D366]', name: 'WhatsApp' };
+      case 'tiktok':
+        return { icon: Video, color: 'text-brand-dark', name: 'TikTok' };
+      case 'pinterest':
+        return { icon: Pin, color: 'text-[#BD081C]', name: 'Pinterest' };
       default:
         return { icon: Share2, color: 'text-muted-foreground', name: 'Social Media' };
     }
