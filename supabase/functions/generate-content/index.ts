@@ -136,7 +136,7 @@ Return the response as a JSON array with this exact structure:
 [
   {
     "title": "Caption title here",
-    "content": "Full caption content here with hashtags and platform-specific formatting",
+    "content": "Full caption content here with hashtags and platform-specific formatting, but no emojis",
     "platform": "linkedin", 
     "persona_name": "${actualPersona.name}",
     "goal": "company goal to which this content applies",
