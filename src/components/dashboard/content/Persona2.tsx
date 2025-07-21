@@ -161,7 +161,7 @@ const Persona2 = ({ persona }: Persona2Props) => {
           <h2 className="font-bold text-sm">Unlock for:</h2>
         </div>
         <p className="text-xs text-muted-foreground flex items-start justify-start">
-          <i className="fa-solid fa-users mr-1"></i>
+          <i className="fa-solid fa-users mr-0.5"></i>
           Top Competitors: {persona?.top_competitors || "Competitors analysis"}
         </p>
         <p className="text-xs text-muted-foreground flex items-center justify-center gap-1">
@@ -173,7 +173,7 @@ const Persona2 = ({ persona }: Persona2Props) => {
           LTV: {persona?.ltv_estimate || "$300-800"}
         </p>
         <p className="text-xs text-muted-foreground flex items-start justify-start">
-          <i className="fa-solid fa-heart mr-1"></i>
+          <i className="fa-solid fa-heart mr-0.5"></i>
           Appeal: {persona?.appeal_how_to || "Appeal strategies"}
         </p>
       </div>
