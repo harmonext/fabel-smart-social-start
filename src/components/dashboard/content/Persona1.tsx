@@ -126,7 +126,7 @@ const Persona1 = () => {
       <div className="text-center">
         <h2 className="font-bold text-sm mb-1">Psychographics:</h2>
         <p className="text-xs text-muted-foreground">
-          This persona is interested in home design and is looking for budget-friendly solutions to improve their living space.
+          [[psychographics]]
         </p>
       </div>
 
