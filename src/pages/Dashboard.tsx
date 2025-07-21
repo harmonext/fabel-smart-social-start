@@ -5,23 +5,29 @@ import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import DashboardContent from "@/components/dashboard/DashboardContent";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { useOnboarding } from "@/hooks/useOnboarding";
+import { useCompanyDetails } from "@/hooks/useCompanyDetails";
 
 const Dashboard = () => {
   const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState("company-profile");
   const [activeSubTab, setActiveSubTab] = useState("profile-survey");
   const { isCompleted, isLoading } = useOnboarding();
+  const { isOnboarded, isLoading: companyLoading } = useCompanyDetails();
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!isLoading && isCompleted === false) {
       navigate('/onboarding');
+    } else if (!isLoading && !companyLoading && isOnboarded === true) {
+      // If user has onboarded=true in company_details, take them to personas tab
+      setActiveTab("company-profile");
+      setActiveSubTab("personas");
     } else if (!isLoading && isCompleted === true) {
-      // Always take completed users to personas tab
+      // For other completed users, also take them to personas tab
       setActiveTab("company-profile");
       setActiveSubTab("personas");
     }
-  }, [isCompleted, isLoading, navigate]);
+  }, [isCompleted, isLoading, navigate, isOnboarded, companyLoading]);
 
   // Handle URL parameters for tab navigation
   useEffect(() => {

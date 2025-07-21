@@ -8,6 +8,7 @@ export interface CompanyDetailsData {
   company_name: string;
   company_industry: string;
   company_address: string;
+  onboarded?: boolean;
 }
 
 export const useCompanyDetails = () => {
@@ -17,6 +18,7 @@ export const useCompanyDetails = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [companyDetails, setCompanyDetails] = useState<CompanyDetailsData | null>(null);
+  const [isOnboarded, setIsOnboarded] = useState<boolean | null>(null);
 
   useEffect(() => {
     const checkCompanyDetailsStatus = async () => {
@@ -40,8 +42,10 @@ export const useCompanyDetails = () => {
           setCompanyDetails({
             company_name: data.company_name,
             company_industry: data.company_industry,
-            company_address: data.company_address
+            company_address: data.company_address,
+            onboarded: data.onboarded
           });
+          setIsOnboarded(data.onboarded || false);
           setIsCompleted(true);
         } else {
           setIsCompleted(false);
@@ -112,6 +116,7 @@ export const useCompanyDetails = () => {
     isLoading,
     isSaving,
     companyDetails,
+    isOnboarded,
     saveCompanyDetails
   };
 };
