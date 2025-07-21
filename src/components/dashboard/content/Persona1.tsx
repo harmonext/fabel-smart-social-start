@@ -142,6 +142,15 @@ const Persona1 = ({ persona }: Persona1Props) => {
   const handleGenerateContentClick = async () => {
     const personaName = persona?.name || "The Ambitious Entrepreneur";
     
+    console.log('Persona object:', persona);
+    console.log('Persona name:', personaName);
+    console.log('Persona has ID:', !!persona?.id);
+    
+    if (!persona?.id) {
+      toast.error("Please generate and save personas first before creating content");
+      return;
+    }
+    
     setIsGenerating(true);
     
     try {
