@@ -31,8 +31,8 @@ export const useOnboarding = () => {
       }
 
       try {
-        // Check both company details and onboarding completion
-        const [companyDetailsResult, onboardingResult] = await Promise.all([
+        // Check both company details and onboarding completion (either tenant_onboarding or marketing_onboarding)
+        const [companyDetailsResult, tenantOnboardingResult, marketingOnboardingResult] = await Promise.all([
           supabase
             .from('company_details')
             .select('id')
@@ -42,14 +42,20 @@ export const useOnboarding = () => {
             .from('tenant_onboarding')
             .select('id')
             .eq('user_id', user.id)
+            .maybeSingle(),
+          supabase
+            .from('marketing_onboarding')
+            .select('id')
+            .eq('user_id', user.id)
             .maybeSingle()
         ]);
 
         const hasCompanyDetails = !!companyDetailsResult.data;
-        const hasOnboarding = !!onboardingResult.data;
+        const hasTenantOnboarding = !!tenantOnboardingResult.data;
+        const hasMarketingOnboarding = !!marketingOnboardingResult.data;
 
-        // Both must be completed for full onboarding completion
-        setIsCompleted(hasCompanyDetails && hasOnboarding);
+        // Either tenant onboarding or marketing onboarding must be completed (along with company details)
+        setIsCompleted(hasCompanyDetails && (hasTenantOnboarding || hasMarketingOnboarding));
       } catch (error) {
         console.error('Error checking onboarding status:', error);
         setIsCompleted(false);
