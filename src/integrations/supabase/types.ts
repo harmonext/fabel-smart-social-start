@@ -158,6 +158,51 @@ export type Database = {
         }
         Relationships: []
       }
+      scheduled_content: {
+        Row: {
+          content: string | null
+          created_at: string
+          engagement_data: Json | null
+          id: string
+          persona_name: string | null
+          platform: string
+          published_at: string | null
+          scheduled_at: string | null
+          status: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string
+          engagement_data?: Json | null
+          id?: string
+          persona_name?: string | null
+          platform: string
+          published_at?: string | null
+          scheduled_at?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string | null
+          created_at?: string
+          engagement_data?: Json | null
+          id?: string
+          persona_name?: string | null
+          platform?: string
+          published_at?: string | null
+          scheduled_at?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       system_prompt_template: {
         Row: {
           created_at: string

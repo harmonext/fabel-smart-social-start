@@ -5,9 +5,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar, Clock, Plus, Edit, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
 import { Facebook, Instagram, Linkedin, Twitter } from "lucide-react";
 import { useState } from "react";
+import { useScheduledContent, ScheduledContent } from "@/hooks/useScheduledContent";
 
 const CalendarView = ({ posts, currentDate, setCurrentDate }: {
-  posts: any[];
+  posts: ScheduledContent[];
   currentDate: Date;
   setCurrentDate: (date: Date) => void;
 }) => {
@@ -50,7 +51,8 @@ const CalendarView = ({ posts, currentDate, setCurrentDate }: {
 
   const getPostsForDate = (day: number) => {
     return posts.filter(post => {
-      const postDate = new Date(post.date);
+      if (!post.scheduled_at) return false;
+      const postDate = new Date(post.scheduled_at);
       return postDate.getDate() === day && 
              postDate.getMonth() === currentDate.getMonth() && 
              postDate.getFullYear() === currentDate.getFullYear();
@@ -141,14 +143,14 @@ const CalendarView = ({ posts, currentDate, setCurrentDate }: {
                   {postsForDay.map((post, index) => (
                     <div
                       key={post.id}
-                      className={`text-xs p-1.5 rounded-md flex items-center gap-1.5 ${getPersonaColor(post.persona)} hover:shadow-sm transition-shadow cursor-pointer`}
+                      className={`text-xs p-1.5 rounded-md flex items-center gap-1.5 ${getPersonaColor(post.persona_name || '')} hover:shadow-sm transition-shadow cursor-pointer`}
                       title={`${post.title} - ${post.platform}`}
                     >
                       <div className="flex items-center gap-1">
                         {getSocialIcon(post.platform)}
-                        <span className="text-xs">{getPersonaAvatar(post.persona)}</span>
+                        <span className="text-xs">{getPersonaAvatar(post.persona_name || '')}</span>
                       </div>
-                      <span className="truncate font-medium">{post.persona.split(' ')[0]}</span>
+                      <span className="truncate font-medium">{post.persona_name?.split(' ')[0] || 'Unknown'}</span>
                     </div>
                   ))}
                 </div>
@@ -215,163 +217,21 @@ const CalendarView = ({ posts, currentDate, setCurrentDate }: {
 };
 
 const ContentScheduling = () => {
-  const [viewMode, setViewMode] = useState<'list' | 'calendar'>('calendar'); // Start with calendar view
-  const [currentDate, setCurrentDate] = useState(new Date(2025, 0, 1)); // Start with January 2025
-  const scheduledPosts = [
-    {
-      id: 1,
-      title: "5 Tips for Small Business Marketing",
-      platform: "Facebook",
-      scheduledTime: "Today, 2:00 PM",
-      status: "scheduled",
-      persona: "Ambitious Entrepreneur",
-      date: new Date(2025, 0, 17) // January 17, 2025
-    },
-    {
-      id: 2,
-      title: "Community Spotlight: Local Success Story",
-      platform: "Instagram",
-      scheduledTime: "Tomorrow, 10:00 AM",
-      status: "scheduled",
-      persona: "Community Builder",
-      date: new Date(2025, 0, 18) // January 18, 2025
-    },
-    {
-      id: 3,
-      title: "Latest Digital Marketing Trends",
-      platform: "LinkedIn",
-      scheduledTime: "March 15, 3:00 PM",
-      status: "scheduled",
-      persona: "Digital Native",
-      date: new Date(2025, 0, 20) // January 20, 2025
-    },
-    {
-      id: 4,
-      title: "Customer Success Story",
-      platform: "Facebook",
-      scheduledTime: "Jan 22, 1:00 PM",
-      status: "scheduled",
-      persona: "Community Builder",
-      date: new Date(2025, 0, 22) // January 22, 2025
-    },
-    {
-      id: 5,
-      title: "Industry Insights Weekly",
-      platform: "LinkedIn",
-      scheduledTime: "Jan 25, 9:00 AM",
-      status: "scheduled",
-      persona: "Digital Native",
-      date: new Date(2025, 0, 25) // January 25, 2025
-    },
-    {
-      id: 6,
-      title: "Motivational Monday",
-      platform: "Instagram",
-      scheduledTime: "Jan 27, 8:00 AM",
-      status: "scheduled",
-      persona: "Ambitious Entrepreneur",
-      date: new Date(2025, 0, 27) // January 27, 2025
-    },
-    {
-      id: 7,
-      title: "Weekend Inspiration",
-      platform: "Instagram",
-      scheduledTime: "Jan 31, 6:00 PM",
-      status: "scheduled",
-      persona: "Community Builder",
-      date: new Date(2025, 0, 31) // January 31, 2025
-    },
-    // Additional posts for better calendar visualization
-    {
-      id: 8,
-      title: "Tech Tuesday: AI Tools",
-      platform: "Twitter",
-      scheduledTime: "Jan 21, 11:00 AM",
-      status: "scheduled",
-      persona: "Digital Native",
-      date: new Date(2025, 0, 21) // January 21, 2025
-    },
-    {
-      id: 9,
-      title: "Success Stories Friday",
-      platform: "LinkedIn",
-      scheduledTime: "Jan 24, 3:00 PM",
-      status: "scheduled",
-      persona: "Ambitious Entrepreneur",
-      date: new Date(2025, 0, 24) // January 24, 2025
-    },
-    {
-      id: 10,
-      title: "Community Event Reminder",
-      platform: "Facebook",
-      scheduledTime: "Jan 19, 9:00 AM",
-      status: "scheduled",
-      persona: "Community Builder",
-      date: new Date(2025, 0, 19) // January 19, 2025
-    },
-    {
-      id: 11,
-      title: "Behind the Scenes",
-      platform: "Instagram",
-      scheduledTime: "Jan 23, 4:00 PM",
-      status: "scheduled",
-      persona: "Ambitious Entrepreneur",
-      date: new Date(2025, 0, 23) // January 23, 2025
-    },
-    {
-      id: 12,
-      title: "Weekly Wisdom",
-      platform: "Twitter",
-      scheduledTime: "Jan 26, 7:00 AM",
-      status: "scheduled",
-      persona: "Digital Native",
-      date: new Date(2025, 0, 26) // January 26, 2025
-    },
-    {
-      id: 13,
-      title: "Local Business Feature",
-      platform: "Facebook",
-      scheduledTime: "Jan 28, 2:00 PM",
-      status: "scheduled",
-      persona: "Community Builder",
-      date: new Date(2025, 0, 28) // January 28, 2025
-    },
-    {
-      id: 14,
-      title: "Innovation Spotlight",
-      platform: "LinkedIn",
-      scheduledTime: "Jan 29, 10:00 AM",
-      status: "scheduled",
-      persona: "Digital Native",
-      date: new Date(2025, 0, 29) // January 29, 2025
-    },
-    {
-      id: 15,
-      title: "Thursday Thoughts",
-      platform: "Twitter",
-      scheduledTime: "Jan 30, 1:00 PM",
-      status: "scheduled",
-      persona: "Ambitious Entrepreneur",
-      date: new Date(2025, 0, 30) // January 30, 2025
-    }
-  ];
+  const [viewMode, setViewMode] = useState<'list' | 'calendar'>('calendar');
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const { content, isLoading, getContentByStatus, deleteContent } = useScheduledContent();
 
-  const recentPosts = [
-    {
-      id: 1,
-      title: "Welcome to Our New Platform!",
-      platform: "Facebook",
-      publishedTime: "2 hours ago",
-      engagement: "24 likes, 5 comments"
-    },
-    {
-      id: 2,
-      title: "Behind the Scenes: Our Team",
-      platform: "Instagram",
-      publishedTime: "1 day ago",
-      engagement: "67 likes, 12 comments"
-    }
-  ];
+  const formatScheduledTime = (scheduledAt?: string) => {
+    if (!scheduledAt) return 'Not scheduled';
+    const date = new Date(scheduledAt);
+    return date.toLocaleString();
+  };
+
+  const formatEngagement = (engagementData?: any) => {
+    if (!engagementData || typeof engagementData !== 'object') return 'No engagement data';
+    const { likes = 0, comments = 0, shares = 0 } = engagementData as Record<string, number>;
+    return `${likes} likes, ${comments} comments, ${shares} shares`;
+  };
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
@@ -405,87 +265,110 @@ const ContentScheduling = () => {
           </TabsList>
 
         <TabsContent value="scheduled" className="space-y-4">
-          {scheduledPosts.filter(post => post.status === "scheduled").map((post) => (
-            <Card key={post.id}>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <h3 className="font-medium text-foreground">{post.title}</h3>
-                    <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
-                      <span className="flex items-center gap-1">
-                        <Clock className="h-4 w-4" />
-                        {post.scheduledTime}
-                      </span>
-                      <span>📘 {post.platform}</span>
-                      <span>👤 {post.persona}</span>
+          {isLoading ? (
+            <div className="text-center py-8">Loading scheduled posts...</div>
+          ) : getContentByStatus('scheduled').length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">No scheduled posts yet</div>
+          ) : (
+            getContentByStatus('scheduled').map((post) => (
+              <Card key={post.id}>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <h3 className="font-medium text-foreground">{post.title}</h3>
+                      <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
+                        <span className="flex items-center gap-1">
+                          <Clock className="h-4 w-4" />
+                          {formatScheduledTime(post.scheduled_at)}
+                        </span>
+                        <span>📘 {post.platform}</span>
+                        <span>👤 {post.persona_name || 'No persona'}</span>
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button variant="outline" size="sm">
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="text-destructive hover:text-destructive"
+                        onClick={() => deleteContent(post.id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </div>
                   </div>
-                  <div className="flex gap-2">
-                    <Button variant="outline" size="sm">
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button variant="outline" size="sm" className="text-destructive hover:text-destructive">
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                </CardContent>
+              </Card>
+            ))
+          )}
         </TabsContent>
 
         <TabsContent value="drafts" className="space-y-4">
-          {scheduledPosts.filter(post => post.status === "draft").map((post) => (
-            <Card key={post.id}>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <h3 className="font-medium text-foreground">{post.title}</h3>
-                    <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
-                      <span>📘 {post.platform}</span>
-                      <span>👤 {post.persona}</span>
-                      <span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs">Draft</span>
+          {isLoading ? (
+            <div className="text-center py-8">Loading drafts...</div>
+          ) : getContentByStatus('draft').length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">No drafts yet</div>
+          ) : (
+            getContentByStatus('draft').map((post) => (
+              <Card key={post.id}>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <h3 className="font-medium text-foreground">{post.title}</h3>
+                      <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
+                        <span>📘 {post.platform}</span>
+                        <span>👤 {post.persona_name || 'No persona'}</span>
+                        <span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs">Draft</span>
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button variant="outline" size="sm">
+                        Edit
+                      </Button>
+                      <Button size="sm" className="bg-fabel-primary hover:bg-fabel-primary/90">
+                        Schedule
+                      </Button>
                     </div>
                   </div>
-                  <div className="flex gap-2">
-                    <Button variant="outline" size="sm">
-                      Edit
-                    </Button>
-                    <Button size="sm" className="bg-fabel-primary hover:bg-fabel-primary/90">
-                      Schedule
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                </CardContent>
+              </Card>
+            ))
+          )}
         </TabsContent>
 
         <TabsContent value="published" className="space-y-4">
-          {recentPosts.map((post) => (
-            <Card key={post.id}>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <h3 className="font-medium text-foreground">{post.title}</h3>
-                    <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
-                      <span>📘 {post.platform}</span>
-                      <span>Published {post.publishedTime}</span>
-                      <span>{post.engagement}</span>
+          {isLoading ? (
+            <div className="text-center py-8">Loading published posts...</div>
+          ) : getContentByStatus('published').length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">No published posts yet</div>
+          ) : (
+            getContentByStatus('published').map((post) => (
+              <Card key={post.id}>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <h3 className="font-medium text-foreground">{post.title}</h3>
+                      <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
+                        <span>📘 {post.platform}</span>
+                        <span>Published {post.published_at ? new Date(post.published_at).toLocaleDateString() : 'Unknown'}</span>
+                        <span>{formatEngagement(post.engagement_data)}</span>
+                      </div>
                     </div>
+                    <Button variant="outline" size="sm">
+                      View Analytics
+                    </Button>
                   </div>
-                  <Button variant="outline" size="sm">
-                    View Analytics
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                </CardContent>
+              </Card>
+            ))
+          )}
         </TabsContent>
         </Tabs>
       ) : (
         <CalendarView 
-          posts={scheduledPosts.filter(post => post.status === "scheduled")} 
+          posts={content.filter(post => post.status === "scheduled")} 
           currentDate={currentDate}
           setCurrentDate={setCurrentDate}
         />
@@ -499,20 +382,20 @@ const ContentScheduling = () => {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-center">
             <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <div className="text-2xl font-bold text-blue-600">8</div>
+              <div className="text-2xl font-bold text-blue-600">{getContentByStatus('scheduled').length}</div>
               <div className="text-sm text-blue-700">Scheduled Posts</div>
             </div>
             <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-              <div className="text-2xl font-bold text-green-600">156</div>
-              <div className="text-sm text-green-700">Total Engagements</div>
+              <div className="text-2xl font-bold text-green-600">{getContentByStatus('published').length}</div>
+              <div className="text-sm text-green-700">Published Posts</div>
             </div>
             <div className="p-4 bg-purple-50 border border-purple-200 rounded-lg">
-              <div className="text-2xl font-bold text-purple-600">3</div>
+              <div className="text-2xl font-bold text-purple-600">{new Set(content.map(post => post.platform)).size}</div>
               <div className="text-sm text-purple-700">Active Platforms</div>
             </div>
             <div className="p-4 bg-orange-50 border border-orange-200 rounded-lg">
-              <div className="text-2xl font-bold text-orange-600">92%</div>
-              <div className="text-sm text-orange-700">Success Rate</div>
+              <div className="text-2xl font-bold text-orange-600">{getContentByStatus('draft').length}</div>
+              <div className="text-sm text-orange-700">Draft Posts</div>
             </div>
           </div>
         </CardContent>
