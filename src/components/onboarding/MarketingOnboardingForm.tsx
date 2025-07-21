@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { MarketingOnboardingData, useMarketingOnboarding } from "@/hooks/useMarketingOnboarding";
 import { usePersonas } from "@/hooks/usePersonas";
+import { useOnboarding } from "@/hooks/useOnboarding";
 import AboutYouTab from "./marketing/AboutYouTab";
 import AboutCompanyTab from "./marketing/AboutCompanyTab";
 import AboutGoalsTab from "./marketing/AboutGoalsTab";
@@ -15,6 +16,7 @@ const MarketingOnboardingForm = () => {
   const navigate = useNavigate();
   const { saveOnboarding, isSaving, fetchOnboardingData } = useMarketingOnboarding();
   const { generatePersonas } = usePersonas();
+  const { isCompleted: onboardingCompleted } = useOnboarding();
   const [activeTab, setActiveTab] = useState("about-you");
   const [completedTabs, setCompletedTabs] = useState<string[]>([]);
   
@@ -253,14 +255,14 @@ const MarketingOnboardingForm = () => {
               {canSubmit && (
                 <Button
                   onClick={handleSubmit}
-                  disabled={!isCurrentTabValid || isSaving}
+                  disabled={!isCurrentTabValid || isSaving || onboardingCompleted}
                   className="px-6 py-2 text-white border-0"
                   style={{ 
                     backgroundColor: '#E3C38A',
                     color: 'white'
                   }}
                 >
-                  {isSaving ? "Saving..." : "Complete Setup"}
+                  {onboardingCompleted ? "Already Completed" : isSaving ? "Saving..." : "Complete Setup"}
                 </Button>
               )}
             </div>

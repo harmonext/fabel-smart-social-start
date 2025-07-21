@@ -6,6 +6,8 @@ import SocialConnections from "./content/SocialConnections";
 import ContentScheduling from "./content/ContentScheduling";
 import DashboardSettings from "./content/DashboardSettings";
 import OnboardingFlow from "@/components/onboarding/OnboardingFlow";
+import OnboardedData from "./content/OnboardedData";
+import { useOnboarding } from "@/hooks/useOnboarding";
 
 interface DashboardContentProps {
   activeTab: string;
@@ -13,6 +15,8 @@ interface DashboardContentProps {
 }
 
 const DashboardContent = ({ activeTab, activeSubTab }: DashboardContentProps) => {
+  const { isCompleted: onboardingCompleted } = useOnboarding();
+  
   const renderContent = () => {
     if (activeTab === "user-profile") {
       return <UserProfile />;
@@ -23,7 +27,7 @@ const DashboardContent = ({ activeTab, activeSubTab }: DashboardContentProps) =>
         return <ProfileSurvey />;
       }
       if (activeSubTab === "onboarding") {
-        return <OnboardingFlow />;
+        return onboardingCompleted ? <OnboardedData /> : <OnboardingFlow />;
       }
       if (activeSubTab === "personas") {
         return <Personas />;

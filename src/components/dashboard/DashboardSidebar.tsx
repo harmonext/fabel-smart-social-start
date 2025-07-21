@@ -1,6 +1,7 @@
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useOnboarding } from "@/hooks/useOnboarding";
 import { Button } from "@/components/ui/button";
 import { 
   Sidebar, 
@@ -39,6 +40,7 @@ const DashboardSidebar = ({
 }: DashboardSidebarProps) => {
   const [expandedSections, setExpandedSections] = useState<string[]>(["company-profile", "content-management", "personas"]);
   const navigate = useNavigate();
+  const { isCompleted: onboardingCompleted } = useOnboarding();
 
   const toggleSection = (section: string) => {
     setExpandedSections(prev => 
@@ -135,7 +137,7 @@ const DashboardSidebar = ({
                   onClick={() => handleTabClick("company-profile", "onboarding")}
                 >
                   <ClipboardList className="h-3 w-3 mr-3" />
-                  Onboarding
+                  {onboardingCompleted ? "Onboarded Data" : "Onboarding"}
                 </Button>
                 <Button
                   variant="ghost"
