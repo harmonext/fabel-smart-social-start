@@ -16,8 +16,17 @@ const Dashboard = () => {
   useEffect(() => {
     if (!isLoading && isCompleted === false) {
       navigate('/onboarding');
+    } else if (!isLoading && isCompleted === true) {
+      // If user is onboarded and no specific tab is set, default to personas
+      const tabParam = searchParams.get('tab');
+      const subtabParam = searchParams.get('subtab');
+      
+      if (!tabParam && !subtabParam) {
+        setActiveTab("company-profile");
+        setActiveSubTab("personas");
+      }
     }
-  }, [isCompleted, isLoading, navigate]);
+  }, [isCompleted, isLoading, navigate, searchParams]);
 
   // Handle URL parameters for tab navigation
   useEffect(() => {
