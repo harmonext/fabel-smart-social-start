@@ -139,6 +139,7 @@ Return the response as a JSON array with this exact structure:
     "content": "Full caption content here with hashtags and platform-specific formatting",
     "platform": "linkedin", 
     "persona_name": "${actualPersona.name}",
+    "goal": "company goal to which this content applies",
     "scheduled_at": "2025-01-XX 10:00:00"
   }
 ]
@@ -216,6 +217,7 @@ Make sure to:
       content: item.content,
       platform: item.platform.toLowerCase(),
       persona_name: item.persona_name,
+      goal: item.goal,
       scheduled_at: item.scheduled_at,
       status: 'draft'
     }));
