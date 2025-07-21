@@ -98,9 +98,46 @@ export const usePersonas = () => {
           contentPreferences: persona.contentPreferences,
         }));
         setPersonas(mappedPersonas);
+        
+        // Auto-save the generated personas to the database
+        try {
+          const { data: { user }, error: userError } = await supabase.auth.getUser();
+          
+          if (!userError && user) {
+            // Delete existing saved personas for this user
+            await supabase
+              .from('saved_personas')
+              .delete()
+              .eq('user_id', user.id);
+
+            // Insert the new personas
+            const personasToSave = mappedPersonas.map(persona => ({
+              name: persona.name,
+              description: persona.description,
+              demographics: persona.demographics,
+              pain_points: persona.painPoints,
+              goals: persona.goals,
+              preferred_channels: persona.preferredChannels,
+              buying_motivation: persona.buyingMotivation,
+              content_preferences: persona.contentPreferences,
+              user_id: user.id,
+            }));
+
+            const { error: insertError } = await supabase
+              .from('saved_personas')
+              .insert(personasToSave);
+
+            if (!insertError) {
+              console.log('Personas auto-saved successfully');
+            }
+          }
+        } catch (error) {
+          console.error('Error auto-saving personas:', error);
+        }
+        
         toast({
           title: "Success",
-          description: "Marketing personas have been generated successfully!",
+          description: "Marketing personas have been generated and saved successfully!",
         });
         return true;
       } else {
