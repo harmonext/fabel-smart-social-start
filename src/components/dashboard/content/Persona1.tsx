@@ -119,8 +119,7 @@ const Persona1 = () => {
       <div className="text-center">
         <h2 className="font-bold text-sm mb-1">Location:</h2>
         <p className="text-xs text-muted-foreground">
-          New York, Los Angeles<br />
-          Large, metropolitan coastal city
+          [[location]]
         </p>
       </div>
 
