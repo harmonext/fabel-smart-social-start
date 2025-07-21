@@ -150,7 +150,8 @@ Make sure to:
 - Use appropriate tone and formatting for each platform
 - Include relevant hashtags and calls-to-action
 - Schedule posts at optimal times (LinkedIn: weekdays 8-10am, Twitter: weekdays 9am-3pm, etc.)
-- Spread content over 7 days to avoid overwhelming followers`;
+- Spread content over 7 days to avoid overwhelming followers
+- DO NOT include any emojis in the generated content`;
 
     console.log('Sending request to OpenAI with prompt length:', prompt.length);
     
