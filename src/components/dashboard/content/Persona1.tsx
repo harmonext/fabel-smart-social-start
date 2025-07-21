@@ -155,7 +155,7 @@ const Persona1 = ({ persona }: Persona1Props) => {
           <h2 className="font-bold text-sm">Unlock for:</h2>
         </div>
         <p className="text-xs text-muted-foreground flex items-start justify-start">
-          <i className="fa-solid fa-users mr-0.5"></i>
+          <i className="fa-solid fa-users mr-1"></i>
           Top Competitors: {persona?.top_competitors || "Competitors analysis"}
         </p>
         <p className="text-xs text-muted-foreground flex items-center justify-center gap-1">
