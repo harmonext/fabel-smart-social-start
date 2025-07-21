@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Instagram, Twitter, Tv } from "lucide-react";
+import { Linkedin, Twitter, Youtube } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 interface PlatformData {
   name: string;
@@ -21,23 +21,23 @@ const Persona3 = () => {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const platformData: Record<string, PlatformData> = {
-    instagram: {
-      name: 'Instagram',
-      icon: Instagram,
-      color: 'text-[#E4405F]',
-      content: `🌟 Ready to disrupt the market? Your creative vision deserves a platform that keeps up! ✨ Join the digital revolution with tools built for innovators like you. #DigitalNative #Innovation #CreativeEntrepreneur`
+    linkedin: {
+      name: 'LinkedIn',
+      icon: Linkedin,
+      color: 'text-[#0077B5]',
+      content: `Looking to advance your career? Our professional development programs help ambitious professionals like you reach the next level. Connect with industry leaders and unlock your potential. #CareerGrowth #ProfessionalDevelopment #Leadership`
     },
     twitter: {
       name: 'Twitter/X',
       icon: Twitter,
       color: 'text-brand-dark',
-      content: `🚀 The future belongs to digital natives who dare to innovate! Are you ready to turn your creative ideas into viral success? Join the movement! #Innovation #DigitalMarketing #Entrepreneur`
+      content: `🚀 Ready to level up your career game? Our mentorship programs connect you with top executives who've been where you want to go. Apply now! #CareerGoals #Mentorship #Success`
     },
-    tiktok: {
-      name: 'TikTok',
-      icon: Tv,
-      color: 'text-brand-dark',
-      content: `POV: You're tired of outdated marketing strategies 🎯 Finally, a platform that speaks your language! Built for creators, by creators. Ready to go viral? #CreativeLife #DigitalMarketing #Innovation`
+    youtube: {
+      name: 'YouTube',
+      icon: Youtube,
+      color: 'text-[#FF0000]',
+      content: `Watch how our alumni went from entry-level to C-suite in just 5 years! Get the insider strategies that transformed their careers. Subscribe for more success stories! #CareerTransformation #ExecutiveCoaching`
     }
   };
   const handlePlatformToggle = (platform: string) => {
@@ -95,15 +95,17 @@ const Persona3 = () => {
   };
   return <div className="bg-muted rounded-lg p-6 space-y-4 h-full flex flex-col">
       <div>
-        <h1 className="text-lg font-bold text-muted-foreground">Persona Name</h1>
-        <p className="text-sm font-medium text-muted-foreground">Description</p>
+        <div className="flex items-center gap-3 mb-1">
+          <h1 className="text-lg font-bold text-muted-foreground">[[persona_name]]</h1>
+        </div>
+        <p className="text-sm font-medium text-muted-foreground">[[description]]</p>
       </div>
 
       <div className="text-center">
         <h2 className="font-bold text-sm mb-2">Social Media Platforms:</h2>
         <div className="flex items-center justify-center space-x-8">
           <div className="flex flex-col items-center space-y-2">
-            <Instagram className="w-6 h-6 text-[#E4405F]" />
+            <Linkedin className="w-6 h-6 text-[#0077B5]" />
             <Checkbox disabled />
           </div>
           <div className="flex flex-col items-center space-y-2">
@@ -111,7 +113,7 @@ const Persona3 = () => {
             <Checkbox disabled />
           </div>
           <div className="flex flex-col items-center space-y-2">
-            <Tv className="w-6 h-6 text-brand-dark" />
+            <Youtube className="w-6 h-6 text-[#FF0000]" />
             <Checkbox disabled />
           </div>
         </div>
@@ -120,39 +122,37 @@ const Persona3 = () => {
       <div className="text-center">
         <h2 className="font-bold text-sm mb-1">Location:</h2>
         <p className="text-xs text-muted-foreground">
-          Lorem ipsum, lorem ipsum<br />
-          Lorem ipsum lorem ipsum
+          [[location]]
         </p>
       </div>
 
       <div className="text-center">
-        
-        
+        <h2 className="font-bold text-sm mb-1">Psychographics:</h2>
+        <p className="text-xs text-muted-foreground">
+          [[psychographics]]
+        </p>
       </div>
 
       <div className="flex justify-center space-x-8">
         <div className="text-center">
           <h2 className="font-bold text-sm">Age Range:</h2>
-          <p className="text-xs text-muted-foreground">18-25</p>
+          <p className="text-xs text-muted-foreground">[[age_ranges]]</p>
         </div>
         <div className="text-center">
           <h2 className="font-bold text-sm">Gender:</h2>
-          <p className="text-xs text-muted-foreground">Female</p>
+          <p className="text-xs text-muted-foreground">[[genders]]</p>
         </div>
       </div>
-
+        
       <div className="pt-2 text-center">
         <div className="flex items-center justify-center space-x-2 mb-2">
           <i className="fa-solid fa-lock text-lg text-muted-foreground"></i>
           <h2 className="font-bold text-sm">Unlock for:</h2>
         </div>
-        <ul className="list-none space-y-1 text-xs text-muted-foreground">
-          <li>SEO Keywords</li>
-          <li>Competitor Analysis</li>
-          <li>Estimated CAC</li>
-          <li>Estimated LTV</li>
-          <li>How to appeal to persona</li>
-        </ul>
+        <p className="text-xs text-muted-foreground">[[top_competitors]]</p>
+        <p className="text-xs text-muted-foreground">[[cac_estimate]]</p>
+        <p className="text-xs text-muted-foreground">[[ltv_estimate]]</p>
+        <p className="text-xs text-muted-foreground">[[appeal_how_to]]</p>
       </div>
     </div>;
 };
