@@ -1,19 +1,16 @@
 import React, { useState } from "react";
 import { Instagram, Twitter, Tv } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
-
 interface PlatformData {
   name: string;
   icon: React.ComponentType<any>;
   color: string;
   content: string;
 }
-
 interface GeneratedContent {
   platform: string;
   text: string;
 }
-
 const Persona3 = () => {
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
   const [generatedContent, setGeneratedContent] = useState<GeneratedContent[]>([]);
@@ -23,44 +20,35 @@ const Persona3 = () => {
   const [modalText, setModalText] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-
   const platformData: Record<string, PlatformData> = {
     instagram: {
       name: 'Instagram',
       icon: Instagram,
       color: 'text-[#E4405F]',
-      content: `🌟 Ready to disrupt the market? Your creative vision deserves a platform that keeps up! ✨ Join the digital revolution with tools built for innovators like you. #DigitalNative #Innovation #CreativeEntrepreneur`,
+      content: `🌟 Ready to disrupt the market? Your creative vision deserves a platform that keeps up! ✨ Join the digital revolution with tools built for innovators like you. #DigitalNative #Innovation #CreativeEntrepreneur`
     },
     twitter: {
       name: 'Twitter/X',
       icon: Twitter,
       color: 'text-brand-dark',
-      content: `🚀 The future belongs to digital natives who dare to innovate! Are you ready to turn your creative ideas into viral success? Join the movement! #Innovation #DigitalMarketing #Entrepreneur`,
+      content: `🚀 The future belongs to digital natives who dare to innovate! Are you ready to turn your creative ideas into viral success? Join the movement! #Innovation #DigitalMarketing #Entrepreneur`
     },
     tiktok: {
       name: 'TikTok',
       icon: Tv,
       color: 'text-brand-dark',
-      content: `POV: You're tired of outdated marketing strategies 🎯 Finally, a platform that speaks your language! Built for creators, by creators. Ready to go viral? #CreativeLife #DigitalMarketing #Innovation`,
+      content: `POV: You're tired of outdated marketing strategies 🎯 Finally, a platform that speaks your language! Built for creators, by creators. Ready to go viral? #CreativeLife #DigitalMarketing #Innovation`
     }
   };
-
   const handlePlatformToggle = (platform: string) => {
-    setSelectedPlatforms(prev => 
-      prev.includes(platform) 
-        ? prev.filter(p => p !== platform)
-        : [...prev, platform]
-    );
+    setSelectedPlatforms(prev => prev.includes(platform) ? prev.filter(p => p !== platform) : [...prev, platform]);
   };
-
   const handleGenerateContent = () => {
     if (selectedPlatforms.length === 0) {
       return;
     }
-
     setIsGenerating(true);
     setGeneratedContent([]);
-
     setTimeout(() => {
       const content = selectedPlatforms.map(platform => ({
         platform,
@@ -70,7 +58,6 @@ const Persona3 = () => {
       setIsGenerating(false);
     }, 1500);
   };
-
   const handleEditContent = (platform: string) => {
     const currentContent = generatedContent.find(c => c.platform === platform);
     setCurrentEditingPlatform(platform);
@@ -79,20 +66,15 @@ const Persona3 = () => {
     setImagePreview(null);
     setShowModal(true);
   };
-
   const handleSaveChanges = () => {
     if (currentEditingPlatform) {
-      setGeneratedContent(prev => 
-        prev.map(content => 
-          content.platform === currentEditingPlatform 
-            ? { ...content, text: modalText }
-            : content
-        )
-      );
+      setGeneratedContent(prev => prev.map(content => content.platform === currentEditingPlatform ? {
+        ...content,
+        text: modalText
+      } : content));
       handleCloseModal();
     }
   };
-
   const handleCloseModal = () => {
     setShowModal(false);
     setCurrentEditingPlatform(null);
@@ -100,24 +82,21 @@ const Persona3 = () => {
     setImageFile(null);
     setImagePreview(null);
   };
-
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       setImageFile(file);
       const reader = new FileReader();
-      reader.onload = (e) => {
+      reader.onload = e => {
         setImagePreview(e.target?.result as string);
       };
       reader.readAsDataURL(file);
     }
   };
-
-  return (
-    <div className="bg-muted rounded-lg p-6 space-y-4 h-full flex flex-col">
+  return <div className="bg-muted rounded-lg p-6 space-y-4 h-full flex flex-col">
       <div>
-        <h1 className="text-lg font-bold text-muted-foreground">Persona 3</h1>
-        <p className="text-sm font-medium text-muted-foreground">Lorem</p>
+        <h1 className="text-lg font-bold text-muted-foreground">Persona Name</h1>
+        <p className="text-sm font-medium text-muted-foreground">Description</p>
       </div>
 
       <div className="text-center">
@@ -177,8 +156,6 @@ const Persona3 = () => {
           <li>How to appeal to persona</li>
         </ul>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Persona3;
