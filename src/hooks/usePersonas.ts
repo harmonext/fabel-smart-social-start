@@ -190,7 +190,13 @@ export const usePersonas = () => {
   };
 
   const savePersonas = async (): Promise<boolean> => {
+    console.log('=== SAVE PERSONAS FUNCTION CALLED ===');
+    console.log('Current personas:', personas);
+    console.log('Personas length:', personas.length);
+    console.log('Raw persona data:', rawPersonaData);
+
     if (personas.length === 0) {
+      console.log('No personas to save - showing error toast');
       toast({
         title: "No Personas to Save",
         description: "Please generate personas first before saving.",
@@ -200,13 +206,17 @@ export const usePersonas = () => {
     }
 
     setIsSaving(true);
+    console.log('Set isSaving to true');
 
     try {
       // Get the current user
+      console.log('Getting current user...');
       const { data: { user }, error: userError } = await supabase.auth.getUser();
+      console.log('User result:', user);
+      console.log('User error:', userError);
       
       if (userError || !user) {
-        console.error('Error getting user:', userError);
+        console.error('Error getting user or no user found:', userError);
         toast({
           title: "Authentication Error",
           description: "You must be logged in to save personas.",
@@ -215,7 +225,10 @@ export const usePersonas = () => {
         return false;
       }
 
+      console.log('User authenticated successfully, user ID:', user.id);
+
       // First, delete existing saved personas for this user
+      console.log('Deleting existing personas for user:', user.id);
       const { error: deleteError } = await supabase
         .from('saved_personas')
         .delete()
@@ -223,50 +236,64 @@ export const usePersonas = () => {
 
       if (deleteError) {
         console.error('Error deleting existing personas:', deleteError);
+      } else {
+        console.log('Successfully deleted existing personas (or none existed)');
       }
 
       // Then insert the new personas
-      const personasToSave = personas.map(persona => ({
-        name: persona.name,
-        description: persona.description,
-        location: persona.location,
-        psychographics: persona.psychographics,
-        age_ranges: persona.age_ranges,
-        genders: persona.genders,
-        top_competitors: persona.top_competitors,
-        social_media_top_1: persona.social_media_top_1,
-        social_media_top_2: persona.social_media_top_2,
-        social_media_top_3: persona.social_media_top_3,
-        cac_estimate: persona.cac_estimate,
-        ltv_estimate: persona.ltv_estimate,
-        appeal_how_to: persona.appeal_how_to,
-        raw_persona_generated: rawPersonaData,
-        user_id: user.id,
-      }));
+      console.log('Mapping personas for insertion...');
+      const personasToSave = personas.map((persona, index) => {
+        const mappedPersona = {
+          name: persona.name,
+          description: persona.description,
+          location: persona.location,
+          psychographics: persona.psychographics,
+          age_ranges: persona.age_ranges,
+          genders: persona.genders,
+          top_competitors: persona.top_competitors,
+          social_media_top_1: persona.social_media_top_1,
+          social_media_top_2: persona.social_media_top_2,
+          social_media_top_3: persona.social_media_top_3,
+          cac_estimate: persona.cac_estimate,
+          ltv_estimate: persona.ltv_estimate,
+          appeal_how_to: persona.appeal_how_to,
+          raw_persona_generated: rawPersonaData,
+          user_id: user.id,
+        };
+        console.log(`Persona ${index + 1} mapped:`, mappedPersona);
+        return mappedPersona;
+      });
 
-      console.log('Saving personas:', personasToSave);
+      console.log('Final personas to save:', JSON.stringify(personasToSave, null, 2));
+      console.log('About to insert personas into database...');
 
-      const { error: insertError } = await supabase
+      const { data: insertData, error: insertError } = await supabase
         .from('saved_personas')
-        .insert(personasToSave);
+        .insert(personasToSave)
+        .select();
+
+      console.log('Insert operation completed');
+      console.log('Insert data:', insertData);
+      console.log('Insert error:', insertError);
 
       if (insertError) {
         console.error('Error saving personas:', insertError);
         toast({
           title: "Save Error",
-          description: "Failed to save personas. Please try again.",
+          description: `Failed to save personas: ${insertError.message}`,
           variant: "destructive"
         });
         return false;
       }
 
+      console.log('Personas saved successfully!');
       toast({
         title: "Success",
         description: "Personas have been saved successfully!",
       });
       return true;
     } catch (error) {
-      console.error('Error saving personas:', error);
+      console.error('Unexpected error in savePersonas:', error);
       toast({
         title: "Save Error",
         description: "An unexpected error occurred while saving personas.",
@@ -274,7 +301,9 @@ export const usePersonas = () => {
       });
       return false;
     } finally {
+      console.log('Setting isSaving to false');
       setIsSaving(false);
+      console.log('=== SAVE PERSONAS FUNCTION COMPLETED ===');
     }
   };
 
