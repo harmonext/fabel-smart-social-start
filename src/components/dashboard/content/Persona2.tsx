@@ -132,7 +132,12 @@ const Persona2 = () => {
         </p>
       </div>
 
-      
+      <div className="text-center">
+        <h2 className="font-bold text-sm mb-1">Psychographics:</h2>
+        <p className="text-xs text-muted-foreground">
+          [[psychographics]]
+        </p>
+      </div>
 
       <div className="flex justify-center space-x-8">
         <div className="text-center">
