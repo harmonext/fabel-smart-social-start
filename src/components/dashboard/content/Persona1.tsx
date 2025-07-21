@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Linkedin, Twitter, Youtube, Facebook, Instagram, MessageCircle, Share2 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Persona } from "@/hooks/usePersonas";
 interface PlatformData {
   name: string;
@@ -29,20 +30,20 @@ const Persona1 = ({ persona }: Persona1Props) => {
     const platformName = platform?.toLowerCase();
     switch (platformName) {
       case 'linkedin':
-        return { icon: Linkedin, color: 'text-[#0077B5]' };
+        return { icon: Linkedin, color: 'text-[#0077B5]', name: 'LinkedIn' };
       case 'twitter':
       case 'x':
-        return { icon: Twitter, color: 'text-brand-dark' };
+        return { icon: Twitter, color: 'text-brand-dark', name: 'Twitter/X' };
       case 'youtube':
-        return { icon: Youtube, color: 'text-[#FF0000]' };
+        return { icon: Youtube, color: 'text-[#FF0000]', name: 'YouTube' };
       case 'facebook':
-        return { icon: Facebook, color: 'text-[#1877F2]' };
+        return { icon: Facebook, color: 'text-[#1877F2]', name: 'Facebook' };
       case 'instagram':
-        return { icon: Instagram, color: 'text-[#E4405F]' };
+        return { icon: Instagram, color: 'text-[#E4405F]', name: 'Instagram' };
       case 'whatsapp':
-        return { icon: MessageCircle, color: 'text-[#25D366]' };
+        return { icon: MessageCircle, color: 'text-[#25D366]', name: 'WhatsApp' };
       default:
-        return { icon: Share2, color: 'text-muted-foreground' };
+        return { icon: Share2, color: 'text-muted-foreground', name: 'Social Media' };
     }
   };
 
@@ -135,24 +136,35 @@ const Persona1 = ({ persona }: Persona1Props) => {
 
       <div className="text-center">
         <h2 className="font-bold text-sm mb-2">Social Media Platforms:</h2>
-        <div className="flex items-center justify-center space-x-8">
-          {socialMediaPlatforms.slice(0, 3).map((platform, index) => {
-            const { icon: Icon, color } = getSocialMediaIcon(platform);
-            return (
-              <div key={index} className="flex flex-col items-center space-y-2">
-                <Icon className={`w-6 h-6 ${color}`} />
+        <TooltipProvider>
+          <div className="flex items-center justify-center space-x-8">
+            {socialMediaPlatforms.slice(0, 3).map((platform, index) => {
+              const { icon: Icon, color, name } = getSocialMediaIcon(platform);
+              return (
+                <div key={index} className="flex flex-col items-center space-y-2">
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div>
+                        <Icon className={`w-6 h-6 ${color}`} />
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>{name}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                  <Checkbox disabled />
+                </div>
+              );
+            })}
+            {/* Fill remaining slots with empty spaces if less than 3 platforms */}
+            {Array.from({ length: Math.max(0, 3 - socialMediaPlatforms.length) }).map((_, index) => (
+              <div key={`empty-${index}`} className="flex flex-col items-center space-y-2">
+                <Share2 className="w-6 h-6 text-muted-foreground opacity-30" />
                 <Checkbox disabled />
               </div>
-            );
-          })}
-          {/* Fill remaining slots with empty spaces if less than 3 platforms */}
-          {Array.from({ length: Math.max(0, 3 - socialMediaPlatforms.length) }).map((_, index) => (
-            <div key={`empty-${index}`} className="flex flex-col items-center space-y-2">
-              <Share2 className="w-6 h-6 text-muted-foreground opacity-30" />
-              <Checkbox disabled />
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </TooltipProvider>
       </div>
 
       <div className="text-center">
