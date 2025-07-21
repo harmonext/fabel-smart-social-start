@@ -104,7 +104,7 @@ const Persona2 = () => {
             Upgrade
           </button>
         </div>
-        <p className="text-sm font-medium text-muted-foreground">Description</p>
+        <p className="text-sm font-medium text-muted-foreground">[[description]]</p>
       </div>
 
       <div className="text-center">
