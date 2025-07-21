@@ -111,7 +111,6 @@ export type Database = {
           ltv_estimate: string | null
           name: string
           psychographics: string
-          raw_persona_generated: string | null
           social_media_top_1: string
           social_media_top_2: string | null
           social_media_top_3: string | null
@@ -131,7 +130,6 @@ export type Database = {
           ltv_estimate?: string | null
           name: string
           psychographics?: string
-          raw_persona_generated?: string | null
           social_media_top_1?: string
           social_media_top_2?: string | null
           social_media_top_3?: string | null
@@ -151,7 +149,6 @@ export type Database = {
           ltv_estimate?: string | null
           name?: string
           psychographics?: string
-          raw_persona_generated?: string | null
           social_media_top_1?: string
           social_media_top_2?: string | null
           social_media_top_3?: string | null

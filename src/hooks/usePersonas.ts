@@ -175,7 +175,7 @@ export const usePersonas = () => {
             cac_estimate: persona.cac_estimate,
             ltv_estimate: persona.ltv_estimate,
             appeal_how_to: persona.appeal_how_to,
-            raw_persona_generated: rawJson,
+            
             user_id: user.id,
           }));
 
@@ -303,7 +303,7 @@ export const usePersonas = () => {
           cac_estimate: persona.cac_estimate,
           ltv_estimate: persona.ltv_estimate,
           appeal_how_to: persona.appeal_how_to,
-          raw_persona_generated: rawPersonaData,
+          
           user_id: user.id,
         };
         console.log(`Persona ${index + 1} mapped:`, mappedPersona);
