@@ -158,7 +158,7 @@ const Persona2 = () => {
         <p className="text-xs text-muted-foreground">[[top_competitors]]</p>
         <p className="text-xs text-muted-foreground">[[cac_estimate]]</p>
         <p className="text-xs text-muted-foreground">[[ltv_estimate]]</p>
-        <p className="text-xs text-muted-foreground">[[appeal_howto]]</p>
+        <p className="text-xs text-muted-foreground">[[appeal_how_to]]</p>
       </div>
     </div>;
 };
