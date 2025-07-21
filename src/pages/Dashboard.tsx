@@ -16,14 +16,17 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log('Dashboard effect - isLoading:', isLoading, 'companyLoading:', companyLoading, 'isCompleted:', isCompleted, 'isOnboarded:', isOnboarded);
+    
     if (!isLoading && isCompleted === false) {
+      console.log('Redirecting to onboarding - user not completed');
       navigate('/onboarding');
     } else if (!isLoading && !companyLoading && isOnboarded === true) {
-      // If user has onboarded=true in company_details, take them to personas tab
+      console.log('Setting personas tab - user has onboarded=true');
       setActiveTab("company-profile");
       setActiveSubTab("personas");
     } else if (!isLoading && isCompleted === true) {
-      // For other completed users, also take them to personas tab
+      console.log('Setting personas tab - user completed onboarding');
       setActiveTab("company-profile");
       setActiveSubTab("personas");
     }
