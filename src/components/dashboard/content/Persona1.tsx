@@ -154,8 +154,8 @@ const Persona1 = ({ persona }: Persona1Props) => {
           <i className="fa-solid fa-lock text-lg text-muted-foreground"></i>
           <h2 className="font-bold text-sm">Unlock for:</h2>
         </div>
-        <p className="text-xs text-muted-foreground flex items-center justify-center gap-1">
-          <i className="fa-solid fa-users"></i>
+        <p className="text-xs text-muted-foreground flex items-start justify-start">
+          <i className="fa-solid fa-users mr-1"></i>
           Top Competitors: {persona?.top_competitors || "Competitors analysis"}
         </p>
         <p className="text-xs text-muted-foreground flex items-center justify-center gap-1">
@@ -166,8 +166,8 @@ const Persona1 = ({ persona }: Persona1Props) => {
           <i className="fa-solid fa-infinity"></i>
           LTV: {persona?.ltv_estimate || "$500-1000"}
         </p>
-        <p className="text-xs text-muted-foreground flex items-center justify-center gap-1">
-          <i className="fa-solid fa-heart"></i>
+        <p className="text-xs text-muted-foreground flex items-start justify-start">
+          <i className="fa-solid fa-heart mr-1"></i>
           Appeal: {persona?.appeal_how_to || "Appeal strategies"}
         </p>
       </div>
