@@ -160,7 +160,7 @@ const Persona2 = ({ persona }: Persona2Props) => {
           <i className="fa-solid fa-lock text-lg text-muted-foreground"></i>
           <h2 className="font-bold text-sm">Unlock for:</h2>
         </div>
-        <p className="text-xs text-muted-foreground">{persona?.top_competitors || "Competitors analysis"}</p>
+        <p className="text-xs text-muted-foreground">Top Competitors: {persona?.top_competitors || "Competitors analysis"}</p>
         <p className="text-xs text-muted-foreground">CAC: {persona?.cac_estimate || "$30-70"}</p>
         <p className="text-xs text-muted-foreground">LTV: {persona?.ltv_estimate || "$300-800"}</p>
         <p className="text-xs text-muted-foreground">{persona?.appeal_how_to || "Appeal strategies"}</p>

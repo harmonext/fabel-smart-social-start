@@ -154,7 +154,7 @@ const Persona3 = ({ persona }: Persona3Props) => {
           <i className="fa-solid fa-lock text-lg text-muted-foreground"></i>
           <h2 className="font-bold text-sm">Unlock for:</h2>
         </div>
-        <p className="text-xs text-muted-foreground">{persona?.top_competitors || "Competitors analysis"}</p>
+        <p className="text-xs text-muted-foreground">Top Competitors: {persona?.top_competitors || "Competitors analysis"}</p>
         <p className="text-xs text-muted-foreground">CAC: {persona?.cac_estimate || "$20-50"}</p>
         <p className="text-xs text-muted-foreground">LTV: {persona?.ltv_estimate || "$200-600"}</p>
         <p className="text-xs text-muted-foreground">{persona?.appeal_how_to || "Appeal strategies"}</p>
