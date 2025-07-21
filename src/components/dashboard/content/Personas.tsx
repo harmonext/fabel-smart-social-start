@@ -40,11 +40,17 @@ const Personas = () => {
             <div>
               <h4 className="text-sm font-medium text-gray-900 mb-2">Social Media Platforms:</h4>
               <div className="flex flex-wrap gap-2 mb-2">
-                {persona.preferredChannels ? persona.preferredChannels.split(',').slice(0, 3).map((channel: string, idx: number) => (
+                {[persona.social_media_top_1, persona.social_media_top_2, persona.social_media_top_3].filter(Boolean).map((platform: string, idx: number) => (
+                  <div key={idx} className="w-8 h-8 rounded border flex items-center justify-center bg-blue-50">
+                    {getSocialIcon(platform)}
+                  </div>
+                ))}
+                {(!persona.social_media_top_1 && persona.preferredChannels) && persona.preferredChannels.split(',').slice(0, 3).map((channel: string, idx: number) => (
                   <div key={idx} className="w-8 h-8 rounded border flex items-center justify-center bg-blue-50">
                     {getSocialIcon(channel.trim())}
                   </div>
-                )) : (
+                ))}
+                {(!persona.social_media_top_1 && !persona.preferredChannels) && (
                   <>
                     <div className="w-8 h-8 rounded border flex items-center justify-center bg-blue-50">
                       <Facebook className="h-4 w-4" />
@@ -67,25 +73,25 @@ const Personas = () => {
 
             <div>
               <h4 className="text-sm font-medium text-gray-900 mb-1">Location:</h4>
-              <p className="text-sm text-blue-600">{persona.demographics || "New York, Los Angeles"}</p>
+              <p className="text-sm text-blue-600">{persona.location || persona.demographics || "New York, Los Angeles"}</p>
               <p className="text-xs text-gray-500">Large, metropolitan coastal city</p>
             </div>
 
-            {persona.painPoints && (
+            {(persona.psychographics || persona.painPoints) && (
               <div>
                 <h4 className="text-sm font-medium text-gray-900 mb-1">Psychographics:</h4>
-                <p className="text-xs text-gray-600">{persona.painPoints}</p>
+                <p className="text-xs text-gray-600">{persona.psychographics || persona.painPoints}</p>
               </div>
             )}
 
             <div className="flex gap-8 text-sm">
               <div>
                 <span className="font-medium text-gray-900">Age Range:</span>
-                <p className="text-gray-600">25-34</p>
+                <p className="text-gray-600">{persona.age_ranges?.[0] || "25-34"}</p>
               </div>
               <div>
                 <span className="font-medium text-gray-900">Gender:</span>
-                <p className="text-gray-600">Female</p>
+                <p className="text-gray-600">{persona.genders?.[0] || "Female"}</p>
               </div>
             </div>
 

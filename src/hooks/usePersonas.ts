@@ -6,12 +6,17 @@ import { useToast } from '@/hooks/use-toast';
 export interface Persona {
   name: string;
   description: string;
-  demographics: string;
-  painPoints: string;
-  goals: string;
-  preferredChannels: string;
-  buyingMotivation: string;
-  contentPreferences: string;
+  location: string;
+  psychographics: string;
+  age_ranges: string[];
+  genders: string[];
+  top_competitors: string[];
+  social_media_top_1: string;
+  social_media_top_2?: string;
+  social_media_top_3?: string;
+  cac_estimate?: number;
+  ltv_estimate?: number;
+  appeal_howto: string;
 }
 
 export const usePersonas = () => {
@@ -41,12 +46,17 @@ export const usePersonas = () => {
         const loadedPersonas = data.map(persona => ({
           name: persona.name,
           description: persona.description,
-          demographics: persona.demographics,
-          painPoints: persona.pain_points,
-          goals: persona.goals,
-          preferredChannels: persona.preferred_channels,
-          buyingMotivation: persona.buying_motivation,
-          contentPreferences: persona.content_preferences,
+          location: persona.location || '',
+          psychographics: persona.psychographics || '',
+          age_ranges: persona.age_ranges || [],
+          genders: persona.genders || [],
+          top_competitors: persona.top_competitors || [],
+          social_media_top_1: persona.social_media_top_1 || '',
+          social_media_top_2: persona.social_media_top_2,
+          social_media_top_3: persona.social_media_top_3,
+          cac_estimate: persona.cac_estimate,
+          ltv_estimate: persona.ltv_estimate,
+          appeal_howto: persona.appeal_howto || '',
         }));
         setPersonas(loadedPersonas);
       }
@@ -88,14 +98,19 @@ export const usePersonas = () => {
         console.log('Setting personas:', data.personas);
         // Map AI response fields to our interface
         const mappedPersonas = data.personas.map((persona: any) => ({
-          name: persona.name,
-          description: persona.description,
-          demographics: persona.demographics,
-          painPoints: persona.painPoints,
-          goals: persona.goal || persona.goals, // Handle both singular and plural
-          preferredChannels: persona.preferredChannels,
-          buyingMotivation: persona.buyingMotivation,
-          contentPreferences: persona.contentPreferences,
+          name: persona.name || '',
+          description: persona.description || '',
+          location: persona.location || '',
+          psychographics: persona.psychographics || persona.demographics || '',
+          age_ranges: persona.age_ranges || persona.ageRanges || [],
+          genders: persona.genders || [],
+          top_competitors: persona.top_competitors || persona.competitors || [],
+          social_media_top_1: persona.social_media_top_1 || persona.preferredChannels?.split(',')[0] || '',
+          social_media_top_2: persona.social_media_top_2 || persona.preferredChannels?.split(',')[1],
+          social_media_top_3: persona.social_media_top_3 || persona.preferredChannels?.split(',')[2],
+          cac_estimate: persona.cac_estimate || persona.cacEstimate,
+          ltv_estimate: persona.ltv_estimate || persona.ltvEstimate,
+          appeal_howto: persona.appeal_howto || persona.appealHowto || '',
         }));
         setPersonas(mappedPersonas);
         
@@ -114,12 +129,17 @@ export const usePersonas = () => {
             const personasToSave = mappedPersonas.map(persona => ({
               name: persona.name,
               description: persona.description,
-              demographics: persona.demographics,
-              pain_points: persona.painPoints,
-              goals: persona.goals,
-              preferred_channels: persona.preferredChannels,
-              buying_motivation: persona.buyingMotivation,
-              content_preferences: persona.contentPreferences,
+              location: persona.location,
+              psychographics: persona.psychographics,
+              age_ranges: persona.age_ranges,
+              genders: persona.genders,
+              top_competitors: persona.top_competitors,
+              social_media_top_1: persona.social_media_top_1,
+              social_media_top_2: persona.social_media_top_2,
+              social_media_top_3: persona.social_media_top_3,
+              cac_estimate: persona.cac_estimate,
+              ltv_estimate: persona.ltv_estimate,
+              appeal_howto: persona.appeal_howto,
               user_id: user.id,
             }));
 
@@ -202,12 +222,17 @@ export const usePersonas = () => {
       const personasToSave = personas.map(persona => ({
         name: persona.name,
         description: persona.description,
-        demographics: persona.demographics,
-        pain_points: persona.painPoints,
-        goals: persona.goals,
-        preferred_channels: persona.preferredChannels,
-        buying_motivation: persona.buyingMotivation,
-        content_preferences: persona.contentPreferences,
+        location: persona.location,
+        psychographics: persona.psychographics,
+        age_ranges: persona.age_ranges,
+        genders: persona.genders,
+        top_competitors: persona.top_competitors,
+        social_media_top_1: persona.social_media_top_1,
+        social_media_top_2: persona.social_media_top_2,
+        social_media_top_3: persona.social_media_top_3,
+        cac_estimate: persona.cac_estimate,
+        ltv_estimate: persona.ltv_estimate,
+        appeal_howto: persona.appeal_howto,
         user_id: user.id,
       }));
 
