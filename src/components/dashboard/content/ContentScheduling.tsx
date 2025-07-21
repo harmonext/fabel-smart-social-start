@@ -14,23 +14,26 @@ const CalendarView = ({ posts, allContent, currentDate, setCurrentDate }: {
   currentDate: Date;
   setCurrentDate: (date: Date) => void;
 }) => {
-  const getSocialIcon = (platform: string) => {
-    const iconProps = { className: "h-3 w-3" };
+  const getSocialIcon = (platform: string, size: 'sm' | 'md' = 'sm') => {
+    const sizeClasses = size === 'sm' ? "h-3 w-3" : "h-4 w-4";
+    const iconProps = { className: sizeClasses };
     switch (platform.toLowerCase()) {
-      case 'facebook': return <Facebook {...iconProps} className="h-3 w-3 text-blue-600" />;
-      case 'instagram': return <Instagram {...iconProps} className="h-3 w-3 text-pink-600" />;
-      case 'linkedin': return <Linkedin {...iconProps} className="h-3 w-3 text-blue-700" />;
-      case 'twitter': return <Twitter {...iconProps} className="h-3 w-3 text-blue-400" />;
-      case 'pinterest': return <div className="h-3 w-3 bg-red-600 rounded-full flex items-center justify-center">
+      case 'facebook': return <Facebook {...iconProps} className={`${sizeClasses} text-blue-600`} />;
+      case 'instagram': return <Instagram {...iconProps} className={`${sizeClasses} text-pink-600`} />;
+      case 'linkedin': return <Linkedin {...iconProps} className={`${sizeClasses} text-blue-700`} />;
+      case 'twitter': return <Twitter {...iconProps} className={`${sizeClasses} text-blue-400`} />;
+      case 'pinterest': return <div className={`${sizeClasses} bg-red-600 rounded-full flex items-center justify-center`}>
         <span className="text-white text-xs font-bold">P</span>
       </div>;
-      default: return <div className="h-3 w-3 bg-gray-400 rounded"></div>;
+      default: return <div className={`${sizeClasses} bg-gray-400 rounded`}></div>;
     }
   };
 
-  const getPersonaColor = (persona: string) => {
+  const getPersonaColor = (persona: string, variant: 'light' | 'dark' = 'light') => {
     // Generate color based on persona name for dynamic personas
-    if (!persona) return 'bg-gray-100 text-gray-800 border border-gray-200';
+    if (!persona) return variant === 'light' 
+      ? 'bg-gray-100 text-gray-800 border border-gray-300' 
+      : 'bg-gray-800 text-gray-100 border border-gray-600';
     
     // Hash the persona name to get consistent colors
     let hash = 0;
@@ -38,17 +41,29 @@ const CalendarView = ({ posts, allContent, currentDate, setCurrentDate }: {
       hash = persona.charCodeAt(i) + ((hash << 5) - hash);
     }
     
-    const colors = [
-      'bg-blue-100 text-blue-800 border border-blue-200',
-      'bg-green-100 text-green-800 border border-green-200',
-      'bg-purple-100 text-purple-800 border border-purple-200',
-      'bg-pink-100 text-pink-800 border border-pink-200',
-      'bg-yellow-100 text-yellow-800 border border-yellow-200',
-      'bg-indigo-100 text-indigo-800 border border-indigo-200',
-      'bg-red-100 text-red-800 border border-red-200',
-      'bg-orange-100 text-orange-800 border border-orange-200'
+    const lightColors = [
+      'bg-blue-100 text-blue-900 border border-blue-300',
+      'bg-green-100 text-green-900 border border-green-300',
+      'bg-purple-100 text-purple-900 border border-purple-300',
+      'bg-pink-100 text-pink-900 border border-pink-300',
+      'bg-yellow-100 text-yellow-900 border border-yellow-300',
+      'bg-indigo-100 text-indigo-900 border border-indigo-300',
+      'bg-red-100 text-red-900 border border-red-300',
+      'bg-orange-100 text-orange-900 border border-orange-300'
+    ];
+
+    const darkColors = [
+      'bg-blue-800 text-blue-100 border border-blue-600',
+      'bg-green-800 text-green-100 border border-green-600',
+      'bg-purple-800 text-purple-100 border border-purple-600',
+      'bg-pink-800 text-pink-100 border border-pink-600',
+      'bg-yellow-800 text-yellow-100 border border-yellow-600',
+      'bg-indigo-800 text-indigo-100 border border-indigo-600',
+      'bg-red-800 text-red-100 border border-red-600',
+      'bg-orange-800 text-orange-100 border border-orange-600'
     ];
     
+    const colors = variant === 'light' ? lightColors : darkColors;
     return colors[Math.abs(hash) % colors.length];
   };
 
@@ -159,61 +174,107 @@ const CalendarView = ({ posts, allContent, currentDate, setCurrentDate }: {
                   {day}
                 </div>
                 <div className="space-y-1 overflow-hidden">
-                  {postsForDay.slice(0, 3).map((post, index) => (
-                    <TooltipProvider key={post.id}>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <div
-                            className={`text-xs p-1.5 rounded-md flex items-center gap-1.5 min-h-[24px] ${getPersonaColor(post.persona_name || '')} hover:shadow-sm transition-all duration-200 cursor-pointer border`}
-                          >
-                            <div className="flex items-center gap-1 flex-shrink-0">
-                              <div className="flex-shrink-0">
-                                {getSocialIcon(post.platform)}
+                  {postsForDay.slice(0, 3).map((post, index) => {
+                    const scheduledTime = post.scheduled_at ? new Date(post.scheduled_at) : null;
+                    const timeString = scheduledTime ? scheduledTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
+                    const shortTitle = post.title.length > 12 ? `${post.title.substring(0, 12)}...` : post.title;
+                    
+                    return (
+                      <TooltipProvider key={post.id}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div
+                              className={`text-xs p-2 rounded-lg flex flex-col gap-1.5 min-h-[32px] ${getPersonaColor(post.persona_name || '')} hover:shadow-md hover:scale-[1.02] transition-all duration-200 cursor-pointer border-2`}
+                            >
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-1.5 flex-shrink-0">
+                                  <div className="p-0.5 bg-white/95 rounded-full shadow-sm">
+                                    {getSocialIcon(post.platform)}
+                                  </div>
+                                  <div className="w-5 h-5 rounded-full bg-white/95 flex items-center justify-center text-xs font-bold shadow-sm border">
+                                    {getPersonaAvatar(post.persona_name || '')}
+                                  </div>
+                                </div>
+                                {timeString && (
+                                  <div className="text-xs font-mono bg-black/10 px-1.5 py-0.5 rounded">
+                                    {timeString}
+                                  </div>
+                                )}
                               </div>
-                              <div className="w-4 h-4 rounded-full bg-white/90 flex items-center justify-center text-xs font-bold shadow-sm">
-                                {getPersonaAvatar(post.persona_name || '')}
+                              <div className="text-xs font-semibold leading-tight">
+                                {shortTitle}
                               </div>
                             </div>
-                            <div className="truncate text-xs font-medium min-w-0 flex-1">
-                              {post.title.length > 15 ? `${post.title.substring(0, 15)}...` : post.title}
-                            </div>
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent side="right" align="start" className="max-w-sm">
-                          <div className="space-y-2">
-                            <div className="font-semibold text-sm">{post.title}</div>
-                            <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
-                              <div className="flex items-center gap-1">
-                                <span className="font-medium">Platform:</span>
-                                <div className="flex items-center gap-1">
-                                  {getSocialIcon(post.platform)}
-                                  <span className="capitalize">{post.platform}</span>
+                          </TooltipTrigger>
+                          <TooltipContent side="right" align="start" className="max-w-sm p-4">
+                            <div className="space-y-3">
+                              <div>
+                                <div className="font-bold text-base text-foreground mb-1">{post.title}</div>
+                                <div className="text-sm text-muted-foreground">{post.content ? `${post.content.substring(0, 100)}${post.content.length > 100 ? '...' : ''}` : 'No content preview'}</div>
+                              </div>
+                              
+                              <div className="grid grid-cols-1 gap-3 text-sm">
+                                <div className="flex items-center justify-between p-2 bg-muted/50 rounded-lg">
+                                  <div className="flex items-center gap-2">
+                                    <span className="font-medium text-foreground">Platform:</span>
+                                    <div className="flex items-center gap-1.5">
+                                      {getSocialIcon(post.platform, 'md')}
+                                      <span className="capitalize font-medium">{post.platform}</span>
+                                    </div>
+                                  </div>
+                                </div>
+                                
+                                <div className="flex items-center justify-between p-2 bg-muted/50 rounded-lg">
+                                  <span className="font-medium text-foreground">Persona:</span>
+                                  <div className={`px-2 py-1 rounded-full text-sm font-medium border-2 ${getPersonaColor(post.persona_name || '', 'dark')}`}>
+                                    <span className="mr-1">{getPersonaAvatar(post.persona_name || '')}</span>
+                                    {post.persona_name || 'No persona'}
+                                  </div>
                                 </div>
                               </div>
-                              <div className="flex items-center gap-1">
-                                <span className="font-medium">Persona:</span>
-                                <div className={`px-1.5 py-0.5 rounded-full text-xs font-medium ${getPersonaColor(post.persona_name || '')}`}>
-                                  {getPersonaAvatar(post.persona_name || '')} {post.persona_name || 'Unknown'}
+                              
+                              {post.scheduled_at && (
+                                <div className="border-t pt-3">
+                                  <div className="flex items-center gap-2 text-sm">
+                                    <Clock className="h-4 w-4 text-primary" />
+                                    <span className="font-medium text-foreground">Scheduled for:</span>
+                                  </div>
+                                  <div className="mt-1 text-sm font-mono bg-muted p-2 rounded">
+                                    {new Date(post.scheduled_at).toLocaleDateString([], {
+                                      weekday: 'long',
+                                      year: 'numeric',
+                                      month: 'long',
+                                      day: 'numeric'
+                                    })} at {new Date(post.scheduled_at).toLocaleTimeString([], {
+                                      hour: '2-digit',
+                                      minute: '2-digit'
+                                    })}
+                                  </div>
                                 </div>
-                              </div>
-                            </div>
-                            {post.scheduled_at && (
+                              )}
+                              
+                              {post.goal && (
+                                <div className="border-t pt-3">
+                                  <div className="flex items-center gap-2 text-sm mb-1">
+                                    <span className="font-medium text-foreground">Campaign Goal:</span>
+                                  </div>
+                                  <div className="text-sm bg-primary/10 text-primary p-2 rounded border border-primary/20">
+                                    {post.goal}
+                                  </div>
+                                </div>
+                              )}
+                              
                               <div className="text-xs text-muted-foreground border-t pt-2">
-                                <span className="font-medium">Scheduled:</span> {new Date(post.scheduled_at).toLocaleString()}
+                                Status: <span className="capitalize font-medium">{post.status}</span>
                               </div>
-                            )}
-                            {post.goal && (
-                              <div className="text-xs text-muted-foreground">
-                                <span className="font-medium">Goal:</span> {post.goal}
-                              </div>
-                            )}
-                          </div>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  ))}
+                            </div>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    )
+                  })}
                   {postsForDay.length > 3 && (
-                    <div className="text-xs text-muted-foreground font-medium px-1.5 py-1 bg-muted/30 rounded text-center">
+                    <div className="text-xs text-muted-foreground font-medium px-2 py-1.5 bg-muted/50 rounded-lg text-center border-2 border-dashed border-muted-foreground/30">
                       +{postsForDay.length - 3} more posts
                     </div>
                   )}
@@ -223,47 +284,74 @@ const CalendarView = ({ posts, allContent, currentDate, setCurrentDate }: {
           })}
         </div>
         
-        {/* Legend */}
-        <div className="mt-6 pt-4 border-t">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <h4 className="text-sm font-medium mb-3">Platform Icons</h4>
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <Facebook className="h-3 w-3 text-blue-600" />
-                  <span className="text-sm text-muted-foreground">Facebook</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Instagram className="h-3 w-3 text-pink-600" />
-                  <span className="text-sm text-muted-foreground">Instagram</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Linkedin className="h-3 w-3 text-blue-700" />
-                  <span className="text-sm text-muted-foreground">LinkedIn</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Twitter className="h-3 w-3 text-blue-400" />
-                  <span className="text-sm text-muted-foreground">Twitter</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="h-3 w-3 bg-red-600 rounded-full flex items-center justify-center">
-                    <span className="text-white text-xs font-bold">P</span>
+        {/* Enhanced Legend */}
+        <div className="mt-6 pt-4 border-t bg-muted/20 rounded-lg p-4">
+          <h3 className="text-lg font-semibold mb-4 text-foreground">Legend</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-3">
+              <h4 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
+                <div className="w-2 h-2 bg-primary rounded-full"></div>
+                Platform Icons
+              </h4>
+              <div className="grid grid-cols-2 gap-2">
+                <div className="flex items-center gap-3 p-2 bg-background rounded-lg border shadow-sm">
+                  <div className="p-1 bg-blue-50 rounded-full">
+                    <Facebook className="h-4 w-4 text-blue-600" />
                   </div>
-                  <span className="text-sm text-muted-foreground">Pinterest</span>
+                  <span className="text-sm font-medium">Facebook</span>
+                </div>
+                <div className="flex items-center gap-3 p-2 bg-background rounded-lg border shadow-sm">
+                  <div className="p-1 bg-pink-50 rounded-full">
+                    <Instagram className="h-4 w-4 text-pink-600" />
+                  </div>
+                  <span className="text-sm font-medium">Instagram</span>
+                </div>
+                <div className="flex items-center gap-3 p-2 bg-background rounded-lg border shadow-sm">
+                  <div className="p-1 bg-blue-50 rounded-full">
+                    <Linkedin className="h-4 w-4 text-blue-700" />
+                  </div>
+                  <span className="text-sm font-medium">LinkedIn</span>
+                </div>
+                <div className="flex items-center gap-3 p-2 bg-background rounded-lg border shadow-sm">
+                  <div className="p-1 bg-blue-50 rounded-full">
+                    <Twitter className="h-4 w-4 text-blue-400" />
+                  </div>
+                  <span className="text-sm font-medium">Twitter</span>
+                </div>
+                <div className="flex items-center gap-3 p-2 bg-background rounded-lg border shadow-sm col-span-2">
+                  <div className="p-1 bg-red-50 rounded-full">
+                    <div className="h-4 w-4 bg-red-600 rounded-full flex items-center justify-center">
+                      <span className="text-white text-xs font-bold">P</span>
+                    </div>
+                  </div>
+                  <span className="text-sm font-medium">Pinterest</span>
                 </div>
               </div>
             </div>
-            <div>
-              <h4 className="text-sm font-medium mb-3">Persona Icons</h4>
-              <div className="space-y-2">
+            <div className="space-y-3">
+              <h4 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
+                <div className="w-2 h-2 bg-secondary rounded-full"></div>
+                Active Personas
+              </h4>
+              <div className="space-y-2 max-h-48 overflow-y-auto">
                 {Array.from(new Set(allContent.map(post => post.persona_name).filter(Boolean))).map((persona) => (
-                  <div key={persona as string} className="flex items-center gap-2">
-                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium ${getPersonaColor(persona as string)}`}>
-                      {getPersonaAvatar(persona as string)}
+                  <div key={persona as string} className="flex items-center justify-between gap-3 p-3 bg-background rounded-lg border shadow-sm">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold border-2 ${getPersonaColor(persona as string, 'dark')}`}>
+                        {getPersonaAvatar(persona as string)}
+                      </div>
+                      <span className="text-sm font-medium">{persona as string}</span>
                     </div>
-                    <span className="text-sm text-muted-foreground">{persona as string}</span>
+                    <div className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded-full">
+                      {allContent.filter(p => p.persona_name === persona).length} posts
+                    </div>
                   </div>
                 ))}
+                {allContent.filter(post => post.persona_name).length === 0 && (
+                  <div className="text-center py-4 text-muted-foreground text-sm">
+                    No personas assigned to content yet
+                  </div>
+                )}
               </div>
             </div>
           </div>
