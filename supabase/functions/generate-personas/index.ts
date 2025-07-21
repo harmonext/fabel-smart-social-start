@@ -181,6 +181,14 @@ serve(async (req) => {
       console.error('Error fetching company details:', companyError);
     } else {
       console.log('Company details found:', !!companyDetails);
+      if (companyDetails) {
+        console.log('Company details data:', {
+          company_name: companyDetails.company_name,
+          company_industry: companyDetails.company_industry,
+          onboarding_persona_prompt: companyDetails.onboarding_persona_prompt ? 'PRESENT' : 'NULL/UNDEFINED',
+          onboarding_persona_prompt_length: companyDetails.onboarding_persona_prompt?.length || 0
+        });
+      }
     }
 
     console.log('Fetching onboarding data...');
