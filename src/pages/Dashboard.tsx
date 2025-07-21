@@ -24,36 +24,35 @@ const Dashboard = () => {
       return;
     }
     
-    // Check URL parameters first
+    // If user has onboarded=true, force redirect to personas regardless of URL params
+    if (!companyLoading && isOnboarded === true) {
+      console.log('FORCING personas tab - user has onboarded=true');
+      setActiveTab("company-profile");
+      setActiveSubTab("personas");
+      // Also update URL to reflect the change
+      navigate('/dashboard?tab=company-profile&subtab=personas', { replace: true });
+      return;
+    }
+    
+    // Check URL parameters for manual navigation
     const tabParam = searchParams.get('tab');
     const subtabParam = searchParams.get('subtab');
     
-    // If no URL parameters are set, apply automatic redirection logic
-    if (!tabParam && !subtabParam) {
-      // Check if user has onboarded=true in company_details (prioritize this)
-      if (!companyLoading && isOnboarded === true) {
-        console.log('Setting personas tab - user has onboarded=true');
-        setActiveTab("company-profile");
-        setActiveSubTab("personas");
-        return;
-      }
-      
-      // Fallback: if user completed onboarding via the old logic
-      if (!isLoading && isCompleted === true) {
-        console.log('Setting personas tab - user completed onboarding (fallback)');
-        setActiveTab("company-profile");
-        setActiveSubTab("personas");
-        return;
-      }
-    }
-    
-    // Handle URL parameters for tab navigation
     if (tabParam) {
+      console.log('Setting tab from URL:', tabParam);
       setActiveTab(tabParam);
     }
     
     if (subtabParam) {
+      console.log('Setting subtab from URL:', subtabParam);
       setActiveSubTab(subtabParam);
+    }
+    
+    // Fallback: if user completed onboarding via the old logic and no specific params
+    if (!isLoading && isCompleted === true && !tabParam && !subtabParam) {
+      console.log('Setting personas tab - user completed onboarding (fallback)');
+      setActiveTab("company-profile");
+      setActiveSubTab("personas");
     }
   }, [isLoading, companyLoading, isCompleted, isOnboarded, navigate, searchParams]);
 
