@@ -233,13 +233,16 @@ const CalendarView = ({ posts, currentDate, setCurrentDate }: {
               </div>
             </div>
             <div>
-              <h4 className="text-sm font-medium mb-3">How to Read Calendar</h4>
-              <div className="space-y-2 text-sm text-muted-foreground">
-                <div>• Each colored box represents a persona</div>
-                <div>• Icons show the platform (Facebook, Instagram, etc.)</div>
-                <div>• Letters show persona initials</div>
-                <div>• Hover over items to see full details</div>
-                <div>• Up to 3 posts shown per day, with count for more</div>
+              <h4 className="text-sm font-medium mb-3">Persona Icons</h4>
+              <div className="space-y-2">
+                {Array.from(new Set(posts.map(post => post.persona_name).filter(Boolean))).map((persona) => (
+                  <div key={persona as string} className="flex items-center gap-2">
+                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium ${getPersonaColor(persona as string)}`}>
+                      {getPersonaAvatar(persona as string)}
+                    </div>
+                    <span className="text-sm text-muted-foreground">{persona as string}</span>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
