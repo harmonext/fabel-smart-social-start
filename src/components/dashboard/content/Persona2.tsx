@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Linkedin, Twitter, Youtube } from "lucide-react";
+import { Linkedin, Twitter, Youtube, Facebook, Instagram, MessageCircle, Share2 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Persona } from "@/hooks/usePersonas";
 interface PlatformData {
@@ -25,6 +25,33 @@ const Persona2 = ({ persona }: Persona2Props) => {
   const [modalText, setModalText] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const getSocialMediaIcon = (platform: string) => {
+    const platformName = platform?.toLowerCase();
+    switch (platformName) {
+      case 'linkedin':
+        return { icon: Linkedin, color: 'text-[#0077B5]' };
+      case 'twitter':
+      case 'x':
+        return { icon: Twitter, color: 'text-brand-dark' };
+      case 'youtube':
+        return { icon: Youtube, color: 'text-[#FF0000]' };
+      case 'facebook':
+        return { icon: Facebook, color: 'text-[#1877F2]' };
+      case 'instagram':
+        return { icon: Instagram, color: 'text-[#E4405F]' };
+      case 'whatsapp':
+        return { icon: MessageCircle, color: 'text-[#25D366]' };
+      default:
+        return { icon: Share2, color: 'text-muted-foreground' };
+    }
+  };
+
+  const socialMediaPlatforms = [
+    persona?.social_media_top_1,
+    persona?.social_media_top_2,
+    persona?.social_media_top_3
+  ].filter(Boolean);
+
   const platformData: Record<string, PlatformData> = {
     linkedin: {
       name: 'LinkedIn',
@@ -115,18 +142,22 @@ const Persona2 = ({ persona }: Persona2Props) => {
       <div className="text-center">
         <h2 className="font-bold text-sm mb-2">Social Media Platforms:</h2>
         <div className="flex items-center justify-center space-x-8">
-          <div className="flex flex-col items-center space-y-2">
-            <Linkedin className="w-6 h-6 text-[#0077B5]" />
-            <Checkbox disabled />
-          </div>
-          <div className="flex flex-col items-center space-y-2">
-            <Twitter className="w-6 h-6 text-brand-dark" />
-            <Checkbox disabled />
-          </div>
-          <div className="flex flex-col items-center space-y-2">
-            <Youtube className="w-6 h-6 text-[#FF0000]" />
-            <Checkbox disabled />
-          </div>
+          {socialMediaPlatforms.slice(0, 3).map((platform, index) => {
+            const { icon: Icon, color } = getSocialMediaIcon(platform);
+            return (
+              <div key={index} className="flex flex-col items-center space-y-2">
+                <Icon className={`w-6 h-6 ${color}`} />
+                <Checkbox disabled />
+              </div>
+            );
+          })}
+          {/* Fill remaining slots with empty spaces if less than 3 platforms */}
+          {Array.from({ length: Math.max(0, 3 - socialMediaPlatforms.length) }).map((_, index) => (
+            <div key={`empty-${index}`} className="flex flex-col items-center space-y-2">
+              <Share2 className="w-6 h-6 text-muted-foreground opacity-30" />
+              <Checkbox disabled />
+            </div>
+          ))}
         </div>
       </div>
 
