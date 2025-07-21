@@ -94,44 +94,77 @@ export type Database = {
       }
       saved_personas: {
         Row: {
+          age_ranges: string[]
+          appeal_howto: string
           buying_motivation: string
+          cac_estimate: number | null
           content_preferences: string
           created_at: string
           demographics: string
           description: string
+          genders: string[]
           goals: string
           id: string
+          location: string
+          ltv_estimate: number | null
           name: string
           pain_points: string
           preferred_channels: string
+          psychographics: string
+          social_media_top_1: string
+          social_media_top_2: string | null
+          social_media_top_3: string | null
+          top_competitors: string[]
           updated_at: string
           user_id: string
         }
         Insert: {
+          age_ranges?: string[]
+          appeal_howto?: string
           buying_motivation: string
+          cac_estimate?: number | null
           content_preferences: string
           created_at?: string
           demographics: string
           description: string
+          genders?: string[]
           goals: string
           id?: string
+          location?: string
+          ltv_estimate?: number | null
           name: string
           pain_points: string
           preferred_channels: string
+          psychographics?: string
+          social_media_top_1?: string
+          social_media_top_2?: string | null
+          social_media_top_3?: string | null
+          top_competitors?: string[]
           updated_at?: string
           user_id: string
         }
         Update: {
+          age_ranges?: string[]
+          appeal_howto?: string
           buying_motivation?: string
+          cac_estimate?: number | null
           content_preferences?: string
           created_at?: string
           demographics?: string
           description?: string
+          genders?: string[]
           goals?: string
           id?: string
+          location?: string
+          ltv_estimate?: number | null
           name?: string
           pain_points?: string
           preferred_channels?: string
+          psychographics?: string
+          social_media_top_1?: string
+          social_media_top_2?: string | null
+          social_media_top_3?: string | null
+          top_competitors?: string[]
           updated_at?: string
           user_id?: string
         }
