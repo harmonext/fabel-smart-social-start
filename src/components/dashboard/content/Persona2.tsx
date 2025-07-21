@@ -158,6 +158,7 @@ const Persona2 = () => {
         <ul className="list-none space-y-1 text-xs text-muted-foreground">
           <li>SEO Keywords</li>
           <li>Major Competitors</li>
+          <li>[[top_competitors]]</li>
           <li>Estimated CAC</li>
           <li>Estimated LTV</li>
           <li>How to appeal to persona</li>
