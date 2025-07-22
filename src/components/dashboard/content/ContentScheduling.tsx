@@ -346,6 +346,77 @@ const EditablePost = ({ post, editMode, shortTitle, timeString }: {
   );
 };
 
+// Editable List Post Component
+const EditableListPost = ({ post, editMode, timeString }: {
+  post: ScheduledContent;
+  editMode: boolean;
+  timeString: string;
+}) => {
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const { updateContent } = useScheduledContent();
+  const { toast } = useToast();
+
+  const handleEditClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (editMode) {
+      setEditDialogOpen(true);
+    }
+  };
+
+  const handleSave = async (postId: string, updates: Partial<ScheduledContent>) => {
+    const success = await updateContent(postId, updates);
+    if (success) {
+      toast({
+        title: "Post Updated",
+        description: "Your post has been successfully updated.",
+      });
+    }
+  };
+
+  return (
+    <>
+      <div className={`flex items-center gap-3 p-3 rounded-lg ${getPersonaColor(post.persona_name || '')} hover:shadow-sm transition-all duration-200 border cursor-pointer hover:border-primary`}>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          {getSocialIcon(post.platform, 'md')}
+          <div className="w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold bg-white/80 border">
+            {getPersonaAvatar(post.persona_name || '')}
+          </div>
+        </div>
+        
+        <div className="flex-1 min-w-0">
+          <div className="font-medium text-sm truncate">
+            {post.title}
+          </div>
+          <div className="text-xs text-muted-foreground truncate">
+            {post.content ? `${post.content.substring(0, 60)}${post.content.length > 60 ? '...' : ''}` : 'No content'}
+          </div>
+        </div>
+        
+        <div className="flex items-center gap-2 flex-shrink-0">
+          {timeString && (
+            <div className="text-xs font-mono bg-black/10 px-2 py-1 rounded">
+              {timeString}
+            </div>
+          )}
+          <Edit 
+            className="h-5 w-5 opacity-70 hover:opacity-100 cursor-pointer z-10" 
+            onClick={handleEditClick}
+            onPointerDown={(e) => e.stopPropagation()}
+            onMouseDown={(e) => e.stopPropagation()}
+          />
+        </div>
+      </div>
+      
+      <EditPostDialog
+        post={post}
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
+        onSave={handleSave}
+      />
+    </>
+  );
+};
+
 const ListView = ({ posts, allContent, currentDate, setCurrentDate, onReschedule, editMode }: {
   posts: ScheduledContent[];
   allContent: ScheduledContent[];
@@ -453,44 +524,11 @@ const ListView = ({ posts, allContent, currentDate, setCurrentDate, onReschedule
                       const scheduledTime = post.scheduled_at ? new Date(post.scheduled_at) : null;
                       const timeString = scheduledTime ? scheduledTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
                       
-                      return (
-                        <DraggablePost key={post.id} post={post} editMode={editMode}>
-                          <div className={`flex items-center gap-3 p-3 rounded-lg ${getPersonaColor(post.persona_name || '')} hover:shadow-sm transition-all duration-200 border cursor-pointer hover:border-primary`}>
-                            <div className="flex items-center gap-2 flex-shrink-0">
-                              {getSocialIcon(post.platform, 'md')}
-                              <div className="w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold bg-white/80 border">
-                                {getPersonaAvatar(post.persona_name || '')}
-                              </div>
-                            </div>
-                            
-                            <div className="flex-1 min-w-0">
-                              <div className="font-medium text-sm truncate">
-                                {post.title}
-                              </div>
-                              <div className="text-xs text-muted-foreground truncate">
-                                {post.content ? `${post.content.substring(0, 60)}${post.content.length > 60 ? '...' : ''}` : 'No content'}
-                              </div>
-                            </div>
-                            
-                            <div className="flex items-center gap-2 flex-shrink-0">
-                              {timeString && (
-                                <div className="text-xs font-mono bg-black/10 px-2 py-1 rounded">
-                                  {timeString}
-                                </div>
-                              )}
-                              <Edit 
-                                className="h-5 w-5 opacity-70 hover:opacity-100 cursor-pointer z-10" 
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  // Edit functionality would go here
-                                }}
-                                onPointerDown={(e) => e.stopPropagation()}
-                                onMouseDown={(e) => e.stopPropagation()}
-                              />
-                            </div>
-                          </div>
-                        </DraggablePost>
-                      );
+                       return (
+                         <DraggablePost key={post.id} post={post} editMode={editMode}>
+                           <EditableListPost post={post} editMode={editMode} timeString={timeString} />
+                         </DraggablePost>
+                       );
                     })}
                   </div>
                 ) : (
