@@ -609,6 +609,87 @@ const ContentScheduling = () => {
                 );
               })}
             </div>
+            
+            {/* Enhanced Legend */}
+            <div className="mt-6 pt-4 border-t bg-muted/20 rounded-lg p-4">
+              <h3 className="text-lg font-semibold mb-4 text-foreground">Legend</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-3">
+                  <h4 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
+                    <div className="w-2 h-2 bg-primary rounded-full"></div>
+                    Platform Icons
+                  </h4>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="flex items-center gap-3 p-2 bg-background rounded-lg border shadow-sm">
+                      <div className="p-1 bg-blue-50 rounded-full">
+                        <Facebook className="h-4 w-4 text-blue-600" />
+                      </div>
+                      <span className="text-sm font-medium">Facebook</span>
+                    </div>
+                    <div className="flex items-center gap-3 p-2 bg-background rounded-lg border shadow-sm">
+                      <div className="p-1 bg-pink-50 rounded-full">
+                        <Instagram className="h-4 w-4 text-pink-600" />
+                      </div>
+                      <span className="text-sm font-medium">Instagram</span>
+                    </div>
+                    <div className="flex items-center gap-3 p-2 bg-background rounded-lg border shadow-sm">
+                      <div className="p-1 bg-blue-50 rounded-full">
+                        <Linkedin className="h-4 w-4 text-blue-700" />
+                      </div>
+                      <span className="text-sm font-medium">LinkedIn</span>
+                    </div>
+                    <div className="flex items-center gap-3 p-2 bg-background rounded-lg border shadow-sm">
+                      <div className="p-1 bg-blue-50 rounded-full">
+                        <Twitter className="h-4 w-4 text-blue-400" />
+                      </div>
+                      <span className="text-sm font-medium">Twitter</span>
+                    </div>
+                    <div className="flex items-center gap-3 p-2 bg-background rounded-lg border shadow-sm">
+                      <div className="p-1 bg-red-50 rounded-full">
+                        <div className="h-4 w-4 bg-red-600 rounded-full flex items-center justify-center">
+                          <span className="text-white text-xs font-bold">P</span>
+                        </div>
+                      </div>
+                      <span className="text-sm font-medium">Pinterest</span>
+                    </div>
+                    <div className="flex items-center gap-3 p-2 bg-background rounded-lg border shadow-sm">
+                      <div className="p-1 bg-gray-50 rounded-full">
+                        <div className="h-4 w-4 bg-black rounded-full flex items-center justify-center">
+                          <span className="text-white text-xs font-bold">T</span>
+                        </div>
+                      </div>
+                      <span className="text-sm font-medium">TikTok</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <h4 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
+                    <div className="w-2 h-2 bg-secondary rounded-full"></div>
+                    Active Personas
+                  </h4>
+                  <div className="space-y-2 max-h-48 overflow-y-auto">
+                    {Array.from(new Set(content.map(post => post.persona_name).filter(Boolean))).map((persona) => (
+                      <div key={persona as string} className="flex items-center justify-between gap-3 p-3 bg-background rounded-lg border shadow-sm">
+                        <div className="flex items-center gap-3">
+                          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold border-2 ${getPersonaColor(persona as string, 'dark')}`}>
+                            {getPersonaAvatar(persona as string)}
+                          </div>
+                          <span className="text-sm font-medium">{persona as string}</span>
+                        </div>
+                        <div className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded-full">
+                          {content.filter(p => p.persona_name === persona).length} posts
+                        </div>
+                      </div>
+                    ))}
+                    {content.filter(post => post.persona_name).length === 0 && (
+                      <div className="text-center py-4 text-muted-foreground text-sm">
+                        No personas assigned to content yet
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
           </CardContent>
         </Card>
       ) : (
