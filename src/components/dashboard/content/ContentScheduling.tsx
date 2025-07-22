@@ -7,6 +7,109 @@ import { Facebook, Instagram, Linkedin, Twitter } from "lucide-react";
 import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { useState } from "react";
 import { useScheduledContent, ScheduledContent } from "@/hooks/useScheduledContent";
+import { DndContext, DragOverlay, DragStartEvent, DragEndEvent, useSensor, useSensors, PointerSensor, KeyboardSensor } from '@dnd-kit/core';
+import { useDraggable, useDroppable } from '@dnd-kit/core';
+import { CSS } from '@dnd-kit/utilities';
+import { useToast } from "@/hooks/use-toast";
+
+// Utility functions for drag and drop validation
+const getValidDateRange = () => {
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  tomorrow.setHours(0, 0, 0, 0);
+  
+  const maxDate = new Date(tomorrow);
+  maxDate.setDate(maxDate.getDate() + 6); // 7 days total including tomorrow
+  maxDate.setHours(23, 59, 59, 999);
+  
+  return { minDate: tomorrow, maxDate };
+};
+
+const isDateInValidRange = (date: Date) => {
+  const { minDate, maxDate } = getValidDateRange();
+  return date >= minDate && date <= maxDate;
+};
+
+const formatDateForDropzone = (date: Date) => {
+  return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+};
+
+// Draggable Post Component
+const DraggablePost = ({ post, children }: { post: ScheduledContent; children: React.ReactNode }) => {
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+    id: post.id,
+    data: { post }
+  });
+
+  const style = {
+    transform: CSS.Translate.toString(transform),
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...listeners}
+      {...attributes}
+      className={`${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+    >
+      {children}
+    </div>
+  );
+};
+
+// Droppable Day Cell Component for Calendar
+const DroppableDay = ({ date, children, className }: { 
+  date: Date; 
+  children: React.ReactNode;
+  className?: string;
+}) => {
+  const isValid = isDateInValidRange(date);
+  const dropId = formatDateForDropzone(date);
+  
+  const { isOver, setNodeRef } = useDroppable({
+    id: dropId,
+    data: { date },
+    disabled: !isValid
+  });
+
+  return (
+    <div
+      ref={setNodeRef}
+      className={`${className} ${isOver && isValid ? 'bg-green-100 border-green-300' : ''} 
+        ${!isValid ? 'opacity-50' : ''} transition-colors duration-200`}
+    >
+      {children}
+    </div>
+  );
+};
+
+// Droppable Day Container for List View
+const DroppableListDay = ({ date, children, className }: { 
+  date: Date; 
+  children: React.ReactNode;
+  className?: string;
+}) => {
+  const isValid = isDateInValidRange(date);
+  const dropId = `list-${formatDateForDropzone(date)}`;
+  
+  const { isOver, setNodeRef } = useDroppable({
+    id: dropId,
+    data: { date },
+    disabled: !isValid
+  });
+
+  return (
+    <div
+      ref={setNodeRef}
+      className={`${className} ${isOver && isValid ? 'bg-green-50 border-green-200' : ''} 
+        ${!isValid ? 'opacity-50' : ''} transition-colors duration-200`}
+    >
+      {children}
+    </div>
+  );
+};
 
 // Utility functions for both Calendar and List views
 const getSocialIcon = (platform: string, size: 'xs' | 'sm' | 'md' = 'sm') => {
@@ -73,11 +176,12 @@ const getPersonaAvatar = (persona: string) => {
   return firstLetter;
 };
 
-const CalendarView = ({ posts, allContent, currentDate, setCurrentDate }: {
+const CalendarView = ({ posts, allContent, currentDate, setCurrentDate, onReschedule }: {
   posts: ScheduledContent[];
   allContent: ScheduledContent[];
   currentDate: Date;
   setCurrentDate: (date: Date) => void;
+  onReschedule: (postId: string, newDate: Date) => void;
 }) => {
 
   const getDaysInMonth = (date: Date) => {
@@ -166,9 +270,12 @@ const CalendarView = ({ posts, allContent, currentDate, setCurrentDate }: {
                            new Date().getMonth() === currentDate.getMonth() && 
                            new Date().getFullYear() === currentDate.getFullYear();
             
+            const dayDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+            
             return (
-              <div
+              <DroppableDay
                 key={day}
+                date={dayDate}
                 className={`h-32 border rounded-lg p-1 ${
                   isToday ? 'bg-blue-50 border-blue-200' : 'border-gray-200'
                 }`}
@@ -188,24 +295,26 @@ const CalendarView = ({ posts, allContent, currentDate, setCurrentDate }: {
                       <TooltipProvider key={post.id}>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <div
-                              className={`text-xs p-1 rounded flex items-center gap-1 min-h-[20px] ${getPersonaColor(post.persona_name || '')} hover:shadow-sm transition-all duration-200 cursor-pointer border`}
-                            >
-                              <div className="flex items-center gap-1 flex-shrink-0">
-                                {getSocialIcon(post.platform, 'xs')}
-                                <div className="w-3 h-3 rounded-full flex items-center justify-center text-[8px] font-bold">
-                                  {getPersonaAvatar(post.persona_name || '')}
+                            <DraggablePost post={post}>
+                              <div
+                                className={`text-xs p-1 rounded flex items-center gap-1 min-h-[20px] ${getPersonaColor(post.persona_name || '')} hover:shadow-sm transition-all duration-200 cursor-grab active:cursor-grabbing border`}
+                              >
+                                <div className="flex items-center gap-1 flex-shrink-0">
+                                  {getSocialIcon(post.platform, 'xs')}
+                                  <div className="w-3 h-3 rounded-full flex items-center justify-center text-[8px] font-bold">
+                                    {getPersonaAvatar(post.persona_name || '')}
+                                  </div>
                                 </div>
-                              </div>
-                              <div className="text-[10px] font-medium leading-tight truncate flex-1">
-                                {shortTitle}
-                              </div>
-                              {timeString && (
-                                <div className="text-[8px] font-mono bg-black/10 px-1 py-0.5 rounded shrink-0">
-                                  {timeString}
+                                <div className="text-[10px] font-medium leading-tight truncate flex-1">
+                                  {shortTitle}
                                 </div>
-                              )}
-                            </div>
+                                {timeString && (
+                                  <div className="text-[8px] font-mono bg-black/10 px-1 py-0.5 rounded shrink-0">
+                                    {timeString}
+                                  </div>
+                                )}
+                              </div>
+                            </DraggablePost>
                           </TooltipTrigger>
                           <TooltipContent side="right" align="start" className="max-w-sm p-4">
                             <div className="space-y-3">
@@ -280,7 +389,7 @@ const CalendarView = ({ posts, allContent, currentDate, setCurrentDate }: {
                     </div>
                   )}
                 </div>
-              </div>
+              </DroppableDay>
             );
           })}
         </div>
@@ -373,7 +482,84 @@ const CalendarView = ({ posts, allContent, currentDate, setCurrentDate }: {
 const ContentScheduling = () => {
   const [viewMode, setViewMode] = useState<'list' | 'calendar'>('calendar');
   const [currentDate, setCurrentDate] = useState(new Date());
-  const { content, isLoading, getContentByStatus, deleteContent } = useScheduledContent();
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const { content, isLoading, getContentByStatus, deleteContent, updateContent } = useScheduledContent();
+  const { toast } = useToast();
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor)
+  );
+
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveId(event.active.id as string);
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    setActiveId(null);
+
+    if (!over) return;
+
+    const draggedPost = content.find(p => p.id === active.id);
+    if (!draggedPost) return;
+
+    // Extract date from droppable id
+    const dropId = over.id as string;
+    const isListView = dropId.startsWith('list-');
+    const dateStr = isListView ? dropId.replace('list-', '') : dropId;
+    
+    try {
+      const [year, month, day] = dateStr.split('-').map(Number);
+      const newDate = new Date(year, month - 1, day);
+      
+      // Validate the date is within the allowed range
+      if (!isDateInValidRange(newDate)) {
+        toast({
+          variant: "destructive",
+          title: "Invalid Date",
+          description: "Content can only be rescheduled within 7 days starting tomorrow.",
+        });
+        return;
+      }
+
+      // Preserve the original time
+      const originalDate = draggedPost.scheduled_at ? new Date(draggedPost.scheduled_at) : new Date();
+      newDate.setHours(originalDate.getHours());
+      newDate.setMinutes(originalDate.getMinutes());
+      newDate.setSeconds(originalDate.getSeconds());
+
+      handleReschedule(draggedPost.id, newDate);
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to parse the new date. Please try again.",
+      });
+    }
+  };
+
+  const handleReschedule = async (postId: string, newDate: Date) => {
+    const success = await updateContent(postId, {
+      scheduled_at: newDate.toISOString()
+    });
+
+    if (success) {
+      toast({
+        title: "Content Rescheduled",
+        description: `Post has been moved to ${newDate.toLocaleDateString()} at ${newDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}.`,
+      });
+    }
+  };
+
+  const getDraggedPost = () => {
+    if (!activeId) return null;
+    return content.find(p => p.id === activeId);
+  };
 
   const formatScheduledTime = (scheduledAt?: string) => {
     if (!scheduledAt) return 'Not scheduled';
@@ -411,131 +597,139 @@ const ContentScheduling = () => {
       </div>
 
       {viewMode === 'list' ? (
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle>
-                {['January', 'February', 'March', 'April', 'May', 'June',
-                  'July', 'August', 'September', 'October', 'November', 'December'][currentDate.getMonth()]} {currentDate.getFullYear()} - Daily Schedule
-              </CardTitle>
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    const newDate = new Date(currentDate);
-                    newDate.setMonth(newDate.getMonth() - 1);
-                    setCurrentDate(newDate);
-                  }}
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    const newDate = new Date(currentDate);
-                    newDate.setMonth(newDate.getMonth() + 1);
-                    setCurrentDate(newDate);
-                  }}
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-            <CardDescription>
-              View all scheduled content organized by day of the month
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {Array.from({ length: new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate() }, (_, i) => {
-                const day = i + 1;
-                const postsForDay = content.filter(post => {
-                  if (!post.scheduled_at) return false;
-                  const postDate = new Date(post.scheduled_at);
-                  return postDate.getDate() === day && 
-                         postDate.getMonth() === currentDate.getMonth() && 
-                         postDate.getFullYear() === currentDate.getFullYear();
-                });
-                const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
-                const dayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][date.getDay()];
-                const isToday = new Date().getDate() === day && 
-                               new Date().getMonth() === currentDate.getMonth() && 
-                               new Date().getFullYear() === currentDate.getFullYear();
-                
-                return (
-                  <div
-                    key={day}
-                    className={`border rounded-lg p-4 ${
-                      isToday ? 'bg-blue-50 border-blue-200' : 'border-gray-200'
-                    }`}
+        <DndContext
+          sensors={sensors}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+        >
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle>
+                  {['January', 'February', 'March', 'April', 'May', 'June',
+                    'July', 'August', 'September', 'October', 'November', 'December'][currentDate.getMonth()]} {currentDate.getFullYear()} - Daily Schedule
+                </CardTitle>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      const newDate = new Date(currentDate);
+                      newDate.setMonth(newDate.getMonth() - 1);
+                      setCurrentDate(newDate);
+                    }}
                   >
-                    <div className={`flex items-center justify-between mb-4 ${
-                      isToday ? 'text-blue-600' : 'text-foreground'
-                    }`}>
-                      <div>
-                        <h3 className="font-semibold text-lg">
-                          {dayName}, {['January', 'February', 'March', 'April', 'May', 'June',
-                            'July', 'August', 'September', 'October', 'November', 'December'][currentDate.getMonth()]} {day}
-                        </h3>
-                        <div className="text-sm text-muted-foreground">
-                          {postsForDay.length} {postsForDay.length === 1 ? 'post' : 'posts'} scheduled
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      const newDate = new Date(currentDate);
+                      newDate.setMonth(newDate.getMonth() + 1);
+                      setCurrentDate(newDate);
+                    }}
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+              <CardDescription>
+                View all scheduled content organized by day of the month. Drag posts to reschedule within 7 days starting tomorrow.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {Array.from({ length: new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate() }, (_, i) => {
+                  const day = i + 1;
+                  const postsForDay = content.filter(post => {
+                    if (!post.scheduled_at) return false;
+                    const postDate = new Date(post.scheduled_at);
+                    return postDate.getDate() === day && 
+                           postDate.getMonth() === currentDate.getMonth() && 
+                           postDate.getFullYear() === currentDate.getFullYear();
+                  });
+                  const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+                  const dayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][date.getDay()];
+                  const isToday = new Date().getDate() === day && 
+                                 new Date().getMonth() === currentDate.getMonth() && 
+                                 new Date().getFullYear() === currentDate.getFullYear();
+                  
+                  return (
+                    <DroppableListDay
+                      key={day}
+                      date={date}
+                      className={`border rounded-lg p-4 min-h-[120px] ${
+                        isToday ? 'bg-blue-50 border-blue-200' : 'border-gray-200'
+                      }`}
+                    >
+                      <div className={`flex items-center justify-between mb-4 ${
+                        isToday ? 'text-blue-600' : 'text-foreground'
+                      }`}>
+                        <div>
+                          <h3 className="font-semibold text-lg">
+                            {dayName}, {['January', 'February', 'March', 'April', 'May', 'June',
+                              'July', 'August', 'September', 'October', 'November', 'December'][currentDate.getMonth()]} {day}
+                          </h3>
+                          <div className="text-sm text-muted-foreground">
+                            {postsForDay.length} {postsForDay.length === 1 ? 'post' : 'posts'} scheduled
+                          </div>
                         </div>
+                        {isToday && (
+                          <div className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium border border-blue-300">
+                            Today
+                          </div>
+                        )}
                       </div>
-                      {isToday && (
-                        <div className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium border border-blue-300">
-                          Today
+                      
+                      {postsForDay.length === 0 ? (
+                        <div className="text-center py-8 text-muted-foreground">
+                          {isDateInValidRange(date) ? 'Drop posts here to reschedule' : 'No posts scheduled for this day'}
                         </div>
-                      )}
-                    </div>
-                    
-                    {postsForDay.length === 0 ? (
-                      <div className="text-center py-8 text-muted-foreground">
-                        No posts scheduled for this day
-                      </div>
-                    ) : (
-                      <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-                        {postsForDay.map((post) => {
-                          const scheduledTime = post.scheduled_at ? new Date(post.scheduled_at) : null;
-                          const timeString = scheduledTime ? scheduledTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
-                          const shortTitle = post.title.length > 35 ? `${post.title.substring(0, 35)}...` : post.title;
-                          
-                          return (
-                            <TooltipProvider key={post.id}>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <div
-                                    className={`p-4 rounded-lg flex flex-col gap-3 ${getPersonaColor(post.persona_name || '')} hover:shadow-md hover:scale-[1.02] transition-all duration-200 cursor-pointer border-2`}
-                                  >
-                                    <div className="flex items-center justify-between">
-                                      <div className="flex items-center gap-2 flex-shrink-0">
-                                        <div className="p-1 bg-white/95 rounded-full shadow-sm">
-                                          {getSocialIcon(post.platform)}
+                      ) : (
+                        <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+                          {postsForDay.map((post) => {
+                            const scheduledTime = post.scheduled_at ? new Date(post.scheduled_at) : null;
+                            const timeString = scheduledTime ? scheduledTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
+                            const shortTitle = post.title.length > 35 ? `${post.title.substring(0, 35)}...` : post.title;
+                            
+                            return (
+                              <TooltipProvider key={post.id}>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <DraggablePost post={post}>
+                                      <div
+                                        className={`p-4 rounded-lg flex flex-col gap-3 ${getPersonaColor(post.persona_name || '')} hover:shadow-md hover:scale-[1.02] transition-all duration-200 cursor-grab active:cursor-grabbing border-2`}
+                                      >
+                                        <div className="flex items-center justify-between">
+                                          <div className="flex items-center gap-2 flex-shrink-0">
+                                            <div className="p-1 bg-white/95 rounded-full shadow-sm">
+                                              {getSocialIcon(post.platform)}
+                                            </div>
+                                            <div className="w-6 h-6 rounded-full bg-white/95 flex items-center justify-center text-xs font-bold shadow-sm border">
+                                              {getPersonaAvatar(post.persona_name || '')}
+                                            </div>
+                                          </div>
+                                          {timeString && (
+                                            <div className="text-xs font-mono bg-black/10 px-2 py-1 rounded">
+                                              {timeString}
+                                            </div>
+                                          )}
                                         </div>
-                                        <div className="w-6 h-6 rounded-full bg-white/95 flex items-center justify-center text-xs font-bold shadow-sm border">
-                                          {getPersonaAvatar(post.persona_name || '')}
+                                        <div className="text-sm font-semibold leading-tight">
+                                          {shortTitle}
+                                        </div>
+                                        <div className="flex items-center justify-between text-xs">
+                                          <span className="capitalize font-medium">{post.platform}</span>
+                                          {post.goal && (
+                                            <span className="px-2 py-1 bg-white/20 rounded-full font-medium">
+                                              {post.goal.length > 15 ? `${post.goal.substring(0, 15)}...` : post.goal}
+                                            </span>
+                                          )}
                                         </div>
                                       </div>
-                                      {timeString && (
-                                        <div className="text-xs font-mono bg-black/10 px-2 py-1 rounded">
-                                          {timeString}
-                                        </div>
-                                      )}
-                                    </div>
-                                    <div className="text-sm font-semibold leading-tight">
-                                      {shortTitle}
-                                    </div>
-                                    <div className="flex items-center justify-between text-xs">
-                                      <span className="capitalize font-medium">{post.platform}</span>
-                                      {post.goal && (
-                                        <span className="px-2 py-1 bg-white/20 rounded-full font-medium">
-                                          {post.goal.length > 15 ? `${post.goal.substring(0, 15)}...` : post.goal}
-                                        </span>
-                                      )}
-                                    </div>
-                                  </div>
-                                </TooltipTrigger>
+                                    </DraggablePost>
+                                  </TooltipTrigger>
                                 <TooltipContent side="right" align="start" className="max-w-sm p-4">
                                   <div className="space-y-3">
                                     <div>
@@ -605,7 +799,7 @@ const ContentScheduling = () => {
                         })}
                       </div>
                     )}
-                  </div>
+                  </DroppableListDay>
                 );
               })}
             </div>
@@ -692,13 +886,39 @@ const ContentScheduling = () => {
             </div>
           </CardContent>
         </Card>
+        <DragOverlay>
+          {activeId ? (
+            <div className="p-2 rounded-lg bg-primary text-primary-foreground shadow-lg opacity-90">
+              <div className="text-sm font-medium">
+                {getDraggedPost()?.title || 'Moving post...'}
+              </div>
+            </div>
+          ) : null}
+        </DragOverlay>
+      </DndContext>
       ) : (
-        <CalendarView 
-          posts={content.filter(post => post.scheduled_at)} 
-          allContent={content}
-          currentDate={currentDate}
-          setCurrentDate={setCurrentDate}
-        />
+        <DndContext
+          sensors={sensors}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+        >
+          <CalendarView 
+            posts={content.filter(post => post.scheduled_at)} 
+            allContent={content}
+            currentDate={currentDate}
+            setCurrentDate={setCurrentDate}
+            onReschedule={handleReschedule}
+          />
+          <DragOverlay>
+            {activeId ? (
+              <div className="p-2 rounded-lg bg-primary text-primary-foreground shadow-lg opacity-90">
+                <div className="text-sm font-medium">
+                  {getDraggedPost()?.title || 'Moving post...'}
+                </div>
+              </div>
+            ) : null}
+          </DragOverlay>
+        </DndContext>
       )}
 
       <Card>
