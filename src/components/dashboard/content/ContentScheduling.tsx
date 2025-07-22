@@ -534,9 +534,7 @@ const ContentScheduling = () => {
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 25, // Require significant movement to start drag
-        delay: 300, // Longer delay to allow tooltip to appear
-        tolerance: 10,
+        distance: 3, // Minimal movement to start drag - much more responsive
       },
     }),
     useSensor(KeyboardSensor)
