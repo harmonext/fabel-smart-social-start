@@ -883,7 +883,7 @@ const ContentScheduling = () => {
               />
             </div>
             <span className="text-xs text-muted-foreground">
-              {editMode ? 'Edit, drag & drop' : 'Hover to view details'}
+              {editMode ? 'Edit, drag & drop' : 'Edit, drag & drop'}
             </span>
           </div>
         </div>
