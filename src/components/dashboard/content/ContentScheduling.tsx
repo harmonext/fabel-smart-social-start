@@ -63,11 +63,14 @@ const DraggablePost = React.forwardRef<HTMLDivElement, {
           ref={setNodeRef}
           style={style}
           {...attributes}
-          className={`${isDragging ? 'cursor-grabbing' : ''} touch-none`}
+          className={`${isDragging ? 'cursor-grabbing' : ''} touch-none relative group`}
         >
-          <div {...listeners} className="cursor-grab">
-            {children}
-          </div>
+          {/* Invisible drag handle that only activates on longer press/hover */}
+          <div 
+            {...listeners} 
+            className="absolute inset-0 cursor-grab opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none group-hover:pointer-events-auto"
+          />
+          {children}
         </div>
       );
     } else {
@@ -442,7 +445,20 @@ const EditablePost = ({ post, editMode, shortTitle, timeString }: {
 
   return (
     <TooltipProvider>
-      <Tooltip>
+      <Tooltip 
+        open={editMode ? undefined : undefined} 
+        onOpenChange={editMode ? (open) => {
+          if (open) {
+            setEditData({
+              title: post.title,
+              content: post.content || '',
+              scheduled_at: post.scheduled_at || '',
+              status: post.status
+            });
+            setHasChanges(false);
+          }
+        } : undefined}
+      >
         <TooltipTrigger asChild>
           <div
             className={`text-xs p-1 rounded flex items-center gap-1 min-h-[20px] ${getPersonaColor(post.persona_name || '')} hover:shadow-sm transition-all duration-200 border ${editMode ? 'cursor-pointer hover:border-primary' : ''}`}
@@ -467,7 +483,8 @@ const EditablePost = ({ post, editMode, shortTitle, timeString }: {
         <TooltipContent 
           side="right" 
           align="start" 
-          className={editMode ? "max-w-sm p-4" : "max-w-sm p-4"}
+          className={editMode ? "max-w-md p-4 pointer-events-auto" : "max-w-sm p-4"}
+          onPointerDownOutside={(e) => editMode && e.preventDefault()}
         >
           {editMode ? <EditableTooltipContent /> : <ViewTooltipContent />}
         </TooltipContent>
@@ -664,9 +681,9 @@ const ContentScheduling = () => {
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 15, // Increased from 8 to require more deliberate drag
-        delay: 100, // Add delay to allow hover events to fire first
-        tolerance: 5,
+        distance: 25, // Require significant movement to start drag
+        delay: 300, // Longer delay to allow tooltip to appear
+        tolerance: 10,
       },
     }),
     useSensor(KeyboardSensor)
