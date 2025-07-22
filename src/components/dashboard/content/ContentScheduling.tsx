@@ -261,110 +261,191 @@ const EditablePost = ({ post, editMode, shortTitle, timeString }: {
     return date.toISOString().slice(0, 16);
   };
 
-  if (editMode && isEditing) {
-    return (
-      <div className="border rounded-lg p-3 bg-white shadow-sm space-y-3 min-w-[300px]">
-        <div className="space-y-2">
-          <label className="text-xs font-medium">Title</label>
-          <Input
-            value={editData.title}
-            onChange={(e) => handleChange('title', e.target.value)}
-            className="text-xs"
-          />
+  // EditableTooltipContent component for when in edit mode
+  const EditableTooltipContent = () => (
+    <div className="space-y-3">
+      <div className="space-y-2">
+        <label className="text-xs font-medium">Title</label>
+        <Input
+          value={editData.title}
+          onChange={(e) => handleChange('title', e.target.value)}
+          className="text-xs"
+          onClick={(e) => e.stopPropagation()}
+        />
+      </div>
+      
+      <div className="space-y-2">
+        <label className="text-xs font-medium">Content</label>
+        <Textarea
+          value={editData.content}
+          onChange={(e) => handleChange('content', e.target.value)}
+          className="text-xs min-h-[60px]"
+          onClick={(e) => e.stopPropagation()}
+        />
+      </div>
+      
+      <div className="space-y-2">
+        <label className="text-xs font-medium">Scheduled Date</label>
+        <Input
+          type="datetime-local"
+          value={formatDateTimeForInput(editData.scheduled_at)}
+          onChange={(e) => handleChange('scheduled_at', e.target.value ? new Date(e.target.value).toISOString() : '')}
+          className="text-xs"
+          onClick={(e) => e.stopPropagation()}
+        />
+      </div>
+      
+      <div className="space-y-2">
+        <label className="text-xs font-medium">Status</label>
+        <Select value={editData.status} onValueChange={(value) => handleChange('status', value)}>
+          <SelectTrigger className="text-xs h-8" onClick={(e) => e.stopPropagation()}>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="draft">Draft</SelectItem>
+            <SelectItem value="scheduled">Scheduled</SelectItem>
+            <SelectItem value="published">Published</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      
+      <div className="grid grid-cols-1 gap-3 text-sm">
+        <div className="flex items-center justify-between p-2 bg-muted/50 rounded-lg">
+          <div className="flex items-center gap-2">
+            <span className="font-medium text-foreground">Platform:</span>
+            <div className="flex items-center gap-1.5">
+              {getSocialIcon(post.platform, 'md')}
+              <span className="capitalize font-medium">{post.platform}</span>
+            </div>
+          </div>
         </div>
         
-        <div className="space-y-2">
-          <label className="text-xs font-medium">Content</label>
-          <Textarea
-            value={editData.content}
-            onChange={(e) => handleChange('content', e.target.value)}
-            className="text-xs min-h-[60px]"
-          />
-        </div>
-        
-        <div className="space-y-2">
-          <label className="text-xs font-medium">Scheduled Date</label>
-          <Input
-            type="datetime-local"
-            value={formatDateTimeForInput(editData.scheduled_at)}
-            onChange={(e) => handleChange('scheduled_at', e.target.value ? new Date(e.target.value).toISOString() : '')}
-            className="text-xs"
-          />
-        </div>
-        
-        <div className="space-y-2">
-          <label className="text-xs font-medium">Status</label>
-          <Select value={editData.status} onValueChange={(value) => handleChange('status', value)}>
-            <SelectTrigger className="text-xs h-8">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="draft">Draft</SelectItem>
-              <SelectItem value="scheduled">Scheduled</SelectItem>
-              <SelectItem value="published">Published</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        
-        <div className="flex gap-2 pt-2">
-          <Button
-            size="sm"
-            onClick={handleSave}
-            disabled={!hasChanges}
-            className="h-6 px-2 text-xs"
-          >
-            <Check className="h-3 w-3 mr-1" />
-            Save
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={handleCancel}
-            className="h-6 px-2 text-xs"
-          >
-            <X className="h-3 w-3 mr-1" />
-            Cancel
-          </Button>
+        <div className="flex items-center justify-between p-2 bg-muted/50 rounded-lg">
+          <span className="font-medium text-foreground">Persona:</span>
+          <div className={`px-2 py-1 rounded-full text-sm font-medium border-2 ${getPersonaColor(post.persona_name || '', 'dark')}`}>
+            <span className="mr-1">{getPersonaAvatar(post.persona_name || '')}</span>
+            {post.persona_name || 'No persona'}
+          </div>
         </div>
       </div>
-    );
-  }
+      
+      {post.goal && (
+        <div className="border-t pt-3">
+          <div className="flex items-center gap-2 text-sm mb-1">
+            <span className="font-medium text-foreground">Campaign Goal:</span>
+          </div>
+          <div className="text-sm bg-primary/10 text-primary p-2 rounded border border-primary/20">
+            {post.goal}
+          </div>
+        </div>
+      )}
+      
+      <div className="flex gap-2 pt-2 border-t">
+        <Button
+          size="sm"
+          onClick={handleSave}
+          disabled={!hasChanges}
+          className="h-6 px-2 text-xs"
+        >
+          <Check className="h-3 w-3 mr-1" />
+          Save
+        </Button>
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={handleCancel}
+          className="h-6 px-2 text-xs"
+        >
+          <X className="h-3 w-3 mr-1" />
+          Cancel
+        </Button>
+      </div>
+    </div>
+  );
 
-  if (editMode) {
-    return (
-      <div
-        onClick={(e) => {
-          e.stopPropagation();
-          e.preventDefault();
-          handleEdit();
-        }}
-        className={`text-xs p-1 rounded flex items-center gap-1 min-h-[20px] ${getPersonaColor(post.persona_name || '')} hover:shadow-sm transition-all duration-200 cursor-pointer border hover:border-primary`}
-      >
-        <div className="flex items-center gap-1 flex-shrink-0">
-          {getSocialIcon(post.platform, 'xs')}
-          <div className="w-3 h-3 rounded-full flex items-center justify-center text-[8px] font-bold">
-            {getPersonaAvatar(post.persona_name || '')}
-          </div>
-        </div>
-        <div className="text-[10px] font-medium leading-tight truncate flex-1">
-          {shortTitle}
-        </div>
-        {timeString && (
-          <div className="text-[8px] font-mono bg-black/10 px-1 py-0.5 rounded shrink-0">
-            {timeString}
-          </div>
-        )}
-        <Edit className="h-2 w-2 ml-1 opacity-50" />
+  // Regular TooltipContent for view mode
+  const ViewTooltipContent = () => (
+    <div className="space-y-3">
+      <div>
+        <div className="font-bold text-base text-foreground mb-1">{post.title}</div>
+        <div className="text-sm text-muted-foreground">{post.content ? `${post.content.substring(0, 100)}${post.content.length > 100 ? '...' : ''}` : 'No content preview'}</div>
       </div>
-    );
-  }
+      
+      <div className="grid grid-cols-1 gap-3 text-sm">
+        <div className="flex items-center justify-between p-2 bg-muted/50 rounded-lg">
+          <div className="flex items-center gap-2">
+            <span className="font-medium text-foreground">Platform:</span>
+            <div className="flex items-center gap-1.5">
+              {getSocialIcon(post.platform, 'md')}
+              <span className="capitalize font-medium">{post.platform}</span>
+            </div>
+          </div>
+        </div>
+        
+        <div className="flex items-center justify-between p-2 bg-muted/50 rounded-lg">
+          <span className="font-medium text-foreground">Persona:</span>
+          <div className={`px-2 py-1 rounded-full text-sm font-medium border-2 ${getPersonaColor(post.persona_name || '', 'dark')}`}>
+            <span className="mr-1">{getPersonaAvatar(post.persona_name || '')}</span>
+            {post.persona_name || 'No persona'}
+          </div>
+        </div>
+      </div>
+      
+      {post.scheduled_at && (
+        <div className="border-t pt-3">
+          <div className="flex items-center gap-2 text-sm">
+            <Clock className="h-4 w-4 text-primary" />
+            <span className="font-medium text-foreground">Scheduled for:</span>
+          </div>
+          <div className="mt-1 text-sm font-mono bg-muted p-2 rounded">
+            {new Date(post.scheduled_at).toLocaleDateString([], {
+              weekday: 'long',
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            })} at {new Date(post.scheduled_at).toLocaleTimeString([], {
+              hour: '2-digit',
+              minute: '2-digit'
+            })}
+          </div>
+        </div>
+      )}
+      
+      {post.goal && (
+        <div className="border-t pt-3">
+          <div className="flex items-center gap-2 text-sm mb-1">
+            <span className="font-medium text-foreground">Campaign Goal:</span>
+          </div>
+          <div className="text-sm bg-primary/10 text-primary p-2 rounded border border-primary/20">
+            {post.goal}
+          </div>
+        </div>
+      )}
+      
+      <div className="text-xs text-muted-foreground border-t pt-2">
+        Status: <span className="capitalize font-medium">{post.status}</span>
+      </div>
+    </div>
+  );
+
+  React.useEffect(() => {
+    if (editMode) {
+      setEditData({
+        title: post.title,
+        content: post.content || '',
+        scheduled_at: post.scheduled_at || '',
+        status: post.status
+      });
+      setHasChanges(false);
+    }
+  }, [editMode, post]);
 
   return (
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
           <div
-            className={`text-xs p-1 rounded flex items-center gap-1 min-h-[20px] ${getPersonaColor(post.persona_name || '')} hover:shadow-sm transition-all duration-200 border`}
+            className={`text-xs p-1 rounded flex items-center gap-1 min-h-[20px] ${getPersonaColor(post.persona_name || '')} hover:shadow-sm transition-all duration-200 border ${editMode ? 'cursor-pointer hover:border-primary' : ''}`}
           >
             <div className="flex items-center gap-1 flex-shrink-0">
               {getSocialIcon(post.platform, 'xs')}
@@ -380,70 +461,15 @@ const EditablePost = ({ post, editMode, shortTitle, timeString }: {
                 {timeString}
               </div>
             )}
+            {editMode && <Edit className="h-2 w-2 ml-1 opacity-50" />}
           </div>
         </TooltipTrigger>
-        <TooltipContent side="right" align="start" className="max-w-sm p-4">
-          <div className="space-y-3">
-            <div>
-              <div className="font-bold text-base text-foreground mb-1">{post.title}</div>
-              <div className="text-sm text-muted-foreground">{post.content ? `${post.content.substring(0, 100)}${post.content.length > 100 ? '...' : ''}` : 'No content preview'}</div>
-            </div>
-            
-            <div className="grid grid-cols-1 gap-3 text-sm">
-              <div className="flex items-center justify-between p-2 bg-muted/50 rounded-lg">
-                <div className="flex items-center gap-2">
-                  <span className="font-medium text-foreground">Platform:</span>
-                  <div className="flex items-center gap-1.5">
-                    {getSocialIcon(post.platform, 'md')}
-                    <span className="capitalize font-medium">{post.platform}</span>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="flex items-center justify-between p-2 bg-muted/50 rounded-lg">
-                <span className="font-medium text-foreground">Persona:</span>
-                <div className={`px-2 py-1 rounded-full text-sm font-medium border-2 ${getPersonaColor(post.persona_name || '', 'dark')}`}>
-                  <span className="mr-1">{getPersonaAvatar(post.persona_name || '')}</span>
-                  {post.persona_name || 'No persona'}
-                </div>
-              </div>
-            </div>
-            
-            {post.scheduled_at && (
-              <div className="border-t pt-3">
-                <div className="flex items-center gap-2 text-sm">
-                  <Clock className="h-4 w-4 text-primary" />
-                  <span className="font-medium text-foreground">Scheduled for:</span>
-                </div>
-                <div className="mt-1 text-sm font-mono bg-muted p-2 rounded">
-                  {new Date(post.scheduled_at).toLocaleDateString([], {
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                  })} at {new Date(post.scheduled_at).toLocaleTimeString([], {
-                    hour: '2-digit',
-                    minute: '2-digit'
-                  })}
-                </div>
-              </div>
-            )}
-            
-            {post.goal && (
-              <div className="border-t pt-3">
-                <div className="flex items-center gap-2 text-sm mb-1">
-                  <span className="font-medium text-foreground">Campaign Goal:</span>
-                </div>
-                <div className="text-sm bg-primary/10 text-primary p-2 rounded border border-primary/20">
-                  {post.goal}
-                </div>
-              </div>
-            )}
-            
-            <div className="text-xs text-muted-foreground border-t pt-2">
-              Status: <span className="capitalize font-medium">{post.status}</span>
-            </div>
-          </div>
+        <TooltipContent 
+          side="right" 
+          align="start" 
+          className={editMode ? "max-w-sm p-4" : "max-w-sm p-4"}
+        >
+          {editMode ? <EditableTooltipContent /> : <ViewTooltipContent />}
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
