@@ -23,8 +23,8 @@ const getValidDateRange = () => {
   tomorrow.setDate(tomorrow.getDate() + 1);
   tomorrow.setHours(0, 0, 0, 0);
   
-  const maxDate = new Date(tomorrow);
-  maxDate.setDate(maxDate.getDate() + 6); // 7 days total including tomorrow
+  // Allow scheduling for any future date (no arbitrary limit)
+  const maxDate = new Date('2099-12-31'); // Far future date
   maxDate.setHours(23, 59, 59, 999);
   
   return { minDate: tomorrow, maxDate };
