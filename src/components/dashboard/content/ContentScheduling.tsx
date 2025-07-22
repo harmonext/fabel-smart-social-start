@@ -315,7 +315,7 @@ const EditablePost = ({ post, editMode, shortTitle, timeString }: {
               )}
               {editMode && (
                 <Edit 
-                  className="h-4 w-4 ml-1 opacity-70 hover:opacity-100 cursor-pointer z-10" 
+                  className="h-[18px] w-[18px] ml-1 opacity-70 hover:opacity-100 cursor-pointer z-10" 
                   onClick={handleEditClick}
                   onPointerDown={(e) => e.stopPropagation()}
                   onMouseDown={(e) => e.stopPropagation()}
