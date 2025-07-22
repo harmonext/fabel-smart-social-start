@@ -3,7 +3,7 @@ import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calendar, Clock, Plus, Edit, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
+import { Calendar, Clock, Plus, Edit, Trash2, ChevronLeft, ChevronRight, Move } from "lucide-react";
 import { Facebook, Instagram, Linkedin, Twitter } from "lucide-react";
 import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { useState } from "react";
@@ -12,6 +12,7 @@ import { DndContext, DragOverlay, DragStartEvent, DragEndEvent, useSensor, useSe
 import { useDraggable, useDroppable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import { useToast } from "@/hooks/use-toast";
+import { Switch } from "@/components/ui/switch";
 
 // Utility functions for drag and drop validation
 const getValidDateRange = () => {
@@ -36,11 +37,16 @@ const formatDateForDropzone = (date: Date) => {
 };
 
 // Draggable Post Component
-const DraggablePost = React.forwardRef<HTMLDivElement, { post: ScheduledContent; children: React.ReactNode }>(
-  ({ post, children }, ref) => {
+const DraggablePost = React.forwardRef<HTMLDivElement, { 
+  post: ScheduledContent; 
+  children: React.ReactNode;
+  editMode: boolean;
+}>(
+  ({ post, children, editMode }, ref) => {
     const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
       id: post.id,
-      data: { post }
+      data: { post },
+      disabled: !editMode // Disable dragging when not in edit mode
     });
 
     const style = {
@@ -48,17 +54,23 @@ const DraggablePost = React.forwardRef<HTMLDivElement, { post: ScheduledContent;
       opacity: isDragging ? 0.5 : 1,
     };
 
-    return (
-      <div
-        ref={setNodeRef}
-        style={style}
-        {...attributes}
-        {...listeners}
-        className={`${isDragging ? 'cursor-grabbing' : 'cursor-grab'} touch-none`}
-      >
-        {children}
-      </div>
-    );
+    // If in edit mode, make it draggable, otherwise just render the children
+    if (editMode) {
+      return (
+        <div
+          ref={setNodeRef}
+          style={style}
+          {...attributes}
+          {...listeners}
+          className={`${isDragging ? 'cursor-grabbing' : 'cursor-grab'} touch-none`}
+        >
+          {children}
+        </div>
+      );
+    } else {
+      // When not in edit mode, just render without drag functionality
+      return <div>{children}</div>;
+    }
   }
 );
 
@@ -179,12 +191,13 @@ const getPersonaAvatar = (persona: string) => {
   return firstLetter;
 };
 
-const CalendarView = ({ posts, allContent, currentDate, setCurrentDate, onReschedule }: {
+const CalendarView = ({ posts, allContent, currentDate, setCurrentDate, onReschedule, editMode }: {
   posts: ScheduledContent[];
   allContent: ScheduledContent[];
   currentDate: Date;
   setCurrentDate: (date: Date) => void;
   onReschedule: (postId: string, newDate: Date) => void;
+  editMode: boolean;
 }) => {
 
   const getDaysInMonth = (date: Date) => {
@@ -298,9 +311,9 @@ const CalendarView = ({ posts, allContent, currentDate, setCurrentDate, onResche
                       <TooltipProvider key={post.id}>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <DraggablePost post={post}>
+                            <DraggablePost post={post} editMode={editMode}>
                               <div
-                                className={`text-xs p-1 rounded flex items-center gap-1 min-h-[20px] ${getPersonaColor(post.persona_name || '')} hover:shadow-sm transition-all duration-200 cursor-grab active:cursor-grabbing border`}
+                                className={`text-xs p-1 rounded flex items-center gap-1 min-h-[20px] ${getPersonaColor(post.persona_name || '')} hover:shadow-sm transition-all duration-200 ${editMode ? 'cursor-grab active:cursor-grabbing' : ''} border`}
                               >
                                 <div className="flex items-center gap-1 flex-shrink-0">
                                   {getSocialIcon(post.platform, 'xs')}
@@ -486,6 +499,7 @@ const ContentScheduling = () => {
   const [viewMode, setViewMode] = useState<'list' | 'calendar'>('calendar');
   const [currentDate, setCurrentDate] = useState(new Date());
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [editMode, setEditMode] = useState(false);
   const { content, isLoading, getContentByStatus, deleteContent, updateContent } = useScheduledContent();
   const { toast } = useToast();
 
@@ -591,7 +605,23 @@ const ContentScheduling = () => {
     <div className="max-w-6xl mx-auto space-y-6">
       <div>
         <h1 className="text-3xl font-bold text-foreground mb-2">Content Scheduling</h1>
-        <p className="text-muted-foreground">Schedule and manage your social media content across all platforms.</p>
+        <div className="flex items-center justify-between">
+          <p className="text-muted-foreground">Schedule and manage your social media content across all platforms.</p>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <Move className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm text-muted-foreground">Edit Mode</span>
+              <Switch
+                checked={editMode}
+                onCheckedChange={setEditMode}
+                aria-label="Toggle edit mode"
+              />
+            </div>
+            <span className="text-xs text-muted-foreground">
+              {editMode ? 'Drag & drop enabled' : 'Hover to view details'}
+            </span>
+          </div>
+        </div>
       </div>
 
       <div className="flex justify-between items-center">
@@ -710,11 +740,11 @@ const ContentScheduling = () => {
                             return (
                               <TooltipProvider key={post.id}>
                                 <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <DraggablePost post={post}>
-                                      <div
-                                        className={`p-4 rounded-lg flex flex-col gap-3 ${getPersonaColor(post.persona_name || '')} hover:shadow-md hover:scale-[1.02] transition-all duration-200 cursor-grab active:cursor-grabbing border-2`}
-                                      >
+                                   <TooltipTrigger asChild>
+                                     <DraggablePost post={post} editMode={editMode}>
+                                       <div
+                                         className={`p-4 rounded-lg flex flex-col gap-3 ${getPersonaColor(post.persona_name || '')} hover:shadow-md hover:scale-[1.02] transition-all duration-200 ${editMode ? 'cursor-grab active:cursor-grabbing' : ''} border-2`}
+                                       >
                                         <div className="flex items-center justify-between">
                                           <div className="flex items-center gap-2 flex-shrink-0">
                                             <div className="p-1 bg-white/95 rounded-full shadow-sm">
@@ -922,6 +952,7 @@ const ContentScheduling = () => {
             currentDate={currentDate}
             setCurrentDate={setCurrentDate}
             onReschedule={handleReschedule}
+            editMode={editMode}
           />
           <DragOverlay>
             {activeId ? (
