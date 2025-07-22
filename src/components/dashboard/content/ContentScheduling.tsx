@@ -63,10 +63,11 @@ const DraggablePost = React.forwardRef<HTMLDivElement, {
           ref={setNodeRef}
           style={style}
           {...attributes}
-          {...listeners}
-          className={`${isDragging ? 'cursor-grabbing' : 'cursor-grab'} touch-none`}
+          className={`${isDragging ? 'cursor-grabbing' : ''} touch-none`}
         >
-          {children}
+          <div {...listeners} className="cursor-grab">
+            {children}
+          </div>
         </div>
       );
     } else {
@@ -332,8 +333,12 @@ const EditablePost = ({ post, editMode, shortTitle, timeString }: {
   if (editMode) {
     return (
       <div
-        onClick={handleEdit}
-        className={`text-xs p-1 rounded flex items-center gap-1 min-h-[20px] ${getPersonaColor(post.persona_name || '')} hover:shadow-sm transition-all duration-200 cursor-grab active:cursor-grabbing border hover:border-primary`}
+        onClick={(e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          handleEdit();
+        }}
+        className={`text-xs p-1 rounded flex items-center gap-1 min-h-[20px] ${getPersonaColor(post.persona_name || '')} hover:shadow-sm transition-all duration-200 cursor-pointer border hover:border-primary`}
       >
         <div className="flex items-center gap-1 flex-shrink-0">
           {getSocialIcon(post.platform, 'xs')}
