@@ -649,7 +649,7 @@ const CalendarView = ({ posts, allContent, currentDate, setCurrentDate, onResche
                        <EditablePost
                          key={post.id}
                          post={post}
-                         editMode={false}
+                         editMode={editMode}
                          shortTitle={shortTitle}
                          timeString={timeString}
                        />
