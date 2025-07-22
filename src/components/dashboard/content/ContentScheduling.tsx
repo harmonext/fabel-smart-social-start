@@ -538,6 +538,15 @@ const ContentScheduling = () => {
       newDate.setMinutes(originalDate.getMinutes());
       newDate.setSeconds(originalDate.getSeconds());
 
+      // Check if the date actually changed (compare just the date part)
+      const originalDateOnly = originalDate.toDateString();
+      const newDateOnly = newDate.toDateString();
+      
+      if (originalDateOnly === newDateOnly) {
+        // No actual date change, don't update or show notification
+        return;
+      }
+
       handleReschedule(draggedPost.id, newDate);
     } catch (error) {
       toast({
