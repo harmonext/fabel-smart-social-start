@@ -346,6 +346,169 @@ const EditablePost = ({ post, editMode, shortTitle, timeString }: {
   );
 };
 
+const ListView = ({ posts, allContent, currentDate, setCurrentDate, onReschedule, editMode }: {
+  posts: ScheduledContent[];
+  allContent: ScheduledContent[];
+  currentDate: Date;
+  setCurrentDate: (date: Date) => void;
+  onReschedule: (postId: string, newDate: Date) => void;
+  editMode: boolean;
+}) => {
+  const { minDate, maxDate } = getValidDateRange();
+  const daysToShow = [];
+  
+  // Generate 7 days starting from tomorrow
+  for (let i = 0; i < 7; i++) {
+    const date = new Date(minDate);
+    date.setDate(date.getDate() + i);
+    daysToShow.push(date);
+  }
+
+  const getPostsForDate = (date: Date) => {
+    return posts.filter(post => {
+      if (!post.scheduled_at) return false;
+      const postDate = new Date(post.scheduled_at);
+      return postDate.getDate() === date.getDate() && 
+             postDate.getMonth() === date.getMonth() && 
+             postDate.getFullYear() === date.getFullYear();
+    }).sort((a, b) => {
+      if (!a.scheduled_at || !b.scheduled_at) return 0;
+      return new Date(a.scheduled_at).getTime() - new Date(b.scheduled_at).getTime();
+    });
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>List View</CardTitle>
+        <CardDescription>
+          {editMode ? 'Drag posts to reschedule them' : 'Hover over posts to see details'}
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          {daysToShow.map((date) => {
+            const postsForDay = getPostsForDate(date);
+            const isToday = new Date().toDateString() === date.toDateString();
+            
+            return editMode ? (
+              <DroppableListDay
+                key={date.toISOString()}
+                date={date}
+                className={`p-4 border rounded-lg ${
+                  isToday ? 'bg-blue-50 border-blue-200' : 'border-gray-200'
+                }`}
+              >
+                <div className={`font-medium mb-3 ${
+                  isToday ? 'text-blue-600' : 'text-foreground'
+                }`}>
+                  {date.toLocaleDateString([], {
+                    weekday: 'long',
+                    month: 'long',
+                    day: 'numeric'
+                  })}
+                </div>
+                
+                {postsForDay.length > 0 ? (
+                  <div className="space-y-2">
+                    {postsForDay.map((post) => {
+                      const scheduledTime = post.scheduled_at ? new Date(post.scheduled_at) : null;
+                      const timeString = scheduledTime ? scheduledTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
+                      
+                      return (
+                        <DraggablePost key={post.id} post={post} editMode={editMode}>
+                          <div className={`flex items-center gap-3 p-3 rounded-lg ${getPersonaColor(post.persona_name || '')} hover:shadow-sm transition-all duration-200 border cursor-pointer hover:border-primary`}>
+                            <div className="flex items-center gap-2 flex-shrink-0">
+                              {getSocialIcon(post.platform, 'md')}
+                              <div className="w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold bg-white/80 border">
+                                {getPersonaAvatar(post.persona_name || '')}
+                              </div>
+                            </div>
+                            
+                            <div className="flex-1 min-w-0">
+                              <div className="font-medium text-sm truncate">
+                                {post.title}
+                              </div>
+                              <div className="text-xs text-muted-foreground truncate">
+                                {post.content ? `${post.content.substring(0, 60)}${post.content.length > 60 ? '...' : ''}` : 'No content'}
+                              </div>
+                            </div>
+                            
+                            <div className="flex items-center gap-2 flex-shrink-0">
+                              {timeString && (
+                                <div className="text-xs font-mono bg-black/10 px-2 py-1 rounded">
+                                  {timeString}
+                                </div>
+                              )}
+                              <Edit 
+                                className="h-5 w-5 opacity-70 hover:opacity-100 cursor-pointer z-10" 
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  // Edit functionality would go here
+                                }}
+                                onPointerDown={(e) => e.stopPropagation()}
+                                onMouseDown={(e) => e.stopPropagation()}
+                              />
+                            </div>
+                          </div>
+                        </DraggablePost>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="text-sm text-muted-foreground italic py-4">
+                    No posts scheduled for this day
+                  </div>
+                )}
+              </DroppableListDay>
+            ) : (
+              <div
+                key={date.toISOString()}
+                className={`p-4 border rounded-lg ${
+                  isToday ? 'bg-blue-50 border-blue-200' : 'border-gray-200'
+                }`}
+              >
+                <div className={`font-medium mb-3 ${
+                  isToday ? 'text-blue-600' : 'text-foreground'
+                }`}>
+                  {date.toLocaleDateString([], {
+                    weekday: 'long',
+                    month: 'long',
+                    day: 'numeric'
+                  })}
+                </div>
+                
+                {postsForDay.length > 0 ? (
+                  <div className="space-y-2">
+                    {postsForDay.map((post) => {
+                      const scheduledTime = post.scheduled_at ? new Date(post.scheduled_at) : null;
+                      const timeString = scheduledTime ? scheduledTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
+                      
+                      return (
+                        <EditablePost
+                          key={post.id}
+                          post={post}
+                          editMode={editMode}
+                          shortTitle={post.title}
+                          timeString={timeString}
+                        />
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="text-sm text-muted-foreground italic py-4">
+                    No posts scheduled for this day
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
 const CalendarView = ({ posts, allContent, currentDate, setCurrentDate, onReschedule, editMode }: {
   posts: ScheduledContent[];
   allContent: ScheduledContent[];
@@ -682,17 +845,14 @@ const ContentScheduling = () => {
               editMode={editMode}
             />
           ) : (
-            <Card>
-              <CardHeader>
-                <CardTitle>List View (Edit Mode)</CardTitle>
-                <CardDescription>Drag posts to reschedule them</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-8 text-muted-foreground">
-                  List view with drag and drop coming soon...
-                </div>
-              </CardContent>
-            </Card>
+            <ListView 
+              posts={content.filter(post => post.scheduled_at)} 
+              allContent={content}
+              currentDate={currentDate}
+              setCurrentDate={setCurrentDate}
+              onReschedule={handleReschedule}
+              editMode={editMode}
+            />
           )}
           <DragOverlay>
             {activeId ? (
@@ -716,17 +876,14 @@ const ContentScheduling = () => {
             editMode={editMode}
           />
         ) : (
-          <Card>
-            <CardHeader>
-              <CardTitle>List View</CardTitle>
-              <CardDescription>Hover over posts to see details</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-8 text-muted-foreground">
-                List view coming soon...
-              </div>
-            </CardContent>
-          </Card>
+          <ListView 
+            posts={content.filter(post => post.scheduled_at)} 
+            allContent={content}
+            currentDate={currentDate}
+            setCurrentDate={setCurrentDate}
+            onReschedule={handleReschedule}
+            editMode={editMode}
+          />
         )
       )}
 
