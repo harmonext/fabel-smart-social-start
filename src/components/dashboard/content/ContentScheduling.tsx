@@ -470,7 +470,7 @@ const EditablePost = ({ post, editMode, shortTitle, timeString }: {
                 {timeString}
               </div>
             )}
-            {editMode && <Edit className="h-3 w-3 ml-1 opacity-70" />}
+            {editMode && <Edit className="h-4 w-4 ml-1 opacity-70" />}
           </div>
         </TooltipTrigger>
         <TooltipContent 
