@@ -407,364 +407,206 @@ const ContentScheduling = () => {
       </div>
 
       {viewMode === 'list' ? (
-        <Tabs defaultValue="scheduled" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="scheduled">Scheduled Posts</TabsTrigger>
-            <TabsTrigger value="drafts">Drafts</TabsTrigger>
-            <TabsTrigger value="published">Published</TabsTrigger>
-          </TabsList>
-
-        <TabsContent value="scheduled" className="space-y-4">
-          {isLoading ? (
-            <div className="text-center py-8">Loading scheduled posts...</div>
-          ) : getContentByStatus('scheduled').length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">No scheduled posts yet</div>
-          ) : (
-            getContentByStatus('scheduled').map((post) => {
-              const shortTitle = post.title.length > 50 ? `${post.title.substring(0, 50)}...` : post.title;
-              return (
-                <TooltipProvider key={post.id}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Card className="hover:shadow-md hover:scale-[1.02] transition-all duration-200 cursor-pointer">
-                        <CardContent className="p-4">
-                          <div className="flex items-center justify-between">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-3 mb-3">
-                                <div className="p-1.5 bg-white/95 rounded-full shadow-sm border">
-                                  {getSocialIcon(post.platform, 'md')}
-                                </div>
-                                <div className={`px-3 py-1.5 rounded-full text-sm font-medium border-2 ${getPersonaColor(post.persona_name || '', 'light')}`}>
-                                  <span className="mr-1.5">{getPersonaAvatar(post.persona_name || '')}</span>
-                                  {post.persona_name || 'No persona'}
-                                </div>
-                              </div>
-                              <h3 className="font-medium text-foreground mb-2">{shortTitle}</h3>
-                              <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                                <span className="flex items-center gap-1.5">
-                                  <Clock className="h-4 w-4" />
-                                  {formatScheduledTime(post.scheduled_at)}
-                                </span>
-                                <span className="capitalize font-medium">{post.platform}</span>
-                                {post.goal && (
-                                  <span className="px-2 py-1 bg-primary/10 text-primary rounded-full text-xs border border-primary/20">
-                                    {post.goal}
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                            <div className="flex gap-2 ml-4">
-                              <Button variant="outline" size="sm">
-                                <Edit className="h-4 w-4" />
-                              </Button>
-                              <Button 
-                                variant="outline" 
-                                size="sm" 
-                                className="text-destructive hover:text-destructive"
-                                onClick={() => deleteContent(post.id)}
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </TooltipTrigger>
-                    <TooltipContent side="right" align="start" className="max-w-sm p-4">
-                      <div className="space-y-3">
-                        <div>
-                          <div className="font-bold text-base text-foreground mb-1">{post.title}</div>
-                          <div className="text-sm text-muted-foreground">{post.content ? `${post.content.substring(0, 100)}${post.content.length > 100 ? '...' : ''}` : 'No content preview'}</div>
-                        </div>
-                        
-                        <div className="grid grid-cols-1 gap-3 text-sm">
-                          <div className="flex items-center justify-between p-2 bg-muted/50 rounded-lg">
-                            <div className="flex items-center gap-2">
-                              <span className="font-medium text-foreground">Platform:</span>
-                              <div className="flex items-center gap-1.5">
-                                {getSocialIcon(post.platform, 'md')}
-                                <span className="capitalize font-medium">{post.platform}</span>
-                              </div>
-                            </div>
-                          </div>
-                          
-                          <div className="flex items-center justify-between p-2 bg-muted/50 rounded-lg">
-                            <span className="font-medium text-foreground">Persona:</span>
-                            <div className={`px-2 py-1 rounded-full text-sm font-medium border-2 ${getPersonaColor(post.persona_name || '', 'dark')}`}>
-                              <span className="mr-1">{getPersonaAvatar(post.persona_name || '')}</span>
-                              {post.persona_name || 'No persona'}
-                            </div>
-                          </div>
-                        </div>
-                        
-                        {post.scheduled_at && (
-                          <div className="border-t pt-3">
-                            <div className="flex items-center gap-2 text-sm">
-                              <Clock className="h-4 w-4 text-primary" />
-                              <span className="font-medium text-foreground">Scheduled for:</span>
-                            </div>
-                            <div className="mt-1 text-sm font-mono bg-muted p-2 rounded">
-                              {new Date(post.scheduled_at).toLocaleDateString([], {
-                                weekday: 'long',
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric'
-                              })} at {new Date(post.scheduled_at).toLocaleTimeString([], {
-                                hour: '2-digit',
-                                minute: '2-digit'
-                              })}
-                            </div>
-                          </div>
-                        )}
-                        
-                        {post.goal && (
-                          <div className="border-t pt-3">
-                            <div className="flex items-center gap-2 text-sm mb-1">
-                              <span className="font-medium text-foreground">Campaign Goal:</span>
-                            </div>
-                            <div className="text-sm bg-primary/10 text-primary p-2 rounded border border-primary/20">
-                              {post.goal}
-                            </div>
-                          </div>
-                        )}
-                        
-                        <div className="text-xs text-muted-foreground border-t pt-2">
-                          Status: <span className="capitalize font-medium">{post.status}</span>
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle>
+                {['January', 'February', 'March', 'April', 'May', 'June',
+                  'July', 'August', 'September', 'October', 'November', 'December'][currentDate.getMonth()]} {currentDate.getFullYear()} - Daily Schedule
+              </CardTitle>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const newDate = new Date(currentDate);
+                    newDate.setMonth(newDate.getMonth() - 1);
+                    setCurrentDate(newDate);
+                  }}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const newDate = new Date(currentDate);
+                    newDate.setMonth(newDate.getMonth() + 1);
+                    setCurrentDate(newDate);
+                  }}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+            <CardDescription>
+              View all scheduled content organized by day of the month
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {Array.from({ length: new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate() }, (_, i) => {
+                const day = i + 1;
+                const postsForDay = content.filter(post => {
+                  if (!post.scheduled_at) return false;
+                  const postDate = new Date(post.scheduled_at);
+                  return postDate.getDate() === day && 
+                         postDate.getMonth() === currentDate.getMonth() && 
+                         postDate.getFullYear() === currentDate.getFullYear();
+                });
+                const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+                const dayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][date.getDay()];
+                const isToday = new Date().getDate() === day && 
+                               new Date().getMonth() === currentDate.getMonth() && 
+                               new Date().getFullYear() === currentDate.getFullYear();
+                
+                return (
+                  <div
+                    key={day}
+                    className={`border rounded-lg p-4 ${
+                      isToday ? 'bg-blue-50 border-blue-200' : 'border-gray-200'
+                    }`}
+                  >
+                    <div className={`flex items-center justify-between mb-4 ${
+                      isToday ? 'text-blue-600' : 'text-foreground'
+                    }`}>
+                      <div>
+                        <h3 className="font-semibold text-lg">
+                          {dayName}, {['January', 'February', 'March', 'April', 'May', 'June',
+                            'July', 'August', 'September', 'October', 'November', 'December'][currentDate.getMonth()]} {day}
+                        </h3>
+                        <div className="text-sm text-muted-foreground">
+                          {postsForDay.length} {postsForDay.length === 1 ? 'post' : 'posts'} scheduled
                         </div>
                       </div>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              );
-            })
-          )}
-        </TabsContent>
-
-        <TabsContent value="drafts" className="space-y-4">
-          {isLoading ? (
-            <div className="text-center py-8">Loading drafts...</div>
-          ) : getContentByStatus('draft').length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">No drafts yet</div>
-          ) : (
-            getContentByStatus('draft').map((post) => {
-              const shortTitle = post.title.length > 50 ? `${post.title.substring(0, 50)}...` : post.title;
-              return (
-                <TooltipProvider key={post.id}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Card className="hover:shadow-md hover:scale-[1.02] transition-all duration-200 cursor-pointer">
-                        <CardContent className="p-4">
-                          <div className="flex items-center justify-between">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-3 mb-3">
-                                <div className="p-1.5 bg-white/95 rounded-full shadow-sm border">
-                                  {getSocialIcon(post.platform, 'md')}
-                                </div>
-                                <div className={`px-3 py-1.5 rounded-full text-sm font-medium border-2 ${getPersonaColor(post.persona_name || '', 'light')}`}>
-                                  <span className="mr-1.5">{getPersonaAvatar(post.persona_name || '')}</span>
-                                  {post.persona_name || 'No persona'}
-                                </div>
-                                <span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-medium border border-yellow-300">Draft</span>
-                              </div>
-                              <h3 className="font-medium text-foreground mb-2">{shortTitle}</h3>
-                              <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                                <span className="capitalize font-medium">{post.platform}</span>
-                                {post.goal && (
-                                  <span className="px-2 py-1 bg-primary/10 text-primary rounded-full text-xs border border-primary/20">
-                                    {post.goal}
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                            <div className="flex gap-2 ml-4">
-                              <Button variant="outline" size="sm">
-                                Edit
-                              </Button>
-                              <Button size="sm" className="bg-fabel-primary hover:bg-fabel-primary/90">
-                                Schedule
-                              </Button>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </TooltipTrigger>
-                    <TooltipContent side="right" align="start" className="max-w-sm p-4">
-                      <div className="space-y-3">
-                        <div>
-                          <div className="font-bold text-base text-foreground mb-1">{post.title}</div>
-                          <div className="text-sm text-muted-foreground">{post.content ? `${post.content.substring(0, 100)}${post.content.length > 100 ? '...' : ''}` : 'No content preview'}</div>
+                      {isToday && (
+                        <div className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium border border-blue-300">
+                          Today
                         </div>
-                        
-                        <div className="grid grid-cols-1 gap-3 text-sm">
-                          <div className="flex items-center justify-between p-2 bg-muted/50 rounded-lg">
-                            <div className="flex items-center gap-2">
-                              <span className="font-medium text-foreground">Platform:</span>
-                              <div className="flex items-center gap-1.5">
-                                {getSocialIcon(post.platform, 'md')}
-                                <span className="capitalize font-medium">{post.platform}</span>
-                              </div>
-                            </div>
-                          </div>
-                          
-                          <div className="flex items-center justify-between p-2 bg-muted/50 rounded-lg">
-                            <span className="font-medium text-foreground">Persona:</span>
-                            <div className={`px-2 py-1 rounded-full text-sm font-medium border-2 ${getPersonaColor(post.persona_name || '', 'dark')}`}>
-                              <span className="mr-1">{getPersonaAvatar(post.persona_name || '')}</span>
-                              {post.persona_name || 'No persona'}
-                            </div>
-                          </div>
-                        </div>
-                        
-                        {post.goal && (
-                          <div className="border-t pt-3">
-                            <div className="flex items-center gap-2 text-sm mb-1">
-                              <span className="font-medium text-foreground">Campaign Goal:</span>
-                            </div>
-                            <div className="text-sm bg-primary/10 text-primary p-2 rounded border border-primary/20">
-                              {post.goal}
-                            </div>
-                          </div>
-                        )}
-                        
-                        <div className="text-xs text-muted-foreground border-t pt-2">
-                          Status: <span className="capitalize font-medium text-yellow-600">{post.status}</span>
-                        </div>
+                      )}
+                    </div>
+                    
+                    {postsForDay.length === 0 ? (
+                      <div className="text-center py-8 text-muted-foreground">
+                        No posts scheduled for this day
                       </div>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              );
-            })
-          )}
-        </TabsContent>
-
-        <TabsContent value="published" className="space-y-4">
-          {isLoading ? (
-            <div className="text-center py-8">Loading published posts...</div>
-          ) : getContentByStatus('published').length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">No published posts yet</div>
-          ) : (
-            getContentByStatus('published').map((post) => {
-              const shortTitle = post.title.length > 50 ? `${post.title.substring(0, 50)}...` : post.title;
-              return (
-                <TooltipProvider key={post.id}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Card className="hover:shadow-md hover:scale-[1.02] transition-all duration-200 cursor-pointer">
-                        <CardContent className="p-4">
-                          <div className="flex items-center justify-between">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-3 mb-3">
-                                <div className="p-1.5 bg-white/95 rounded-full shadow-sm border">
-                                  {getSocialIcon(post.platform, 'md')}
-                                </div>
-                                <div className={`px-3 py-1.5 rounded-full text-sm font-medium border-2 ${getPersonaColor(post.persona_name || '', 'light')}`}>
-                                  <span className="mr-1.5">{getPersonaAvatar(post.persona_name || '')}</span>
-                                  {post.persona_name || 'No persona'}
-                                </div>
-                                <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium border border-green-300">Published</span>
-                              </div>
-                              <h3 className="font-medium text-foreground mb-2">{shortTitle}</h3>
-                              <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                                <span className="capitalize font-medium">{post.platform}</span>
-                                <span>Published {post.published_at ? new Date(post.published_at).toLocaleDateString() : 'Unknown'}</span>
-                                <span>{formatEngagement(post.engagement_data)}</span>
-                                {post.goal && (
-                                  <span className="px-2 py-1 bg-primary/10 text-primary rounded-full text-xs border border-primary/20">
-                                    {post.goal}
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                            <div className="flex gap-2 ml-4">
-                              <Button variant="outline" size="sm">
-                                View Analytics
-                              </Button>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </TooltipTrigger>
-                    <TooltipContent side="right" align="start" className="max-w-sm p-4">
-                      <div className="space-y-3">
-                        <div>
-                          <div className="font-bold text-base text-foreground mb-1">{post.title}</div>
-                          <div className="text-sm text-muted-foreground">{post.content ? `${post.content.substring(0, 100)}${post.content.length > 100 ? '...' : ''}` : 'No content preview'}</div>
-                        </div>
-                        
-                        <div className="grid grid-cols-1 gap-3 text-sm">
-                          <div className="flex items-center justify-between p-2 bg-muted/50 rounded-lg">
-                            <div className="flex items-center gap-2">
-                              <span className="font-medium text-foreground">Platform:</span>
-                              <div className="flex items-center gap-1.5">
-                                {getSocialIcon(post.platform, 'md')}
-                                <span className="capitalize font-medium">{post.platform}</span>
-                              </div>
-                            </div>
-                          </div>
+                    ) : (
+                      <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+                        {postsForDay.map((post) => {
+                          const scheduledTime = post.scheduled_at ? new Date(post.scheduled_at) : null;
+                          const timeString = scheduledTime ? scheduledTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
+                          const shortTitle = post.title.length > 35 ? `${post.title.substring(0, 35)}...` : post.title;
                           
-                          <div className="flex items-center justify-between p-2 bg-muted/50 rounded-lg">
-                            <span className="font-medium text-foreground">Persona:</span>
-                            <div className={`px-2 py-1 rounded-full text-sm font-medium border-2 ${getPersonaColor(post.persona_name || '', 'dark')}`}>
-                              <span className="mr-1">{getPersonaAvatar(post.persona_name || '')}</span>
-                              {post.persona_name || 'No persona'}
-                            </div>
-                          </div>
-                        </div>
-                        
-                        {post.published_at && (
-                          <div className="border-t pt-3">
-                            <div className="flex items-center gap-2 text-sm">
-                              <span className="font-medium text-foreground">Published on:</span>
-                            </div>
-                            <div className="mt-1 text-sm font-mono bg-muted p-2 rounded">
-                              {new Date(post.published_at).toLocaleDateString([], {
-                                weekday: 'long',
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric'
-                              })} at {new Date(post.published_at).toLocaleTimeString([], {
-                                hour: '2-digit',
-                                minute: '2-digit'
-                              })}
-                            </div>
-                          </div>
-                        )}
-                        
-                        {post.engagement_data && Object.keys(post.engagement_data).length > 0 && (
-                          <div className="border-t pt-3">
-                            <div className="flex items-center gap-2 text-sm mb-1">
-                              <span className="font-medium text-foreground">Engagement:</span>
-                            </div>
-                            <div className="text-sm bg-green-50 text-green-800 p-2 rounded border border-green-200">
-                              {formatEngagement(post.engagement_data)}
-                            </div>
-                          </div>
-                        )}
-                        
-                        {post.goal && (
-                          <div className="border-t pt-3">
-                            <div className="flex items-center gap-2 text-sm mb-1">
-                              <span className="font-medium text-foreground">Campaign Goal:</span>
-                            </div>
-                            <div className="text-sm bg-primary/10 text-primary p-2 rounded border border-primary/20">
-                              {post.goal}
-                            </div>
-                          </div>
-                        )}
-                        
-                        <div className="text-xs text-muted-foreground border-t pt-2">
-                          Status: <span className="capitalize font-medium text-green-600">{post.status}</span>
-                        </div>
+                          return (
+                            <TooltipProvider key={post.id}>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <div
+                                    className={`p-4 rounded-lg flex flex-col gap-3 ${getPersonaColor(post.persona_name || '')} hover:shadow-md hover:scale-[1.02] transition-all duration-200 cursor-pointer border-2`}
+                                  >
+                                    <div className="flex items-center justify-between">
+                                      <div className="flex items-center gap-2 flex-shrink-0">
+                                        <div className="p-1 bg-white/95 rounded-full shadow-sm">
+                                          {getSocialIcon(post.platform)}
+                                        </div>
+                                        <div className="w-6 h-6 rounded-full bg-white/95 flex items-center justify-center text-xs font-bold shadow-sm border">
+                                          {getPersonaAvatar(post.persona_name || '')}
+                                        </div>
+                                      </div>
+                                      {timeString && (
+                                        <div className="text-xs font-mono bg-black/10 px-2 py-1 rounded">
+                                          {timeString}
+                                        </div>
+                                      )}
+                                    </div>
+                                    <div className="text-sm font-semibold leading-tight">
+                                      {shortTitle}
+                                    </div>
+                                    <div className="flex items-center justify-between text-xs">
+                                      <span className="capitalize font-medium">{post.platform}</span>
+                                      {post.goal && (
+                                        <span className="px-2 py-1 bg-white/20 rounded-full font-medium">
+                                          {post.goal.length > 15 ? `${post.goal.substring(0, 15)}...` : post.goal}
+                                        </span>
+                                      )}
+                                    </div>
+                                  </div>
+                                </TooltipTrigger>
+                                <TooltipContent side="right" align="start" className="max-w-sm p-4">
+                                  <div className="space-y-3">
+                                    <div>
+                                      <div className="font-bold text-base text-foreground mb-1">{post.title}</div>
+                                      <div className="text-sm text-muted-foreground">{post.content ? `${post.content.substring(0, 100)}${post.content.length > 100 ? '...' : ''}` : 'No content preview'}</div>
+                                    </div>
+                                    
+                                    <div className="grid grid-cols-1 gap-3 text-sm">
+                                      <div className="flex items-center justify-between p-2 bg-muted/50 rounded-lg">
+                                        <div className="flex items-center gap-2">
+                                          <span className="font-medium text-foreground">Platform:</span>
+                                          <div className="flex items-center gap-1.5">
+                                            {getSocialIcon(post.platform, 'md')}
+                                            <span className="capitalize font-medium">{post.platform}</span>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      
+                                      <div className="flex items-center justify-between p-2 bg-muted/50 rounded-lg">
+                                        <span className="font-medium text-foreground">Persona:</span>
+                                        <div className={`px-2 py-1 rounded-full text-sm font-medium border-2 ${getPersonaColor(post.persona_name || '', 'dark')}`}>
+                                          <span className="mr-1">{getPersonaAvatar(post.persona_name || '')}</span>
+                                          {post.persona_name || 'No persona'}
+                                        </div>
+                                      </div>
+                                    </div>
+                                    
+                                    {post.scheduled_at && (
+                                      <div className="border-t pt-3">
+                                        <div className="flex items-center gap-2 text-sm">
+                                          <Clock className="h-4 w-4 text-primary" />
+                                          <span className="font-medium text-foreground">Scheduled for:</span>
+                                        </div>
+                                        <div className="mt-1 text-sm font-mono bg-muted p-2 rounded">
+                                          {new Date(post.scheduled_at).toLocaleDateString([], {
+                                            weekday: 'long',
+                                            year: 'numeric',
+                                            month: 'long',
+                                            day: 'numeric'
+                                          })} at {new Date(post.scheduled_at).toLocaleTimeString([], {
+                                            hour: '2-digit',
+                                            minute: '2-digit'
+                                          })}
+                                        </div>
+                                      </div>
+                                    )}
+                                    
+                                    {post.goal && (
+                                      <div className="border-t pt-3">
+                                        <div className="flex items-center gap-2 text-sm mb-1">
+                                          <span className="font-medium text-foreground">Campaign Goal:</span>
+                                        </div>
+                                        <div className="text-sm bg-primary/10 text-primary p-2 rounded border border-primary/20">
+                                          {post.goal}
+                                        </div>
+                                      </div>
+                                    )}
+                                    
+                                    <div className="text-xs text-muted-foreground border-t pt-2">
+                                      Status: <span className="capitalize font-medium">{post.status}</span>
+                                    </div>
+                                  </div>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          );
+                        })}
                       </div>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              );
-            })
-          )}
-        </TabsContent>
-        </Tabs>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
       ) : (
         <CalendarView 
           posts={content.filter(post => post.scheduled_at)} 
