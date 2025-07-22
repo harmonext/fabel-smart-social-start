@@ -294,7 +294,7 @@ const EditablePost = ({ post, editMode, shortTitle, timeString }: {
 
   return (
     <>
-      <TooltipProvider>
+      <TooltipProvider delayDuration={editMode ? 0 : 200}>
         <Tooltip>
           <TooltipTrigger asChild>
             <div
