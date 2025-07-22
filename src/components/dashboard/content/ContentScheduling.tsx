@@ -15,6 +15,7 @@ import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { EditPostDialog } from './EditPostDialog';
 
 // Utility functions for drag and drop validation
 const getValidDateRange = () => {
@@ -204,167 +205,26 @@ const EditablePost = ({ post, editMode, shortTitle, timeString }: {
   shortTitle: string;
   timeString: string;
 }) => {
-  const [isEditing, setIsEditing] = useState(false);
-  const [editData, setEditData] = useState({
-    title: post.title,
-    content: post.content || '',
-    scheduled_at: post.scheduled_at || '',
-    status: post.status
-  });
-  const [hasChanges, setHasChanges] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
   const { updateContent } = useScheduledContent();
   const { toast } = useToast();
 
-  const handleEdit = () => {
-    setIsEditing(true);
-    setEditData({
-      title: post.title,
-      content: post.content || '',
-      scheduled_at: post.scheduled_at || '',
-      status: post.status
-    });
-    setHasChanges(false);
-  };
-
-  const handleSave = async () => {
-    if (!hasChanges) return;
-    
-    const updates: any = {};
-    if (editData.title !== post.title) updates.title = editData.title;
-    if (editData.content !== (post.content || '')) updates.content = editData.content;
-    if (editData.scheduled_at !== (post.scheduled_at || '')) updates.scheduled_at = editData.scheduled_at;
-    if (editData.status !== post.status) updates.status = editData.status;
-
-    const success = await updateContent(post.id, updates);
-    if (success) {
-      setIsEditing(false);
-      setHasChanges(false);
+  const handleEditClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (editMode) {
+      setEditDialogOpen(true);
     }
   };
 
-  const handleCancel = () => {
-    setIsEditing(false);
-    setEditData({
-      title: post.title,
-      content: post.content || '',
-      scheduled_at: post.scheduled_at || '',
-      status: post.status
-    });
-    setHasChanges(false);
+  const handleSave = async (postId: string, updates: Partial<ScheduledContent>) => {
+    const success = await updateContent(postId, updates);
+    if (success) {
+      toast({
+        title: "Post Updated",
+        description: "Your post has been successfully updated.",
+      });
+    }
   };
-
-  const handleChange = (field: string, value: string) => {
-    setEditData(prev => ({ ...prev, [field]: value }));
-    setHasChanges(true);
-  };
-
-  const formatDateTimeForInput = (dateString: string) => {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    return date.toISOString().slice(0, 16);
-  };
-
-  // EditableTooltipContent component for when in edit mode
-  const EditableTooltipContent = () => (
-    <div className="space-y-3">
-      <div className="space-y-2">
-        <label className="text-xs font-medium">Title</label>
-        <Input
-          value={editData.title}
-          onChange={(e) => handleChange('title', e.target.value)}
-          className="text-xs"
-          onClick={(e) => e.stopPropagation()}
-        />
-      </div>
-      
-      <div className="space-y-2">
-        <label className="text-xs font-medium">Content</label>
-        <Textarea
-          value={editData.content}
-          onChange={(e) => handleChange('content', e.target.value)}
-          className="text-xs min-h-[60px]"
-          onClick={(e) => e.stopPropagation()}
-        />
-      </div>
-      
-      <div className="space-y-2">
-        <label className="text-xs font-medium">Scheduled Date</label>
-        <Input
-          type="datetime-local"
-          value={formatDateTimeForInput(editData.scheduled_at)}
-          onChange={(e) => handleChange('scheduled_at', e.target.value ? new Date(e.target.value).toISOString() : '')}
-          className="text-xs"
-          onClick={(e) => e.stopPropagation()}
-        />
-      </div>
-      
-      <div className="space-y-2">
-        <label className="text-xs font-medium">Status</label>
-        <Select value={editData.status} onValueChange={(value) => handleChange('status', value)}>
-          <SelectTrigger className="text-xs h-8" onClick={(e) => e.stopPropagation()}>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="draft">Draft</SelectItem>
-            <SelectItem value="scheduled">Scheduled</SelectItem>
-            <SelectItem value="published">Published</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-      
-      <div className="grid grid-cols-1 gap-3 text-sm">
-        <div className="flex items-center justify-between p-2 bg-muted/50 rounded-lg">
-          <div className="flex items-center gap-2">
-            <span className="font-medium text-foreground">Platform:</span>
-            <div className="flex items-center gap-1.5">
-              {getSocialIcon(post.platform, 'md')}
-              <span className="capitalize font-medium">{post.platform}</span>
-            </div>
-          </div>
-        </div>
-        
-        <div className="flex items-center justify-between p-2 bg-muted/50 rounded-lg">
-          <span className="font-medium text-foreground">Persona:</span>
-          <div className={`px-2 py-1 rounded-full text-sm font-medium border-2 ${getPersonaColor(post.persona_name || '', 'dark')}`}>
-            <span className="mr-1">{getPersonaAvatar(post.persona_name || '')}</span>
-            {post.persona_name || 'No persona'}
-          </div>
-        </div>
-      </div>
-      
-      {post.goal && (
-        <div className="border-t pt-3">
-          <div className="flex items-center gap-2 text-sm mb-1">
-            <span className="font-medium text-foreground">Campaign Goal:</span>
-          </div>
-          <div className="text-sm bg-primary/10 text-primary p-2 rounded border border-primary/20">
-            {post.goal}
-          </div>
-        </div>
-      )}
-      
-      <div className="flex gap-2 pt-2 border-t">
-        <Button
-          size="sm"
-          onClick={handleSave}
-          disabled={!hasChanges}
-          className="h-6 px-2 text-xs"
-        >
-          <Check className="h-3 w-3 mr-1" />
-          Save
-        </Button>
-        <Button
-          size="sm"
-          variant="outline"
-          onClick={handleCancel}
-          className="h-6 px-2 text-xs"
-        >
-          <X className="h-3 w-3 mr-1" />
-          Cancel
-        </Button>
-      </div>
-    </div>
-  );
 
   // Regular TooltipContent for view mode
   const ViewTooltipContent = () => (
@@ -431,65 +291,55 @@ const EditablePost = ({ post, editMode, shortTitle, timeString }: {
     </div>
   );
 
-  const [tooltipOpen, setTooltipOpen] = useState(false);
-
-  React.useEffect(() => {
-    if (editMode) {
-      setEditData({
-        title: post.title,
-        content: post.content || '',
-        scheduled_at: post.scheduled_at || '',
-        status: post.status
-      });
-      setHasChanges(false);
-    }
-  }, [editMode, post]);
-
   return (
-    <TooltipProvider>
-      <Tooltip 
-        open={tooltipOpen || undefined}
-        onOpenChange={setTooltipOpen}
-      >
-        <TooltipTrigger asChild>
-          <div
-            className={`text-xs p-1 rounded flex items-center gap-1 min-h-[20px] ${getPersonaColor(post.persona_name || '')} hover:shadow-sm transition-all duration-200 border ${editMode ? 'cursor-pointer hover:border-primary' : ''}`}
-            onMouseEnter={() => console.log('Mouse enter on post:', post.id, 'editMode:', editMode)}
-          >
-            <div className="flex items-center gap-1 flex-shrink-0">
-              {getSocialIcon(post.platform, 'sm')}
-              <div className="w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold bg-white/80 border">
-                {getPersonaAvatar(post.persona_name || '')}
+    <>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div
+              className={`text-xs p-1 rounded flex items-center gap-1 min-h-[20px] ${getPersonaColor(post.persona_name || '')} hover:shadow-sm transition-all duration-200 border ${editMode ? 'cursor-pointer hover:border-primary' : ''}`}
+            >
+              <div className="flex items-center gap-1 flex-shrink-0">
+                {getSocialIcon(post.platform, 'sm')}
+                <div className="w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold bg-white/80 border">
+                  {getPersonaAvatar(post.persona_name || '')}
+                </div>
               </div>
-            </div>
-            <div className="text-[10px] font-medium leading-tight truncate flex-1">
-              {shortTitle}
-            </div>
-            {timeString && (
-              <div className="text-[8px] font-mono bg-black/10 px-1 py-0.5 rounded shrink-0">
-                {timeString}
+              <div className="text-[10px] font-medium leading-tight truncate flex-1">
+                {shortTitle}
               </div>
-            )}
-            {editMode && <Edit className="h-4 w-4 ml-1 opacity-70" />}
-          </div>
-        </TooltipTrigger>
-        <TooltipContent 
-          side="right" 
-          align="start" 
-          className={editMode ? "max-w-md p-4 pointer-events-auto" : "max-w-sm p-4"}
-          onPointerDownOutside={(e) => editMode && e.preventDefault()}
-        >
-          {editMode ? (
-            <div>
-              <div className="text-xs text-red-500 mb-2">EDIT MODE TOOLTIP</div>
-              <EditableTooltipContent />
+              {timeString && (
+                <div className="text-[8px] font-mono bg-black/10 px-1 py-0.5 rounded shrink-0">
+                  {timeString}
+                </div>
+              )}
+              {editMode && (
+                <Edit 
+                  className="h-4 w-4 ml-1 opacity-70 hover:opacity-100 cursor-pointer" 
+                  onClick={handleEditClick}
+                />
+              )}
             </div>
-          ) : (
-            <ViewTooltipContent />
+          </TooltipTrigger>
+          {!editMode && (
+            <TooltipContent 
+              side="right" 
+              align="start" 
+              className="max-w-sm p-4"
+            >
+              <ViewTooltipContent />
+            </TooltipContent>
           )}
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+        </Tooltip>
+      </TooltipProvider>
+      
+      <EditPostDialog
+        post={post}
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
+        onSave={handleSave}
+      />
+    </>
   );
 };
 
