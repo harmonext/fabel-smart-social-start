@@ -640,12 +640,320 @@ const ContentScheduling = () => {
         </div>
       </div>
 
-      {viewMode === 'list' ? (
+      {editMode ? (
         <DndContext
           sensors={sensors}
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
         >
+          {viewMode === 'list' ? (
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle>
+                    {['January', 'February', 'March', 'April', 'May', 'June',
+                      'July', 'August', 'September', 'October', 'November', 'December'][currentDate.getMonth()]} {currentDate.getFullYear()} - Daily Schedule
+                  </CardTitle>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const newDate = new Date(currentDate);
+                        newDate.setMonth(newDate.getMonth() - 1);
+                        setCurrentDate(newDate);
+                      }}
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const newDate = new Date(currentDate);
+                        newDate.setMonth(newDate.getMonth() + 1);
+                        setCurrentDate(newDate);
+                      }}
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+                <CardDescription>
+                  View all scheduled content organized by day of the month. Drag posts to reschedule within 7 days starting tomorrow.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {Array.from({ length: new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate() }, (_, i) => {
+                    const day = i + 1;
+                    const postsForDay = content.filter(post => {
+                      if (!post.scheduled_at) return false;
+                      const postDate = new Date(post.scheduled_at);
+                      return postDate.getDate() === day && 
+                             postDate.getMonth() === currentDate.getMonth() && 
+                             postDate.getFullYear() === currentDate.getFullYear();
+                    });
+                    const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+                    const dayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][date.getDay()];
+                    const isToday = new Date().getDate() === day && 
+                                   new Date().getMonth() === currentDate.getMonth() && 
+                                   new Date().getFullYear() === currentDate.getFullYear();
+                    
+                    return (
+                      <DroppableListDay
+                        key={day}
+                        date={date}
+                        className={`border rounded-lg p-4 min-h-[120px] ${
+                          isToday ? 'bg-blue-50 border-blue-200' : 'border-gray-200'
+                        }`}
+                      >
+                        <div className={`flex items-center justify-between mb-4 ${
+                          isToday ? 'text-blue-600' : 'text-foreground'
+                        }`}>
+                          <div>
+                            <h3 className="font-semibold text-lg">
+                              {dayName}, {['January', 'February', 'March', 'April', 'May', 'June',
+                                'July', 'August', 'September', 'October', 'November', 'December'][currentDate.getMonth()]} {day}
+                            </h3>
+                            <div className="text-sm text-muted-foreground">
+                              {postsForDay.length} {postsForDay.length === 1 ? 'post' : 'posts'} scheduled
+                            </div>
+                          </div>
+                          {isToday && (
+                            <div className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium border border-blue-300">
+                              Today
+                            </div>
+                          )}
+                        </div>
+                        
+                        {postsForDay.length === 0 ? (
+                          <div className="text-center py-8 text-muted-foreground">
+                            {isDateInValidRange(date) ? 'Drop posts here to reschedule' : 'No posts scheduled for this day'}
+                          </div>
+                        ) : (
+                          <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+                            {postsForDay.map((post) => {
+                              const scheduledTime = post.scheduled_at ? new Date(post.scheduled_at) : null;
+                              const timeString = scheduledTime ? scheduledTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
+                              const shortTitle = post.title.length > 35 ? `${post.title.substring(0, 35)}...` : post.title;
+                              
+                              return (
+                                <TooltipProvider key={post.id}>
+                                  <Tooltip>
+                                     <TooltipTrigger asChild>
+                                       <DraggablePost post={post} editMode={editMode}>
+                                         <div
+                                           className={`p-4 rounded-lg flex flex-col gap-3 ${getPersonaColor(post.persona_name || '')} hover:shadow-md hover:scale-[1.02] transition-all duration-200 ${editMode ? 'cursor-grab active:cursor-grabbing' : ''} border-2`}
+                                         >
+                                          <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-2 flex-shrink-0">
+                                              <div className="p-1 bg-white/95 rounded-full shadow-sm">
+                                                {getSocialIcon(post.platform)}
+                                              </div>
+                                              <div className="w-6 h-6 rounded-full bg-white/95 flex items-center justify-center text-xs font-bold shadow-sm border">
+                                                {getPersonaAvatar(post.persona_name || '')}
+                                              </div>
+                                            </div>
+                                            {timeString && (
+                                              <div className="text-xs font-mono bg-black/10 px-2 py-1 rounded">
+                                                {timeString}
+                                              </div>
+                                            )}
+                                          </div>
+                                          <div className="text-sm font-semibold leading-tight">
+                                            {shortTitle}
+                                          </div>
+                                          <div className="flex items-center justify-between text-xs">
+                                            <span className="capitalize font-medium">{post.platform}</span>
+                                            {post.goal && (
+                                              <span className="px-2 py-1 bg-white/20 rounded-full font-medium">
+                                                {post.goal.length > 15 ? `${post.goal.substring(0, 15)}...` : post.goal}
+                                              </span>
+                                            )}
+                                          </div>
+                                        </div>
+                                      </DraggablePost>
+                                    </TooltipTrigger>
+                                  <TooltipContent side="right" align="start" className="max-w-sm p-4">
+                                    <div className="space-y-3">
+                                      <div>
+                                        <div className="font-bold text-base text-foreground mb-1">{post.title}</div>
+                                        <div className="text-sm text-muted-foreground">{post.content ? `${post.content.substring(0, 100)}${post.content.length > 100 ? '...' : ''}` : 'No content preview'}</div>
+                                      </div>
+                                      
+                                      <div className="grid grid-cols-1 gap-3 text-sm">
+                                        <div className="flex items-center justify-between p-2 bg-muted/50 rounded-lg">
+                                          <div className="flex items-center gap-2">
+                                            <span className="font-medium text-foreground">Platform:</span>
+                                            <div className="flex items-center gap-1.5">
+                                              {getSocialIcon(post.platform, 'md')}
+                                              <span className="capitalize font-medium">{post.platform}</span>
+                                            </div>
+                                          </div>
+                                        </div>
+                                        
+                                        <div className="flex items-center justify-between p-2 bg-muted/50 rounded-lg">
+                                          <span className="font-medium text-foreground">Persona:</span>
+                                          <div className={`px-2 py-1 rounded-full text-sm font-medium border-2 ${getPersonaColor(post.persona_name || '', 'dark')}`}>
+                                            <span className="mr-1">{getPersonaAvatar(post.persona_name || '')}</span>
+                                            {post.persona_name || 'No persona'}
+                                          </div>
+                                        </div>
+                                      </div>
+                                      
+                                      {post.scheduled_at && (
+                                        <div className="border-t pt-3">
+                                          <div className="flex items-center gap-2 text-sm">
+                                            <Clock className="h-4 w-4 text-primary" />
+                                            <span className="font-medium text-foreground">Scheduled for:</span>
+                                          </div>
+                                          <div className="mt-1 text-sm font-mono bg-muted p-2 rounded">
+                                            {new Date(post.scheduled_at).toLocaleDateString([], {
+                                              weekday: 'long',
+                                              year: 'numeric',
+                                              month: 'long',
+                                              day: 'numeric'
+                                            })} at {new Date(post.scheduled_at).toLocaleTimeString([], {
+                                              hour: '2-digit',
+                                              minute: '2-digit'
+                                            })}
+                                          </div>
+                                        </div>
+                                      )}
+                                      
+                                      {post.goal && (
+                                        <div className="border-t pt-3">
+                                          <div className="flex items-center gap-2 text-sm mb-1">
+                                            <span className="font-medium text-foreground">Campaign Goal:</span>
+                                          </div>
+                                          <div className="text-sm bg-primary/10 text-primary p-2 rounded border border-primary/20">
+                                            {post.goal}
+                                          </div>
+                                        </div>
+                                      )}
+                                      
+                                      <div className="text-xs text-muted-foreground border-t pt-2">
+                                        Status: <span className="capitalize font-medium">{post.status}</span>
+                                      </div>
+                                    </div>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </DroppableListDay>
+                  );
+                })}
+              </div>
+              
+              {/* Enhanced Legend */}
+              <div className="mt-6 pt-4 border-t bg-muted/20 rounded-lg p-4">
+                <h3 className="text-lg font-semibold mb-4 text-foreground">Legend</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-3">
+                    <h4 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
+                      <div className="w-2 h-2 bg-primary rounded-full"></div>
+                      Platform Icons
+                    </h4>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="flex items-center gap-3 p-2 bg-background rounded-lg border shadow-sm">
+                        <div className="p-1 bg-blue-50 rounded-full">
+                          <Facebook className="h-4 w-4 text-blue-600" />
+                        </div>
+                        <span className="text-sm font-medium">Facebook</span>
+                      </div>
+                      <div className="flex items-center gap-3 p-2 bg-background rounded-lg border shadow-sm">
+                        <div className="p-1 bg-pink-50 rounded-full">
+                          <Instagram className="h-4 w-4 text-pink-600" />
+                        </div>
+                        <span className="text-sm font-medium">Instagram</span>
+                      </div>
+                      <div className="flex items-center gap-3 p-2 bg-background rounded-lg border shadow-sm">
+                        <div className="p-1 bg-blue-50 rounded-full">
+                          <Linkedin className="h-4 w-4 text-blue-700" />
+                        </div>
+                        <span className="text-sm font-medium">LinkedIn</span>
+                      </div>
+                      <div className="flex items-center gap-3 p-2 bg-background rounded-lg border shadow-sm">
+                        <div className="p-1 bg-blue-50 rounded-full">
+                          <Twitter className="h-4 w-4 text-blue-400" />
+                        </div>
+                        <span className="text-sm font-medium">Twitter</span>
+                      </div>
+                      <div className="flex items-center gap-3 p-2 bg-background rounded-lg border shadow-sm">
+                        <div className="p-1 bg-red-50 rounded-full">
+                          <div className="h-4 w-4 bg-red-600 rounded-full flex items-center justify-center">
+                            <span className="text-white text-xs font-bold">P</span>
+                          </div>
+                        </div>
+                        <span className="text-sm font-medium">Pinterest</span>
+                      </div>
+                      <div className="flex items-center gap-3 p-2 bg-background rounded-lg border shadow-sm">
+                        <div className="p-1 bg-gray-50 rounded-full">
+                          <div className="h-4 w-4 bg-black rounded-full flex items-center justify-center">
+                            <span className="text-white text-xs font-bold">T</span>
+                          </div>
+                        </div>
+                        <span className="text-sm font-medium">TikTok</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="space-y-3">
+                    <h4 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
+                      <div className="w-2 h-2 bg-secondary rounded-full"></div>
+                      Active Personas
+                    </h4>
+                    <div className="space-y-2 max-h-48 overflow-y-auto">
+                      {Array.from(new Set(content.map(post => post.persona_name).filter(Boolean))).map((persona) => (
+                        <div key={persona as string} className="flex items-center justify-between gap-3 p-3 bg-background rounded-lg border shadow-sm">
+                          <div className="flex items-center gap-3">
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold border-2 ${getPersonaColor(persona as string, 'dark')}`}>
+                              {getPersonaAvatar(persona as string)}
+                            </div>
+                            <span className="text-sm font-medium">{persona as string}</span>
+                          </div>
+                          <div className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded-full">
+                            {content.filter(p => p.persona_name === persona).length} posts
+                          </div>
+                        </div>
+                      ))}
+                      {content.filter(post => post.persona_name).length === 0 && (
+                        <div className="text-center py-4 text-muted-foreground text-sm">
+                          No personas assigned to content yet
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          ) : (
+            <CalendarView 
+              posts={content.filter(post => post.scheduled_at)} 
+              allContent={content}
+              currentDate={currentDate}
+              setCurrentDate={setCurrentDate}
+              onReschedule={handleReschedule}
+              editMode={editMode}
+            />
+          )}
+          <DragOverlay>
+            {activeId ? (
+              <div className="p-2 rounded-lg bg-primary text-primary-foreground shadow-lg opacity-90">
+                <div className="text-sm font-medium">
+                  {getDraggedPost()?.title || 'Moving post...'}
+                </div>
+              </div>
+            ) : null}
+          </DragOverlay>
+        </DndContext>
+      ) : (
+        // When edit mode is disabled, render without DndContext to enable hover
+        viewMode === 'list' ? (
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
@@ -679,7 +987,7 @@ const ContentScheduling = () => {
                 </div>
               </div>
               <CardDescription>
-                View all scheduled content organized by day of the month. Drag posts to reschedule within 7 days starting tomorrow.
+                View all scheduled content organized by day of the month. Hover over posts to see details.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -700,9 +1008,8 @@ const ContentScheduling = () => {
                                  new Date().getFullYear() === currentDate.getFullYear();
                   
                   return (
-                    <DroppableListDay
+                    <div
                       key={day}
-                      date={date}
                       className={`border rounded-lg p-4 min-h-[120px] ${
                         isToday ? 'bg-blue-50 border-blue-200' : 'border-gray-200'
                       }`}
@@ -728,7 +1035,7 @@ const ContentScheduling = () => {
                       
                       {postsForDay.length === 0 ? (
                         <div className="text-center py-8 text-muted-foreground">
-                          {isDateInValidRange(date) ? 'Drop posts here to reschedule' : 'No posts scheduled for this day'}
+                          No posts scheduled for this day
                         </div>
                       ) : (
                         <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
@@ -743,7 +1050,7 @@ const ContentScheduling = () => {
                                    <TooltipTrigger asChild>
                                      <DraggablePost post={post} editMode={editMode}>
                                        <div
-                                         className={`p-4 rounded-lg flex flex-col gap-3 ${getPersonaColor(post.persona_name || '')} hover:shadow-md hover:scale-[1.02] transition-all duration-200 ${editMode ? 'cursor-grab active:cursor-grabbing' : ''} border-2`}
+                                         className={`p-4 rounded-lg flex flex-col gap-3 ${getPersonaColor(post.persona_name || '')} hover:shadow-md hover:scale-[1.02] transition-all duration-200 border-2`}
                                        >
                                         <div className="flex items-center justify-between">
                                           <div className="flex items-center gap-2 flex-shrink-0">
@@ -843,109 +1150,13 @@ const ContentScheduling = () => {
                         })}
                       </div>
                     )}
-                  </DroppableListDay>
+                  </div>
                 );
               })}
             </div>
-            
-            {/* Enhanced Legend */}
-            <div className="mt-6 pt-4 border-t bg-muted/20 rounded-lg p-4">
-              <h3 className="text-lg font-semibold mb-4 text-foreground">Legend</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-3">
-                  <h4 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
-                    <div className="w-2 h-2 bg-primary rounded-full"></div>
-                    Platform Icons
-                  </h4>
-                  <div className="grid grid-cols-2 gap-2">
-                    <div className="flex items-center gap-3 p-2 bg-background rounded-lg border shadow-sm">
-                      <div className="p-1 bg-blue-50 rounded-full">
-                        <Facebook className="h-4 w-4 text-blue-600" />
-                      </div>
-                      <span className="text-sm font-medium">Facebook</span>
-                    </div>
-                    <div className="flex items-center gap-3 p-2 bg-background rounded-lg border shadow-sm">
-                      <div className="p-1 bg-pink-50 rounded-full">
-                        <Instagram className="h-4 w-4 text-pink-600" />
-                      </div>
-                      <span className="text-sm font-medium">Instagram</span>
-                    </div>
-                    <div className="flex items-center gap-3 p-2 bg-background rounded-lg border shadow-sm">
-                      <div className="p-1 bg-blue-50 rounded-full">
-                        <Linkedin className="h-4 w-4 text-blue-700" />
-                      </div>
-                      <span className="text-sm font-medium">LinkedIn</span>
-                    </div>
-                    <div className="flex items-center gap-3 p-2 bg-background rounded-lg border shadow-sm">
-                      <div className="p-1 bg-blue-50 rounded-full">
-                        <Twitter className="h-4 w-4 text-blue-400" />
-                      </div>
-                      <span className="text-sm font-medium">Twitter</span>
-                    </div>
-                    <div className="flex items-center gap-3 p-2 bg-background rounded-lg border shadow-sm">
-                      <div className="p-1 bg-red-50 rounded-full">
-                        <div className="h-4 w-4 bg-red-600 rounded-full flex items-center justify-center">
-                          <span className="text-white text-xs font-bold">P</span>
-                        </div>
-                      </div>
-                      <span className="text-sm font-medium">Pinterest</span>
-                    </div>
-                    <div className="flex items-center gap-3 p-2 bg-background rounded-lg border shadow-sm">
-                      <div className="p-1 bg-gray-50 rounded-full">
-                        <div className="h-4 w-4 bg-black rounded-full flex items-center justify-center">
-                          <span className="text-white text-xs font-bold">T</span>
-                        </div>
-                      </div>
-                      <span className="text-sm font-medium">TikTok</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="space-y-3">
-                  <h4 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
-                    <div className="w-2 h-2 bg-secondary rounded-full"></div>
-                    Active Personas
-                  </h4>
-                  <div className="space-y-2 max-h-48 overflow-y-auto">
-                    {Array.from(new Set(content.map(post => post.persona_name).filter(Boolean))).map((persona) => (
-                      <div key={persona as string} className="flex items-center justify-between gap-3 p-3 bg-background rounded-lg border shadow-sm">
-                        <div className="flex items-center gap-3">
-                          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold border-2 ${getPersonaColor(persona as string, 'dark')}`}>
-                            {getPersonaAvatar(persona as string)}
-                          </div>
-                          <span className="text-sm font-medium">{persona as string}</span>
-                        </div>
-                        <div className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded-full">
-                          {content.filter(p => p.persona_name === persona).length} posts
-                        </div>
-                      </div>
-                    ))}
-                    {content.filter(post => post.persona_name).length === 0 && (
-                      <div className="text-center py-4 text-muted-foreground text-sm">
-                        No personas assigned to content yet
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
           </CardContent>
         </Card>
-        <DragOverlay>
-          {activeId ? (
-            <div className="p-2 rounded-lg bg-primary text-primary-foreground shadow-lg opacity-90">
-              <div className="text-sm font-medium">
-                {getDraggedPost()?.title || 'Moving post...'}
-              </div>
-            </div>
-          ) : null}
-        </DragOverlay>
-      </DndContext>
-      ) : (
-        <DndContext
-          sensors={sensors}
-          onDragStart={handleDragStart}
-          onDragEnd={handleDragEnd}
-        >
+        ) : (
           <CalendarView 
             posts={content.filter(post => post.scheduled_at)} 
             allContent={content}
@@ -954,16 +1165,7 @@ const ContentScheduling = () => {
             onReschedule={handleReschedule}
             editMode={editMode}
           />
-          <DragOverlay>
-            {activeId ? (
-              <div className="p-2 rounded-lg bg-primary text-primary-foreground shadow-lg opacity-90">
-                <div className="text-sm font-medium">
-                  {getDraggedPost()?.title || 'Moving post...'}
-                </div>
-              </div>
-            ) : null}
-          </DragOverlay>
-        </DndContext>
+        )
       )}
 
       <Card>
