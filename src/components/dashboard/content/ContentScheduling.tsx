@@ -431,6 +431,8 @@ const EditablePost = ({ post, editMode, shortTitle, timeString }: {
     </div>
   );
 
+  const [tooltipOpen, setTooltipOpen] = useState(false);
+
   React.useEffect(() => {
     if (editMode) {
       setEditData({
@@ -446,22 +448,13 @@ const EditablePost = ({ post, editMode, shortTitle, timeString }: {
   return (
     <TooltipProvider>
       <Tooltip 
-        open={editMode ? undefined : undefined} 
-        onOpenChange={editMode ? (open) => {
-          if (open) {
-            setEditData({
-              title: post.title,
-              content: post.content || '',
-              scheduled_at: post.scheduled_at || '',
-              status: post.status
-            });
-            setHasChanges(false);
-          }
-        } : undefined}
+        open={tooltipOpen || undefined}
+        onOpenChange={setTooltipOpen}
       >
         <TooltipTrigger asChild>
           <div
             className={`text-xs p-1 rounded flex items-center gap-1 min-h-[20px] ${getPersonaColor(post.persona_name || '')} hover:shadow-sm transition-all duration-200 border ${editMode ? 'cursor-pointer hover:border-primary' : ''}`}
+            onMouseEnter={() => console.log('Mouse enter on post:', post.id, 'editMode:', editMode)}
           >
             <div className="flex items-center gap-1 flex-shrink-0">
               {getSocialIcon(post.platform, 'xs')}
@@ -486,7 +479,14 @@ const EditablePost = ({ post, editMode, shortTitle, timeString }: {
           className={editMode ? "max-w-md p-4 pointer-events-auto" : "max-w-sm p-4"}
           onPointerDownOutside={(e) => editMode && e.preventDefault()}
         >
-          {editMode ? <EditableTooltipContent /> : <ViewTooltipContent />}
+          {editMode ? (
+            <div>
+              <div className="text-xs text-red-500 mb-2">EDIT MODE TOOLTIP</div>
+              <EditableTooltipContent />
+            </div>
+          ) : (
+            <ViewTooltipContent />
+          )}
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
