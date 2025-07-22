@@ -12,6 +12,7 @@ const AboutYouTab = ({ formData, onInputChange }: AboutYouTabProps) => {
   const titleOptions = [
     "Owner",
     "Marketing Manager",
+    "Marketing Agency",
     "Other"
   ];
 
