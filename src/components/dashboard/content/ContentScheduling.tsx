@@ -457,8 +457,8 @@ const EditablePost = ({ post, editMode, shortTitle, timeString }: {
             onMouseEnter={() => console.log('Mouse enter on post:', post.id, 'editMode:', editMode)}
           >
             <div className="flex items-center gap-1 flex-shrink-0">
-              {getSocialIcon(post.platform, 'xs')}
-              <div className="w-3 h-3 rounded-full flex items-center justify-center text-[8px] font-bold">
+              {getSocialIcon(post.platform, 'sm')}
+              <div className="w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold bg-white/80 border">
                 {getPersonaAvatar(post.persona_name || '')}
               </div>
             </div>
