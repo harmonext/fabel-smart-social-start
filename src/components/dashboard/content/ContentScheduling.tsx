@@ -2,7 +2,7 @@ import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calendar, Clock, Plus, Edit, Trash2, ChevronLeft, ChevronRight, Move } from "lucide-react";
+import { Calendar, Clock, Plus, Edit, Trash2, ChevronLeft, ChevronRight, Move, Check, X } from "lucide-react";
 import { Facebook, Instagram, Linkedin, Twitter } from "lucide-react";
 import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { useState } from "react";
@@ -12,6 +12,9 @@ import { useDraggable, useDroppable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import { useToast } from "@/hooks/use-toast";
 import { Switch } from "@/components/ui/switch";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 // Utility functions for drag and drop validation
 const getValidDateRange = () => {
@@ -190,6 +193,258 @@ const getPersonaAvatar = (persona: string) => {
   return firstLetter;
 };
 
+// Editable Post Component
+const EditablePost = ({ post, editMode, shortTitle, timeString }: {
+  post: ScheduledContent;
+  editMode: boolean;
+  shortTitle: string;
+  timeString: string;
+}) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editData, setEditData] = useState({
+    title: post.title,
+    content: post.content || '',
+    scheduled_at: post.scheduled_at || '',
+    status: post.status
+  });
+  const [hasChanges, setHasChanges] = useState(false);
+  const { updateContent } = useScheduledContent();
+  const { toast } = useToast();
+
+  const handleEdit = () => {
+    setIsEditing(true);
+    setEditData({
+      title: post.title,
+      content: post.content || '',
+      scheduled_at: post.scheduled_at || '',
+      status: post.status
+    });
+    setHasChanges(false);
+  };
+
+  const handleSave = async () => {
+    if (!hasChanges) return;
+    
+    const updates: any = {};
+    if (editData.title !== post.title) updates.title = editData.title;
+    if (editData.content !== (post.content || '')) updates.content = editData.content;
+    if (editData.scheduled_at !== (post.scheduled_at || '')) updates.scheduled_at = editData.scheduled_at;
+    if (editData.status !== post.status) updates.status = editData.status;
+
+    const success = await updateContent(post.id, updates);
+    if (success) {
+      setIsEditing(false);
+      setHasChanges(false);
+    }
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    setEditData({
+      title: post.title,
+      content: post.content || '',
+      scheduled_at: post.scheduled_at || '',
+      status: post.status
+    });
+    setHasChanges(false);
+  };
+
+  const handleChange = (field: string, value: string) => {
+    setEditData(prev => ({ ...prev, [field]: value }));
+    setHasChanges(true);
+  };
+
+  const formatDateTimeForInput = (dateString: string) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toISOString().slice(0, 16);
+  };
+
+  if (editMode && isEditing) {
+    return (
+      <div className="border rounded-lg p-3 bg-white shadow-sm space-y-3 min-w-[300px]">
+        <div className="space-y-2">
+          <label className="text-xs font-medium">Title</label>
+          <Input
+            value={editData.title}
+            onChange={(e) => handleChange('title', e.target.value)}
+            className="text-xs"
+          />
+        </div>
+        
+        <div className="space-y-2">
+          <label className="text-xs font-medium">Content</label>
+          <Textarea
+            value={editData.content}
+            onChange={(e) => handleChange('content', e.target.value)}
+            className="text-xs min-h-[60px]"
+          />
+        </div>
+        
+        <div className="space-y-2">
+          <label className="text-xs font-medium">Scheduled Date</label>
+          <Input
+            type="datetime-local"
+            value={formatDateTimeForInput(editData.scheduled_at)}
+            onChange={(e) => handleChange('scheduled_at', e.target.value ? new Date(e.target.value).toISOString() : '')}
+            className="text-xs"
+          />
+        </div>
+        
+        <div className="space-y-2">
+          <label className="text-xs font-medium">Status</label>
+          <Select value={editData.status} onValueChange={(value) => handleChange('status', value)}>
+            <SelectTrigger className="text-xs h-8">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="draft">Draft</SelectItem>
+              <SelectItem value="scheduled">Scheduled</SelectItem>
+              <SelectItem value="published">Published</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        
+        <div className="flex gap-2 pt-2">
+          <Button
+            size="sm"
+            onClick={handleSave}
+            disabled={!hasChanges}
+            className="h-6 px-2 text-xs"
+          >
+            <Check className="h-3 w-3 mr-1" />
+            Save
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={handleCancel}
+            className="h-6 px-2 text-xs"
+          >
+            <X className="h-3 w-3 mr-1" />
+            Cancel
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (editMode) {
+    return (
+      <div
+        onClick={handleEdit}
+        className={`text-xs p-1 rounded flex items-center gap-1 min-h-[20px] ${getPersonaColor(post.persona_name || '')} hover:shadow-sm transition-all duration-200 cursor-grab active:cursor-grabbing border hover:border-primary`}
+      >
+        <div className="flex items-center gap-1 flex-shrink-0">
+          {getSocialIcon(post.platform, 'xs')}
+          <div className="w-3 h-3 rounded-full flex items-center justify-center text-[8px] font-bold">
+            {getPersonaAvatar(post.persona_name || '')}
+          </div>
+        </div>
+        <div className="text-[10px] font-medium leading-tight truncate flex-1">
+          {shortTitle}
+        </div>
+        {timeString && (
+          <div className="text-[8px] font-mono bg-black/10 px-1 py-0.5 rounded shrink-0">
+            {timeString}
+          </div>
+        )}
+        <Edit className="h-2 w-2 ml-1 opacity-50" />
+      </div>
+    );
+  }
+
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div
+            className={`text-xs p-1 rounded flex items-center gap-1 min-h-[20px] ${getPersonaColor(post.persona_name || '')} hover:shadow-sm transition-all duration-200 border`}
+          >
+            <div className="flex items-center gap-1 flex-shrink-0">
+              {getSocialIcon(post.platform, 'xs')}
+              <div className="w-3 h-3 rounded-full flex items-center justify-center text-[8px] font-bold">
+                {getPersonaAvatar(post.persona_name || '')}
+              </div>
+            </div>
+            <div className="text-[10px] font-medium leading-tight truncate flex-1">
+              {shortTitle}
+            </div>
+            {timeString && (
+              <div className="text-[8px] font-mono bg-black/10 px-1 py-0.5 rounded shrink-0">
+                {timeString}
+              </div>
+            )}
+          </div>
+        </TooltipTrigger>
+        <TooltipContent side="right" align="start" className="max-w-sm p-4">
+          <div className="space-y-3">
+            <div>
+              <div className="font-bold text-base text-foreground mb-1">{post.title}</div>
+              <div className="text-sm text-muted-foreground">{post.content ? `${post.content.substring(0, 100)}${post.content.length > 100 ? '...' : ''}` : 'No content preview'}</div>
+            </div>
+            
+            <div className="grid grid-cols-1 gap-3 text-sm">
+              <div className="flex items-center justify-between p-2 bg-muted/50 rounded-lg">
+                <div className="flex items-center gap-2">
+                  <span className="font-medium text-foreground">Platform:</span>
+                  <div className="flex items-center gap-1.5">
+                    {getSocialIcon(post.platform, 'md')}
+                    <span className="capitalize font-medium">{post.platform}</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex items-center justify-between p-2 bg-muted/50 rounded-lg">
+                <span className="font-medium text-foreground">Persona:</span>
+                <div className={`px-2 py-1 rounded-full text-sm font-medium border-2 ${getPersonaColor(post.persona_name || '', 'dark')}`}>
+                  <span className="mr-1">{getPersonaAvatar(post.persona_name || '')}</span>
+                  {post.persona_name || 'No persona'}
+                </div>
+              </div>
+            </div>
+            
+            {post.scheduled_at && (
+              <div className="border-t pt-3">
+                <div className="flex items-center gap-2 text-sm">
+                  <Clock className="h-4 w-4 text-primary" />
+                  <span className="font-medium text-foreground">Scheduled for:</span>
+                </div>
+                <div className="mt-1 text-sm font-mono bg-muted p-2 rounded">
+                  {new Date(post.scheduled_at).toLocaleDateString([], {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  })} at {new Date(post.scheduled_at).toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}
+                </div>
+              </div>
+            )}
+            
+            {post.goal && (
+              <div className="border-t pt-3">
+                <div className="flex items-center gap-2 text-sm mb-1">
+                  <span className="font-medium text-foreground">Campaign Goal:</span>
+                </div>
+                <div className="text-sm bg-primary/10 text-primary p-2 rounded border border-primary/20">
+                  {post.goal}
+                </div>
+              </div>
+            )}
+            
+            <div className="text-xs text-muted-foreground border-t pt-2">
+              Status: <span className="capitalize font-medium">{post.status}</span>
+            </div>
+          </div>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+};
+
 const CalendarView = ({ posts, allContent, currentDate, setCurrentDate, onReschedule, editMode }: {
   posts: ScheduledContent[];
   allContent: ScheduledContent[];
@@ -306,28 +561,16 @@ const CalendarView = ({ posts, allContent, currentDate, setCurrentDate, onResche
                     const timeString = scheduledTime ? scheduledTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
                     const shortTitle = post.title.length > 8 ? `${post.title.substring(0, 8)}...` : post.title;
                     
-                    return (
-                      <DraggablePost key={post.id} post={post} editMode={editMode}>
-                        <div
-                          className={`text-xs p-1 rounded flex items-center gap-1 min-h-[20px] ${getPersonaColor(post.persona_name || '')} hover:shadow-sm transition-all duration-200 cursor-grab active:cursor-grabbing border`}
-                        >
-                          <div className="flex items-center gap-1 flex-shrink-0">
-                            {getSocialIcon(post.platform, 'xs')}
-                            <div className="w-3 h-3 rounded-full flex items-center justify-center text-[8px] font-bold">
-                              {getPersonaAvatar(post.persona_name || '')}
-                            </div>
-                          </div>
-                          <div className="text-[10px] font-medium leading-tight truncate flex-1">
-                            {shortTitle}
-                          </div>
-                          {timeString && (
-                            <div className="text-[8px] font-mono bg-black/10 px-1 py-0.5 rounded shrink-0">
-                              {timeString}
-                            </div>
-                          )}
-                        </div>
-                      </DraggablePost>
-                    )
+                     return (
+                       <DraggablePost key={post.id} post={post} editMode={editMode}>
+                         <EditablePost
+                           post={post}
+                           editMode={true}
+                           shortTitle={shortTitle}
+                           timeString={timeString}
+                         />
+                       </DraggablePost>
+                     )
                   })}
                   {postsForDay.length > 4 && (
                     <div className="text-[10px] text-muted-foreground font-medium px-1 py-0.5 bg-muted/50 rounded text-center border border-dashed border-muted-foreground/30">
@@ -354,95 +597,15 @@ const CalendarView = ({ posts, allContent, currentDate, setCurrentDate, onResche
                     const timeString = scheduledTime ? scheduledTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
                     const shortTitle = post.title.length > 8 ? `${post.title.substring(0, 8)}...` : post.title;
                     
-                    return (
-                      <TooltipProvider key={post.id}>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <div
-                              className={`text-xs p-1 rounded flex items-center gap-1 min-h-[20px] ${getPersonaColor(post.persona_name || '')} hover:shadow-sm transition-all duration-200 border`}
-                            >
-                              <div className="flex items-center gap-1 flex-shrink-0">
-                                {getSocialIcon(post.platform, 'xs')}
-                                <div className="w-3 h-3 rounded-full flex items-center justify-center text-[8px] font-bold">
-                                  {getPersonaAvatar(post.persona_name || '')}
-                                </div>
-                              </div>
-                              <div className="text-[10px] font-medium leading-tight truncate flex-1">
-                                {shortTitle}
-                              </div>
-                              {timeString && (
-                                <div className="text-[8px] font-mono bg-black/10 px-1 py-0.5 rounded shrink-0">
-                                  {timeString}
-                                </div>
-                              )}
-                            </div>
-                          </TooltipTrigger>
-                          <TooltipContent side="right" align="start" className="max-w-sm p-4">
-                            <div className="space-y-3">
-                              <div>
-                                <div className="font-bold text-base text-foreground mb-1">{post.title}</div>
-                                <div className="text-sm text-muted-foreground">{post.content ? `${post.content.substring(0, 100)}${post.content.length > 100 ? '...' : ''}` : 'No content preview'}</div>
-                              </div>
-                              
-                              <div className="grid grid-cols-1 gap-3 text-sm">
-                                <div className="flex items-center justify-between p-2 bg-muted/50 rounded-lg">
-                                  <div className="flex items-center gap-2">
-                                    <span className="font-medium text-foreground">Platform:</span>
-                                    <div className="flex items-center gap-1.5">
-                                      {getSocialIcon(post.platform, 'md')}
-                                      <span className="capitalize font-medium">{post.platform}</span>
-                                    </div>
-                                  </div>
-                                </div>
-                                
-                                <div className="flex items-center justify-between p-2 bg-muted/50 rounded-lg">
-                                  <span className="font-medium text-foreground">Persona:</span>
-                                  <div className={`px-2 py-1 rounded-full text-sm font-medium border-2 ${getPersonaColor(post.persona_name || '', 'dark')}`}>
-                                    <span className="mr-1">{getPersonaAvatar(post.persona_name || '')}</span>
-                                    {post.persona_name || 'No persona'}
-                                  </div>
-                                </div>
-                              </div>
-                              
-                              {post.scheduled_at && (
-                                <div className="border-t pt-3">
-                                  <div className="flex items-center gap-2 text-sm">
-                                    <Clock className="h-4 w-4 text-primary" />
-                                    <span className="font-medium text-foreground">Scheduled for:</span>
-                                  </div>
-                                  <div className="mt-1 text-sm font-mono bg-muted p-2 rounded">
-                                    {new Date(post.scheduled_at).toLocaleDateString([], {
-                                      weekday: 'long',
-                                      year: 'numeric',
-                                      month: 'long',
-                                      day: 'numeric'
-                                    })} at {new Date(post.scheduled_at).toLocaleTimeString([], {
-                                      hour: '2-digit',
-                                      minute: '2-digit'
-                                    })}
-                                  </div>
-                                </div>
-                              )}
-                              
-                              {post.goal && (
-                                <div className="border-t pt-3">
-                                  <div className="flex items-center gap-2 text-sm mb-1">
-                                    <span className="font-medium text-foreground">Campaign Goal:</span>
-                                  </div>
-                                  <div className="text-sm bg-primary/10 text-primary p-2 rounded border border-primary/20">
-                                    {post.goal}
-                                  </div>
-                                </div>
-                              )}
-                              
-                              <div className="text-xs text-muted-foreground border-t pt-2">
-                                Status: <span className="capitalize font-medium">{post.status}</span>
-                              </div>
-                            </div>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    )
+                     return (
+                       <EditablePost
+                         key={post.id}
+                         post={post}
+                         editMode={false}
+                         shortTitle={shortTitle}
+                         timeString={timeString}
+                       />
+                     )
                   })}
                   {postsForDay.length > 4 && (
                     <div className="text-[10px] text-muted-foreground font-medium px-1 py-0.5 bg-muted/50 rounded text-center border border-dashed border-muted-foreground/30">
