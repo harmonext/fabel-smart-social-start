@@ -1,4 +1,5 @@
 
+import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -35,29 +36,31 @@ const formatDateForDropzone = (date: Date) => {
 };
 
 // Draggable Post Component
-const DraggablePost = ({ post, children }: { post: ScheduledContent; children: React.ReactNode }) => {
-  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
-    id: post.id,
-    data: { post }
-  });
+const DraggablePost = React.forwardRef<HTMLDivElement, { post: ScheduledContent; children: React.ReactNode }>(
+  ({ post, children }, ref) => {
+    const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+      id: post.id,
+      data: { post }
+    });
 
-  const style = {
-    transform: CSS.Translate.toString(transform),
-    opacity: isDragging ? 0.5 : 1,
-  };
+    const style = {
+      transform: CSS.Translate.toString(transform),
+      opacity: isDragging ? 0.5 : 1,
+    };
 
-  return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      {...listeners}
-      {...attributes}
-      className={`${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
-    >
-      {children}
-    </div>
-  );
-};
+    return (
+      <div
+        ref={setNodeRef}
+        style={style}
+        {...listeners}
+        {...attributes}
+        className={`${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+      >
+        {children}
+      </div>
+    );
+  }
+);
 
 // Droppable Day Cell Component for Calendar
 const DroppableDay = ({ date, children, className }: { 
