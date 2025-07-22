@@ -52,9 +52,9 @@ const DraggablePost = React.forwardRef<HTMLDivElement, { post: ScheduledContent;
       <div
         ref={setNodeRef}
         style={style}
-        {...listeners}
         {...attributes}
-        className={`${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+        {...listeners}
+        className={`${isDragging ? 'cursor-grabbing' : 'cursor-grab'} touch-none`}
       >
         {children}
       </div>
@@ -492,7 +492,9 @@ const ContentScheduling = () => {
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8,
+        distance: 15, // Increased from 8 to require more deliberate drag
+        delay: 100, // Add delay to allow hover events to fire first
+        tolerance: 5,
       },
     }),
     useSensor(KeyboardSensor)
