@@ -875,7 +875,7 @@ const ContentScheduling = () => {
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2">
               <Move className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">Edit Mode</span>
+              <span className="text-sm text-muted-foreground">Read Mode</span>
               <Switch
                 checked={editMode}
                 onCheckedChange={setEditMode}
@@ -883,7 +883,7 @@ const ContentScheduling = () => {
               />
             </div>
             <span className="text-xs text-muted-foreground">
-              {editMode ? 'Drag & drop enabled' : 'Hover to view details'}
+              {editMode ? 'Edit, drag & drop' : 'Hover to view details'}
             </span>
           </div>
         </div>
