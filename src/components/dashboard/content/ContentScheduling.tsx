@@ -613,7 +613,7 @@ const CalendarView = ({ posts, allContent, currentDate, setCurrentDate, onResche
                        <DraggablePost key={post.id} post={post} editMode={editMode}>
                          <EditablePost
                            post={post}
-                           editMode={true}
+                           editMode={editMode}
                            shortTitle={shortTitle}
                            timeString={timeString}
                          />
