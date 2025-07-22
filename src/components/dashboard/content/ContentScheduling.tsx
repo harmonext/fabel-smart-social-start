@@ -319,13 +319,21 @@ const CalendarView = ({ posts, allContent, currentDate, setCurrentDate }: {
                   </div>
                   <span className="text-sm font-medium">Twitter</span>
                 </div>
-                <div className="flex items-center gap-3 p-2 bg-background rounded-lg border shadow-sm col-span-2">
+                <div className="flex items-center gap-3 p-2 bg-background rounded-lg border shadow-sm">
                   <div className="p-1 bg-red-50 rounded-full">
                     <div className="h-4 w-4 bg-red-600 rounded-full flex items-center justify-center">
                       <span className="text-white text-xs font-bold">P</span>
                     </div>
                   </div>
                   <span className="text-sm font-medium">Pinterest</span>
+                </div>
+                <div className="flex items-center gap-3 p-2 bg-background rounded-lg border shadow-sm">
+                  <div className="p-1 bg-gray-50 rounded-full">
+                    <div className="h-4 w-4 bg-black rounded-full flex items-center justify-center">
+                      <span className="text-white text-xs font-bold">T</span>
+                    </div>
+                  </div>
+                  <span className="text-sm font-medium">TikTok</span>
                 </div>
               </div>
             </div>
