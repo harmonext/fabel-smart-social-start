@@ -354,13 +354,16 @@ const ListView = ({ posts, allContent, currentDate, setCurrentDate, onReschedule
   onReschedule: (postId: string, newDate: Date) => void;
   editMode: boolean;
 }) => {
-  const { minDate, maxDate } = getValidDateRange();
+  const getDaysInMonth = (date: Date) => {
+    return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+  };
+
+  // Generate all days of the current month
+  const daysInMonth = getDaysInMonth(currentDate);
   const daysToShow = [];
   
-  // Generate 7 days starting from tomorrow
-  for (let i = 0; i < 7; i++) {
-    const date = new Date(minDate);
-    date.setDate(date.getDate() + i);
+  for (let day = 1; day <= daysInMonth; day++) {
+    const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
     daysToShow.push(date);
   }
 
@@ -377,10 +380,45 @@ const ListView = ({ posts, allContent, currentDate, setCurrentDate, onReschedule
     });
   };
 
+  const monthNames = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+
+  const navigateMonth = (direction: 'prev' | 'next') => {
+    const newDate = new Date(currentDate);
+    if (direction === 'prev') {
+      newDate.setMonth(newDate.getMonth() - 1);
+    } else {
+      newDate.setMonth(newDate.getMonth() + 1);
+    }
+    setCurrentDate(newDate);
+  };
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>List View</CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle>
+            {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
+          </CardTitle>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigateMonth('prev')}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigateMonth('next')}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
         <CardDescription>
           {editMode ? 'Drag posts to reschedule them' : 'Hover over posts to see details'}
         </CardDescription>
