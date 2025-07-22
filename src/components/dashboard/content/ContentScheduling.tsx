@@ -9,8 +9,8 @@ import { useState } from "react";
 import { useScheduledContent, ScheduledContent } from "@/hooks/useScheduledContent";
 
 // Utility functions for both Calendar and List views
-const getSocialIcon = (platform: string, size: 'sm' | 'md' = 'sm') => {
-  const sizeClasses = size === 'sm' ? "h-3 w-3" : "h-4 w-4";
+const getSocialIcon = (platform: string, size: 'xs' | 'sm' | 'md' = 'sm') => {
+  const sizeClasses = size === 'xs' ? "h-2 w-2" : size === 'sm' ? "h-3 w-3" : "h-4 w-4";
   const iconProps = { className: sizeClasses };
   switch (platform.toLowerCase()) {
     case 'facebook': return <Facebook {...iconProps} className={`${sizeClasses} text-blue-600`} />;
@@ -155,7 +155,7 @@ const CalendarView = ({ posts, allContent, currentDate, setCurrentDate }: {
         <div className="grid grid-cols-7 gap-2">
           {/* Empty cells for days before the first day of the month */}
           {Array.from({ length: firstDay }, (_, i) => (
-            <div key={`empty-${i}`} className="h-24"></div>
+            <div key={`empty-${i}`} className="h-32"></div>
           ))}
           
           {/* Days of the month */}
@@ -169,7 +169,7 @@ const CalendarView = ({ posts, allContent, currentDate, setCurrentDate }: {
             return (
               <div
                 key={day}
-                className={`h-24 border rounded-lg p-1 ${
+                className={`h-32 border rounded-lg p-1 ${
                   isToday ? 'bg-blue-50 border-blue-200' : 'border-gray-200'
                 }`}
               >
@@ -178,37 +178,33 @@ const CalendarView = ({ posts, allContent, currentDate, setCurrentDate }: {
                 }`}>
                   {day}
                 </div>
-                <div className="space-y-1 overflow-hidden">
-                  {postsForDay.slice(0, 3).map((post, index) => {
+                <div className="space-y-0.5 overflow-hidden">
+                  {postsForDay.slice(0, 4).map((post, index) => {
                     const scheduledTime = post.scheduled_at ? new Date(post.scheduled_at) : null;
                     const timeString = scheduledTime ? scheduledTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
-                    const shortTitle = post.title.length > 12 ? `${post.title.substring(0, 12)}...` : post.title;
+                    const shortTitle = post.title.length > 8 ? `${post.title.substring(0, 8)}...` : post.title;
                     
                     return (
                       <TooltipProvider key={post.id}>
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <div
-                              className={`text-xs p-2 rounded-lg flex flex-col gap-1.5 min-h-[32px] ${getPersonaColor(post.persona_name || '')} hover:shadow-md hover:scale-[1.02] transition-all duration-200 cursor-pointer border-2`}
+                              className={`text-xs p-1 rounded flex items-center gap-1 min-h-[20px] ${getPersonaColor(post.persona_name || '')} hover:shadow-sm transition-all duration-200 cursor-pointer border`}
                             >
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-1.5 flex-shrink-0">
-                                  <div className="p-0.5 bg-white/95 rounded-full shadow-sm">
-                                    {getSocialIcon(post.platform)}
-                                  </div>
-                                  <div className="w-5 h-5 rounded-full bg-white/95 flex items-center justify-center text-xs font-bold shadow-sm border">
-                                    {getPersonaAvatar(post.persona_name || '')}
-                                  </div>
+                              <div className="flex items-center gap-1 flex-shrink-0">
+                                {getSocialIcon(post.platform, 'xs')}
+                                <div className="w-3 h-3 rounded-full flex items-center justify-center text-[8px] font-bold">
+                                  {getPersonaAvatar(post.persona_name || '')}
                                 </div>
-                                {timeString && (
-                                  <div className="text-xs font-mono bg-black/10 px-1.5 py-0.5 rounded">
-                                    {timeString}
-                                  </div>
-                                )}
                               </div>
-                              <div className="text-xs font-semibold leading-tight">
+                              <div className="text-[10px] font-medium leading-tight truncate flex-1">
                                 {shortTitle}
                               </div>
+                              {timeString && (
+                                <div className="text-[8px] font-mono bg-black/10 px-1 py-0.5 rounded shrink-0">
+                                  {timeString}
+                                </div>
+                              )}
                             </div>
                           </TooltipTrigger>
                           <TooltipContent side="right" align="start" className="max-w-sm p-4">
@@ -278,9 +274,9 @@ const CalendarView = ({ posts, allContent, currentDate, setCurrentDate }: {
                       </TooltipProvider>
                     )
                   })}
-                  {postsForDay.length > 3 && (
-                    <div className="text-xs text-muted-foreground font-medium px-2 py-1.5 bg-muted/50 rounded-lg text-center border-2 border-dashed border-muted-foreground/30">
-                      +{postsForDay.length - 3} more posts
+                  {postsForDay.length > 4 && (
+                    <div className="text-[10px] text-muted-foreground font-medium px-1 py-0.5 bg-muted/50 rounded text-center border border-dashed border-muted-foreground/30">
+                      +{postsForDay.length - 4} more
                     </div>
                   )}
                 </div>
