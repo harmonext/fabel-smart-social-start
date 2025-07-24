@@ -98,6 +98,30 @@ export type Database = {
         }
         Relationships: []
       }
+      prompt_template_type: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       saved_personas: {
         Row: {
           age_ranges: string
@@ -211,7 +235,7 @@ export type Database = {
           created_at: string
           id: string
           name: string
-          template_type: string | null
+          prompt_template_type_id: string | null
           updated_at: string
           value: string
         }
@@ -219,7 +243,7 @@ export type Database = {
           created_at?: string
           id?: string
           name: string
-          template_type?: string | null
+          prompt_template_type_id?: string | null
           updated_at?: string
           value: string
         }
@@ -227,11 +251,19 @@ export type Database = {
           created_at?: string
           id?: string
           name?: string
-          template_type?: string | null
+          prompt_template_type_id?: string | null
           updated_at?: string
           value?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_system_prompt_template_type"
+            columns: ["prompt_template_type_id"]
+            isOneToOne: false
+            referencedRelation: "prompt_template_type"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
