@@ -5,6 +5,7 @@ import Personas from "./content/Personas";
 import SocialConnections from "./content/SocialConnections";
 import ContentScheduling from "./content/ContentScheduling";
 import DashboardSettings from "./content/DashboardSettings";
+import SystemPromptTemplates from "./content/SystemPromptTemplates";
 import OnboardingFlow from "@/components/onboarding/OnboardingFlow";
 import OnboardedData from "./content/OnboardedData";
 import { useOnboarding } from "@/hooks/useOnboarding";
@@ -43,6 +44,13 @@ const DashboardContent = ({ activeTab, activeSubTab }: DashboardContentProps) =>
         return <ContentScheduling />;
       }
       return <SocialConnections />; // Default to social connections
+    }
+    
+    if (activeTab === "system-management") {
+      if (activeSubTab === "prompt-templates") {
+        return <SystemPromptTemplates />;
+      }
+      return <SystemPromptTemplates />; // Default to prompt templates
     }
     
     if (activeTab === "settings") {

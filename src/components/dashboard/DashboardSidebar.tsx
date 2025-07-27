@@ -21,7 +21,8 @@ import {
   LogOut,
   ChevronDown,
   ChevronRight,
-  ClipboardList
+  ClipboardList,
+  Database
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -38,7 +39,7 @@ const DashboardSidebar = ({
   setActiveTab, 
   setActiveSubTab 
 }: DashboardSidebarProps) => {
-  const [expandedSections, setExpandedSections] = useState<string[]>(["company-profile", "content-management", "personas"]);
+  const [expandedSections, setExpandedSections] = useState<string[]>(["company-profile", "content-management", "personas", "system-management"]);
   const navigate = useNavigate();
   const { isCompleted: onboardingCompleted } = useOnboarding();
 
@@ -198,6 +199,44 @@ const DashboardSidebar = ({
                 >
                   <Calendar className="h-3 w-3 mr-3" />
                   Content Scheduling
+                </Button>
+              </div>
+            )}
+          </div>
+
+          {/* System Management */}
+          <div>
+            <Button
+              variant="ghost"
+              className={cn(
+                "w-full justify-between text-left h-10",
+                activeTab === "system-management" && "bg-fabel-primary/10 text-fabel-primary"
+              )}
+              onClick={() => toggleSection("system-management")}
+            >
+              <div className="flex items-center">
+                <Database className="h-4 w-4 mr-3" />
+                System Management
+              </div>
+              {isExpanded("system-management") ? (
+                <ChevronDown className="h-4 w-4" />
+              ) : (
+                <ChevronRight className="h-4 w-4" />
+              )}
+            </Button>
+            
+            {isExpanded("system-management") && (
+              <div className="ml-7 mt-1 space-y-1">
+                <Button
+                  variant="ghost"
+                  className={cn(
+                    "w-full justify-start text-left h-9 text-sm",
+                    activeTab === "system-management" && activeSubTab === "prompt-templates" && "bg-fabel-primary/10 text-fabel-primary"
+                  )}
+                  onClick={() => handleTabClick("system-management", "prompt-templates")}
+                >
+                  <FileText className="h-3 w-3 mr-3" />
+                  Prompt Templates
                 </Button>
               </div>
             )}
