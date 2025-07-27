@@ -58,7 +58,7 @@ const SystemPromptTemplates = () => {
     defaultValues: {
       name: "",
       value: "",
-      prompt_template_type_id: "",
+      prompt_template_type_id: "no-type",
     },
   });
 
@@ -120,7 +120,7 @@ const SystemPromptTemplates = () => {
       const payload = {
         name: data.name,
         value: data.value,
-        prompt_template_type_id: data.prompt_template_type_id || null,
+        prompt_template_type_id: data.prompt_template_type_id === "no-type" ? null : data.prompt_template_type_id || null,
       };
 
       if (editingTemplate) {
@@ -167,7 +167,7 @@ const SystemPromptTemplates = () => {
     form.reset({
       name: template.name,
       value: template.value,
-      prompt_template_type_id: template.prompt_template_type_id || "",
+      prompt_template_type_id: template.prompt_template_type_id || "no-type",
     });
     setIsDialogOpen(true);
   };
@@ -286,7 +286,7 @@ const SystemPromptTemplates = () => {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              <SelectItem value="">No type</SelectItem>
+                              <SelectItem value="no-type">No type</SelectItem>
                               {types.map((type) => (
                                 <SelectItem key={type.id} value={type.id}>
                                   {type.name}
