@@ -6,6 +6,7 @@ import SocialConnections from "./content/SocialConnections";
 import ContentScheduling from "./content/ContentScheduling";
 import DashboardSettings from "./content/DashboardSettings";
 import SystemPromptTemplates from "./content/SystemPromptTemplates";
+import PromptTemplateTypes from "./content/PromptTemplateTypes";
 import OnboardingFlow from "@/components/onboarding/OnboardingFlow";
 import OnboardedData from "./content/OnboardedData";
 import { useOnboarding } from "@/hooks/useOnboarding";
@@ -49,6 +50,9 @@ const DashboardContent = ({ activeTab, activeSubTab }: DashboardContentProps) =>
     if (activeTab === "system-management") {
       if (activeSubTab === "prompt-templates") {
         return <SystemPromptTemplates />;
+      }
+      if (activeSubTab === "template-types") {
+        return <PromptTemplateTypes />;
       }
       return <SystemPromptTemplates />; // Default to prompt templates
     }

@@ -22,7 +22,8 @@ import {
   ChevronDown,
   ChevronRight,
   ClipboardList,
-  Database
+  Database,
+  Tag
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -237,6 +238,17 @@ const DashboardSidebar = ({
                 >
                   <FileText className="h-3 w-3 mr-3" />
                   Prompt Templates
+                </Button>
+                <Button
+                  variant="ghost"
+                  className={cn(
+                    "w-full justify-start text-left h-9 text-sm",
+                    activeTab === "system-management" && activeSubTab === "template-types" && "bg-fabel-primary/10 text-fabel-primary"
+                  )}
+                  onClick={() => handleTabClick("system-management", "template-types")}
+                >
+                  <Tag className="h-3 w-3 mr-3" />
+                  Template Types
                 </Button>
               </div>
             )}
