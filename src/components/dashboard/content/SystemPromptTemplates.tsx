@@ -238,10 +238,10 @@ const SystemPromptTemplates = () => {
       let matchesDateRange = true;
       if (dateRange?.from || dateRange?.to) {
         const templateDate = new Date(template.created_at);
-        if (dateRange.from && templateDate < dateRange.from) {
+        if (dateRange?.from && templateDate < dateRange.from) {
           matchesDateRange = false;
         }
-        if (dateRange.to && templateDate > dateRange.to) {
+        if (dateRange?.to && templateDate > dateRange.to) {
           matchesDateRange = false;
         }
       }
@@ -402,7 +402,7 @@ const SystemPromptTemplates = () => {
                         dateRange?.to ? (
                           <>
                             {format(dateRange.from, "LLL dd, y")} -{" "}
-                            {format(dateRange.to, "LLL dd, y")}
+                            {format(dateRange.to!, "LLL dd, y")}
                           </>
                         ) : (
                           format(dateRange.from, "LLL dd, y")
@@ -416,7 +416,7 @@ const SystemPromptTemplates = () => {
                     <Calendar
                       initialFocus
                       mode="range"
-                      defaultMonth={dateRange.from}
+                      defaultMonth={dateRange?.from}
                       selected={dateRange}
                       onSelect={(range) => setDateRange(range)}
                       numberOfMonths={2}
