@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { format } from "date-fns";
+import { DateRange } from "react-day-picker";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -9,12 +11,15 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Edit, Trash2, Search } from "lucide-react";
+import { Plus, Edit, Trash2, Search, ArrowUpDown, Calendar as CalendarIcon, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { cn } from "@/lib/utils";
 
 interface SystemPromptTemplate {
   id: string;
@@ -51,6 +56,9 @@ const SystemPromptTemplates = () => {
   const [editingTemplate, setEditingTemplate] = useState<SystemPromptTemplate | null>(null);
   const [deleteTemplate, setDeleteTemplate] = useState<SystemPromptTemplate | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [sortField, setSortField] = useState<'name' | 'created_at'>('created_at');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
   const { toast } = useToast();
 
   const form = useForm<FormData>({
@@ -206,11 +214,51 @@ const SystemPromptTemplates = () => {
     setIsDialogOpen(true);
   };
 
-  const filteredTemplates = templates.filter(template =>
-    template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    template.value.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    template.prompt_template_type?.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const handleSort = (field: 'name' | 'created_at') => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('asc');
+    }
+  };
+
+  const clearDateRange = () => {
+    setDateRange(undefined);
+  };
+
+  const filteredAndSortedTemplates = templates
+    .filter(template => {
+      // Text search filter
+      const matchesSearch = template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        template.value.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        template.prompt_template_type?.name.toLowerCase().includes(searchTerm.toLowerCase());
+
+      // Date range filter
+      let matchesDateRange = true;
+      if (dateRange?.from || dateRange?.to) {
+        const templateDate = new Date(template.created_at);
+        if (dateRange.from && templateDate < dateRange.from) {
+          matchesDateRange = false;
+        }
+        if (dateRange.to && templateDate > dateRange.to) {
+          matchesDateRange = false;
+        }
+      }
+
+      return matchesSearch && matchesDateRange;
+    })
+    .sort((a, b) => {
+      let comparison = 0;
+      
+      if (sortField === 'name') {
+        comparison = a.name.localeCompare(b.name);
+      } else if (sortField === 'created_at') {
+        comparison = new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+      }
+      
+      return sortDirection === 'asc' ? comparison : -comparison;
+    });
 
   if (isLoading) {
     return (
@@ -231,130 +279,203 @@ const SystemPromptTemplates = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col sm:flex-row gap-4 mb-6">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search templates..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-9"
-              />
-            </div>
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-              <DialogTrigger asChild>
-                <Button onClick={openCreateDialog} className="shrink-0">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Template
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-                <DialogHeader>
-                  <DialogTitle>
-                    {editingTemplate ? "Edit Template" : "Create Template"}
-                  </DialogTitle>
-                  <DialogDescription>
-                    {editingTemplate ? "Update the prompt template details." : "Create a new system prompt template."}
-                  </DialogDescription>
-                </DialogHeader>
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-                    <FormField
-                      control={form.control}
-                      name="name"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Name</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Enter template name" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={form.control}
-                      name="prompt_template_type_id"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Type (Optional)</FormLabel>
-                          <Select onValueChange={field.onChange} value={field.value}>
+          <div className="flex flex-col gap-4 mb-6">
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search templates..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-9"
+                />
+              </div>
+              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button onClick={openCreateDialog} className="shrink-0">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Template
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle>
+                      {editingTemplate ? "Edit Template" : "Create Template"}
+                    </DialogTitle>
+                    <DialogDescription>
+                      {editingTemplate ? "Update the prompt template details." : "Create a new system prompt template."}
+                    </DialogDescription>
+                  </DialogHeader>
+                  <Form {...form}>
+                    <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+                      <FormField
+                        control={form.control}
+                        name="name"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Name</FormLabel>
                             <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select a type" />
-                              </SelectTrigger>
+                              <Input placeholder="Enter template name" {...field} />
                             </FormControl>
-                            <SelectContent>
-                              <SelectItem value="no-type">No type</SelectItem>
-                              {types.map((type) => (
-                                <SelectItem key={type.id} value={type.id}>
-                                  {type.name}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={form.control}
+                        name="prompt_template_type_id"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Type (Optional)</FormLabel>
+                            <Select onValueChange={field.onChange} value={field.value}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select a type" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="no-type">No type</SelectItem>
+                                {types.map((type) => (
+                                  <SelectItem key={type.id} value={type.id}>
+                                    {type.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
-                    <FormField
-                      control={form.control}
-                      name="value"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Template Value</FormLabel>
-                          <FormControl>
-                            <Textarea
-                              placeholder="Enter the prompt template content..."
-                              className="min-h-[200px] resize-y"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                      <FormField
+                        control={form.control}
+                        name="value"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Template Value</FormLabel>
+                            <FormControl>
+                              <Textarea
+                                placeholder="Enter the prompt template content..."
+                                className="min-h-[200px] resize-y"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
-                    <div className="flex justify-end space-x-2 pt-4">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => setIsDialogOpen(false)}
-                      >
-                        Cancel
-                      </Button>
-                      <Button type="submit">
-                        {editingTemplate ? "Update" : "Create"}
-                      </Button>
-                    </div>
-                  </form>
-                </Form>
-              </DialogContent>
-            </Dialog>
+                      <div className="flex justify-end space-x-2 pt-4">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => setIsDialogOpen(false)}
+                        >
+                          Cancel
+                        </Button>
+                        <Button type="submit">
+                          {editingTemplate ? "Update" : "Create"}
+                        </Button>
+                      </div>
+                    </form>
+                  </Form>
+                </DialogContent>
+              </Dialog>
+            </div>
+            
+            {/* Date Range Filter */}
+            <div className="flex flex-col sm:flex-row gap-4 items-center">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-muted-foreground">Filter by date:</span>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-[260px] justify-start text-left font-normal",
+                        !dateRange?.from && !dateRange?.to && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {dateRange?.from ? (
+                        dateRange?.to ? (
+                          <>
+                            {format(dateRange.from, "LLL dd, y")} -{" "}
+                            {format(dateRange.to, "LLL dd, y")}
+                          </>
+                        ) : (
+                          format(dateRange.from, "LLL dd, y")
+                        )
+                      ) : (
+                        <span>Pick a date range</span>
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      initialFocus
+                      mode="range"
+                      defaultMonth={dateRange.from}
+                      selected={dateRange}
+                      onSelect={(range) => setDateRange(range)}
+                      numberOfMonths={2}
+                      className={cn("p-3 pointer-events-auto")}
+                    />
+                  </PopoverContent>
+                </Popover>
+                {(dateRange?.from || dateRange?.to) && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={clearDateRange}
+                    className="h-8 px-2"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
+            </div>
           </div>
 
           <div className="rounded-md border">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Name</TableHead>
+                  <TableHead>
+                    <Button 
+                      variant="ghost" 
+                      className="h-auto p-0 font-semibold justify-start"
+                      onClick={() => handleSort('name')}
+                    >
+                      Name
+                      <ArrowUpDown className="ml-2 h-4 w-4" />
+                    </Button>
+                  </TableHead>
                   <TableHead>Type</TableHead>
                   <TableHead>Template Preview</TableHead>
-                  <TableHead>Created</TableHead>
+                  <TableHead>
+                    <Button 
+                      variant="ghost" 
+                      className="h-auto p-0 font-semibold justify-start"
+                      onClick={() => handleSort('created_at')}
+                    >
+                      Created
+                      <ArrowUpDown className="ml-2 h-4 w-4" />
+                    </Button>
+                  </TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredTemplates.length === 0 ? (
+                {filteredAndSortedTemplates.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
-                      {searchTerm ? "No templates match your search." : "No templates found."}
+                      {searchTerm || dateRange?.from || dateRange?.to ? "No templates match your filters." : "No templates found."}
                     </TableCell>
                   </TableRow>
                 ) : (
-                  filteredTemplates.map((template) => (
+                  filteredAndSortedTemplates.map((template) => (
                     <TableRow key={template.id}>
                       <TableCell className="font-medium">
                         {template.name}
