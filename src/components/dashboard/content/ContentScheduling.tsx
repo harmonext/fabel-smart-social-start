@@ -234,6 +234,30 @@ const EditablePost = ({ post, editMode, shortTitle, timeString }: {
         <div className="font-bold text-base text-foreground mb-1">{post.title}</div>
         <div className="text-sm text-muted-foreground">{post.content ? `${post.content.substring(0, 100)}${post.content.length > 100 ? '...' : ''}` : 'No content preview'}</div>
       </div>
+
+      {post.media_url && (
+        <div className="border-t pt-3">
+          <div className="flex items-center gap-2 text-sm mb-2">
+            <span className="font-medium text-foreground">Media Asset:</span>
+          </div>
+          <div className="bg-muted/50 p-2 rounded-lg">
+            <img 
+              src={post.media_url} 
+              alt="Media preview" 
+              className="w-full max-w-[200px] h-auto rounded border object-cover"
+              onError={(e) => {
+                const target = e.currentTarget as HTMLImageElement;
+                const fallback = target.nextElementSibling as HTMLElement;
+                target.style.display = 'none';
+                if (fallback) fallback.style.display = 'block';
+              }}
+            />
+            <div className="hidden text-xs text-muted-foreground p-2 bg-muted rounded border">
+              Media file attached
+            </div>
+          </div>
+        </div>
+      )}
       
       <div className="grid grid-cols-1 gap-3 text-sm">
         <div className="flex items-center justify-between p-2 bg-muted/50 rounded-lg">
