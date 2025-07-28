@@ -47,15 +47,6 @@ const DashboardContent = ({ activeTab, activeSubTab }: DashboardContentProps) =>
       return <SocialConnections />; // Default to social connections
     }
     
-    if (activeTab === "system-management") {
-      if (activeSubTab === "prompt-templates") {
-        return <SystemPromptTemplates />;
-      }
-      if (activeSubTab === "template-types") {
-        return <PromptTemplateTypes />;
-      }
-      return <SystemPromptTemplates />; // Default to prompt templates
-    }
     
     if (activeTab === "settings") {
       return <DashboardSettings />;
