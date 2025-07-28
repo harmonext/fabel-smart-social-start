@@ -229,7 +229,7 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
             <Textarea
               value={editData.content}
               onChange={(e) => handleChange('content', e.target.value)}
-              className="text-xs min-h-[60px] resize-none"
+              className="text-xs min-h-[60px]"
               placeholder="Post content..."
             />
           </div>
