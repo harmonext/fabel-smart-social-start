@@ -152,6 +152,39 @@ export const useScheduledContent = () => {
     fetchContent();
   }, []);
 
+  const uploadMedia = async (file: File, contentId: string): Promise<string | null> => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
+
+      // Create unique filename with user ID folder structure
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}/${contentId}-${Date.now()}.${fileExt}`;
+
+      // Upload file to storage
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('scheduled-content-media')
+        .upload(fileName, file);
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const { data: urlData } = supabase.storage
+        .from('scheduled-content-media')
+        .getPublicUrl(fileName);
+
+      return urlData.publicUrl;
+    } catch (error) {
+      console.error('Error uploading media:', error);
+      toast({
+        variant: "destructive",
+        title: "Upload Error",
+        description: "Failed to upload media file. Please try again.",
+      });
+      return null;
+    }
+  };
+
   return {
     content,
     isLoading,
@@ -161,6 +194,7 @@ export const useScheduledContent = () => {
     deleteContent,
     getContentByStatus,
     getContentByDate,
-    refetch: fetchContent
+    refetch: fetchContent,
+    uploadMedia
   };
 };

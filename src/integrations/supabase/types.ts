@@ -189,6 +189,7 @@ export type Database = {
           engagement_data: Json | null
           goal: string | null
           id: string
+          media_url: string | null
           persona_name: string | null
           platform: string
           published_at: string | null
@@ -204,6 +205,7 @@ export type Database = {
           engagement_data?: Json | null
           goal?: string | null
           id?: string
+          media_url?: string | null
           persona_name?: string | null
           platform: string
           published_at?: string | null
@@ -219,6 +221,7 @@ export type Database = {
           engagement_data?: Json | null
           goal?: string | null
           id?: string
+          media_url?: string | null
           persona_name?: string | null
           platform?: string
           published_at?: string | null

@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Check, X, Clock } from 'lucide-react';
-import { ScheduledContent } from '@/hooks/useScheduledContent';
+import { Check, X, Clock, Upload, Image, Video, FileText, Trash2 } from 'lucide-react';
+import { ScheduledContent, useScheduledContent } from '@/hooks/useScheduledContent';
 
 // Import utility functions (we'll need to move these to a shared file)
 const getSocialIcon = (platform: string, size: 'xs' | 'sm' | 'md' = 'sm') => {
@@ -62,13 +62,18 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
   onOpenChange,
   onSave
 }) => {
+  const { uploadMedia } = useScheduledContent();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  
   const [editData, setEditData] = useState({
     title: '',
     content: '',
     scheduled_at: '',
-    status: 'draft' as 'draft' | 'scheduled' | 'published'
+    status: 'draft' as 'draft' | 'scheduled' | 'published',
+    media_url: ''
   });
   const [hasChanges, setHasChanges] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
     if (post) {
@@ -76,7 +81,8 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
         title: post.title,
         content: post.content || '',
         scheduled_at: post.scheduled_at || '',
-        status: post.status as 'draft' | 'scheduled' | 'published'
+        status: post.status as 'draft' | 'scheduled' | 'published',
+        media_url: post.media_url || ''
       });
       setHasChanges(false);
     }
@@ -100,11 +106,48 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
         title: post.title,
         content: post.content || '',
         scheduled_at: post.scheduled_at || '',
-        status: post.status as 'draft' | 'scheduled' | 'published'
+        status: post.status as 'draft' | 'scheduled' | 'published',
+        media_url: post.media_url || ''
       });
       setHasChanges(false);
     }
     onOpenChange(false);
+  };
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file || !post) return;
+
+    setIsUploading(true);
+    try {
+      const mediaUrl = await uploadMedia(file, post.id);
+      if (mediaUrl) {
+        handleChange('media_url', mediaUrl);
+      }
+    } catch (error) {
+      console.error('Upload failed:', error);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const removeMedia = () => {
+    handleChange('media_url', '');
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const getMediaIcon = (url: string) => {
+    if (!url) return <FileText className="h-4 w-4" />;
+    const ext = url.split('.').pop()?.toLowerCase();
+    if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext || '')) {
+      return <Image className="h-4 w-4" />;
+    }
+    if (['mp4', 'mov', 'avi', 'mkv'].includes(ext || '')) {
+      return <Video className="h-4 w-4" />;
+    }
+    return <FileText className="h-4 w-4" />;
   };
 
   if (!post) return null;
@@ -159,6 +202,60 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
                 <SelectItem value="published">Published</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+          
+          <div className="space-y-2">
+            <label className="text-xs font-medium">Media Asset</label>
+            <div className="space-y-2">
+              {editData.media_url ? (
+                <div className="border rounded-lg p-3 bg-muted/30">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      {getMediaIcon(editData.media_url)}
+                      <span className="text-sm font-medium">Media attached</span>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={removeMedia}
+                      className="h-8 w-8 p-0"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  </div>
+                  {editData.media_url.match(/\.(jpg|jpeg|png|gif|webp)$/i) && (
+                    <div className="mt-2">
+                      <img 
+                        src={editData.media_url} 
+                        alt="Media preview" 
+                        className="max-w-full h-20 object-cover rounded border"
+                      />
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*,video/*"
+                    onChange={handleFileUpload}
+                    className="hidden"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isUploading}
+                    className="w-full h-12 border-dashed"
+                  >
+                    <Upload className="h-4 w-4 mr-2" />
+                    {isUploading ? 'Uploading...' : 'Upload Media'}
+                  </Button>
+                </div>
+              )}
+            </div>
           </div>
           
           <div className="grid grid-cols-1 gap-3 text-sm">
