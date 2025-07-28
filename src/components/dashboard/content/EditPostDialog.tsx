@@ -171,40 +171,6 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
           </div>
           
           <div className="space-y-2">
-            <label className="text-xs font-medium">Content</label>
-            <Textarea
-              value={editData.content}
-              onChange={(e) => handleChange('content', e.target.value)}
-              className="text-xs min-h-[60px] resize-none"
-              placeholder="Post content..."
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <label className="text-xs font-medium">Scheduled Date & Time</label>
-            <Input
-              type="datetime-local"
-              value={editData.scheduled_at ? new Date(editData.scheduled_at).toISOString().slice(0, 16) : ''}
-              onChange={(e) => handleChange('scheduled_at', e.target.value ? new Date(e.target.value).toISOString() : '')}
-              className="text-xs h-8"
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <label className="text-xs font-medium">Status</label>
-            <Select value={editData.status} onValueChange={(value) => handleChange('status', value)}>
-              <SelectTrigger className="text-xs h-8">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="draft">Draft</SelectItem>
-                <SelectItem value="scheduled">Scheduled</SelectItem>
-                <SelectItem value="published">Published</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          
-          <div className="space-y-2">
             <label className="text-xs font-medium">Media Asset</label>
             <div className="space-y-2">
               {editData.media_url ? (
@@ -257,6 +223,41 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
               )}
             </div>
           </div>
+          
+          <div className="space-y-2">
+            <label className="text-xs font-medium">Content</label>
+            <Textarea
+              value={editData.content}
+              onChange={(e) => handleChange('content', e.target.value)}
+              className="text-xs min-h-[60px] resize-none"
+              placeholder="Post content..."
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <label className="text-xs font-medium">Scheduled Date & Time</label>
+            <Input
+              type="datetime-local"
+              value={editData.scheduled_at ? new Date(editData.scheduled_at).toISOString().slice(0, 16) : ''}
+              onChange={(e) => handleChange('scheduled_at', e.target.value ? new Date(e.target.value).toISOString() : '')}
+              className="text-xs h-8"
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <label className="text-xs font-medium">Status</label>
+            <Select value={editData.status} onValueChange={(value) => handleChange('status', value)}>
+              <SelectTrigger className="text-xs h-8">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="draft">Draft</SelectItem>
+                <SelectItem value="scheduled">Scheduled</SelectItem>
+                <SelectItem value="published">Published</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          
           
           <div className="grid grid-cols-1 gap-3 text-sm">
             <div className="flex items-center justify-between p-2 bg-muted/50 rounded-lg">
