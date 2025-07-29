@@ -604,6 +604,51 @@ const ListView = ({ posts, allContent, currentDate, setCurrentDate, onReschedule
             );
           })}
         </div>
+        
+        {/* Legend */}
+        <div className="mt-6 pt-4 border-t">
+          <div className="text-sm font-medium text-foreground mb-3">Legend</div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <div className="text-xs font-medium text-muted-foreground mb-2">Social Platforms</div>
+              <div className="flex flex-wrap gap-2">
+                <div className="flex items-center gap-1.5 text-xs">
+                  {getSocialIcon('facebook', 'sm')}
+                  <span>Facebook</span>
+                </div>
+                <div className="flex items-center gap-1.5 text-xs">
+                  {getSocialIcon('instagram', 'sm')}
+                  <span>Instagram</span>
+                </div>
+                <div className="flex items-center gap-1.5 text-xs">
+                  {getSocialIcon('linkedin', 'sm')}
+                  <span>LinkedIn</span>
+                </div>
+                <div className="flex items-center gap-1.5 text-xs">
+                  {getSocialIcon('twitter', 'sm')}
+                  <span>Twitter</span>
+                </div>
+                <div className="flex items-center gap-1.5 text-xs">
+                  {getSocialIcon('pinterest', 'sm')}
+                  <span>Pinterest</span>
+                </div>
+                <div className="flex items-center gap-1.5 text-xs">
+                  {getSocialIcon('tiktok', 'sm')}
+                  <span>TikTok</span>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div className="text-xs font-medium text-muted-foreground mb-2">Personas</div>
+              <div className="flex items-center gap-1.5 text-xs">
+                <div className="w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold bg-white/80 border">
+                  A
+                </div>
+                <span>Persona initial shown in circle</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </CardContent>
     </Card>
   );
@@ -780,6 +825,51 @@ const CalendarView = ({ posts, allContent, currentDate, setCurrentDate, onResche
               </div>
             );
           })}
+        </div>
+        
+        {/* Legend */}
+        <div className="mt-6 pt-4 border-t">
+          <div className="text-sm font-medium text-foreground mb-3">Legend</div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <div className="text-xs font-medium text-muted-foreground mb-2">Social Platforms</div>
+              <div className="flex flex-wrap gap-2">
+                <div className="flex items-center gap-1.5 text-xs">
+                  {getSocialIcon('facebook', 'sm')}
+                  <span>Facebook</span>
+                </div>
+                <div className="flex items-center gap-1.5 text-xs">
+                  {getSocialIcon('instagram', 'sm')}
+                  <span>Instagram</span>
+                </div>
+                <div className="flex items-center gap-1.5 text-xs">
+                  {getSocialIcon('linkedin', 'sm')}
+                  <span>LinkedIn</span>
+                </div>
+                <div className="flex items-center gap-1.5 text-xs">
+                  {getSocialIcon('twitter', 'sm')}
+                  <span>Twitter</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs">
+                  {getSocialIcon('pinterest', 'sm')}
+                  <span>Pinterest</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs">
+                  {getSocialIcon('tiktok', 'sm')}
+                  <span>TikTok</span>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div className="text-xs font-medium text-muted-foreground mb-2">Personas</div>
+              <div className="flex items-center gap-1.5 text-xs">
+                <div className="w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold bg-white/80 border">
+                  A
+                </div>
+                <span>Persona initial shown in circle</span>
+              </div>
+            </div>
+          </div>
         </div>
       </CardContent>
     </Card>
