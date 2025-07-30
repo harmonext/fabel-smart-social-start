@@ -15,7 +15,12 @@ const EmailSignup = () => {
     lastName: "",
     email: "",
     password: "",
-    confirmPassword: ""
+    confirmPassword: "",
+    streetAddress1: "",
+    streetAddress2: "",
+    city: "",
+    state: "",
+    zip: ""
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -57,6 +62,11 @@ const EmailSignup = () => {
           data: {
             first_name: formData.firstName,
             last_name: formData.lastName,
+            street_address1: formData.streetAddress1,
+            street_address2: formData.streetAddress2,
+            city: formData.city,
+            state: formData.state,
+            zip: formData.zip,
           }
         }
       });
@@ -116,7 +126,7 @@ const EmailSignup = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-soft-gold/20 via-background to-muted-teal/20 p-4">
-      <Card className="w-full max-w-md">
+      <Card className="w-full max-w-lg">
         <CardHeader className="space-y-1">
           <div className="flex items-center space-x-2">
             <Button
@@ -231,6 +241,76 @@ const EmailSignup = () => {
                     <Eye className="h-4 w-4" />
                   )}
                 </Button>
+              </div>
+            </div>
+
+            {/* Address Fields */}
+            <div className="space-y-4 pt-4 border-t">
+              <h3 className="text-sm font-medium text-foreground">Address Information</h3>
+              
+              <div className="space-y-2">
+                <Label htmlFor="streetAddress1">Street Address</Label>
+                <Input
+                  id="streetAddress1"
+                  name="streetAddress1"
+                  type="text"
+                  placeholder="123 Main Street"
+                  value={formData.streetAddress1}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="streetAddress2">Street Address 2 (Optional)</Label>
+                <Input
+                  id="streetAddress2"
+                  name="streetAddress2"
+                  type="text"
+                  placeholder="Apt, Suite, Unit, etc."
+                  value={formData.streetAddress2}
+                  onChange={handleInputChange}
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <Label htmlFor="city">City</Label>
+                  <Input
+                    id="city"
+                    name="city"
+                    type="text"
+                    placeholder="New York"
+                    value={formData.city}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="state">State</Label>
+                  <Input
+                    id="state"
+                    name="state"
+                    type="text"
+                    placeholder="NY"
+                    value={formData.state}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="zip">ZIP Code</Label>
+                <Input
+                  id="zip"
+                  name="zip"
+                  type="text"
+                  placeholder="10001"
+                  value={formData.zip}
+                  onChange={handleInputChange}
+                  required
+                />
               </div>
             </div>
 
