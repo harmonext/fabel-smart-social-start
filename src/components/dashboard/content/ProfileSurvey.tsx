@@ -55,6 +55,12 @@ const ProfileSurvey = () => {
                 {companyDetails?.company_industry || "Not provided"}
               </div>
             </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">Phone Number</label>
+              <div className="p-3 border rounded-lg bg-muted">
+                {companyDetails?.phone_number || "Not provided"}
+              </div>
+            </div>
           </div>
           
           <div className="space-y-2">

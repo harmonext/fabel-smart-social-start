@@ -12,6 +12,7 @@ export interface CompanyDetailsData {
   city: string;
   country: string;
   zip: string;
+  phone_number: string;
   onboarded?: boolean;
 }
 
@@ -51,6 +52,7 @@ export const useCompanyDetails = () => {
             city: data.city || '',
             country: data.country || '',
             zip: data.zip || '',
+            phone_number: data.phone_number || '',
             onboarded: data.onboarded
           });
           setIsOnboarded(data.onboarded || false);

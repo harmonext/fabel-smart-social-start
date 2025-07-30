@@ -61,6 +61,10 @@ const OnboardedData = () => {
               <p>{companyDetails.city}, {companyDetails.country} {companyDetails.zip}</p>
             </div>
           </div>
+          <div>
+            <label className="text-sm font-medium text-muted-foreground">Phone Number</label>
+            <p className="text-lg">{companyDetails.phone_number}</p>
+          </div>
         </CardContent>
       </Card>
 

@@ -21,7 +21,8 @@ const CompanyDetailsForm = ({ onContinue }: CompanyDetailsFormProps) => {
     street_address2: companyDetails?.street_address2 || "",
     city: companyDetails?.city || "",
     country: companyDetails?.country || "",
-    zip: companyDetails?.zip || ""
+    zip: companyDetails?.zip || "",
+    phone_number: companyDetails?.phone_number || ""
   });
 
   const industryOptions = [
@@ -54,7 +55,8 @@ const CompanyDetailsForm = ({ onContinue }: CompanyDetailsFormProps) => {
            formData.street_address1.trim() !== '' &&
            formData.city.trim() !== '' &&
            formData.country.trim() !== '' &&
-           formData.zip.trim() !== '';
+           formData.zip.trim() !== '' &&
+           formData.phone_number.trim() !== '';
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -155,6 +157,21 @@ const CompanyDetailsForm = ({ onContinue }: CompanyDetailsFormProps) => {
                   />
                 </div>
               </div>
+            </div>
+
+            {/* Phone Number */}
+            <div className="space-y-3">
+              <Label htmlFor="phone_number" className="text-base font-medium">
+                Phone Number *
+              </Label>
+              <Input
+                id="phone_number"
+                type="tel"
+                placeholder="Enter your company phone number"
+                value={formData.phone_number}
+                onChange={(e) => handleInputChange('phone_number', e.target.value)}
+                required
+              />
             </div>
 
             <div className="pt-6">
