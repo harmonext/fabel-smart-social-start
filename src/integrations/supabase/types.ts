@@ -25,6 +25,7 @@ export type Database = {
           onboarded: boolean
           onboarding_persona_prompt: string | null
           phone_number: string | null
+          state: string | null
           street_address1: string | null
           street_address2: string | null
           updated_at: string
@@ -41,6 +42,7 @@ export type Database = {
           onboarded?: boolean
           onboarding_persona_prompt?: string | null
           phone_number?: string | null
+          state?: string | null
           street_address1?: string | null
           street_address2?: string | null
           updated_at?: string
@@ -57,6 +59,7 @@ export type Database = {
           onboarded?: boolean
           onboarding_persona_prompt?: string | null
           phone_number?: string | null
+          state?: string | null
           street_address1?: string | null
           street_address2?: string | null
           updated_at?: string

@@ -20,6 +20,7 @@ const CompanyDetailsForm = ({ onContinue }: CompanyDetailsFormProps) => {
     street_address1: companyDetails?.street_address1 || "",
     street_address2: companyDetails?.street_address2 || "",
     city: companyDetails?.city || "",
+    state: companyDetails?.state || "",
     country: companyDetails?.country || "",
     zip: companyDetails?.zip || "",
     phone_number: companyDetails?.phone_number || ""
@@ -54,6 +55,7 @@ const CompanyDetailsForm = ({ onContinue }: CompanyDetailsFormProps) => {
            formData.company_industry.trim() !== '' && 
            formData.street_address1.trim() !== '' &&
            formData.city.trim() !== '' &&
+           formData.state.trim() !== '' &&
            formData.country.trim() !== '' &&
            formData.zip.trim() !== '' &&
            formData.phone_number.trim() !== '';
@@ -134,11 +136,18 @@ const CompanyDetailsForm = ({ onContinue }: CompanyDetailsFormProps) => {
                   onChange={(e) => handleInputChange('street_address2', e.target.value)}
                 />
                 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                   <Input
                     placeholder="City"
                     value={formData.city}
                     onChange={(e) => handleInputChange('city', e.target.value)}
+                    required
+                  />
+                  
+                  <Input
+                    placeholder="State/Province"
+                    value={formData.state}
+                    onChange={(e) => handleInputChange('state', e.target.value)}
                     required
                   />
                   

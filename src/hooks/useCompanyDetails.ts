@@ -10,6 +10,7 @@ export interface CompanyDetailsData {
   street_address1: string;
   street_address2?: string;
   city: string;
+  state: string;
   country: string;
   zip: string;
   phone_number: string;
@@ -50,6 +51,7 @@ export const useCompanyDetails = () => {
             street_address1: data.street_address1 || '',
             street_address2: data.street_address2,
             city: data.city || '',
+            state: data.state || '',
             country: data.country || '',
             zip: data.zip || '',
             phone_number: data.phone_number || '',

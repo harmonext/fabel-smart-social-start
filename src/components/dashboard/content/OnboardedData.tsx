@@ -58,7 +58,8 @@ const OnboardedData = () => {
             <div className="text-lg space-y-1">
               <p>{companyDetails.street_address1}</p>
               {companyDetails.street_address2 && <p>{companyDetails.street_address2}</p>}
-              <p>{companyDetails.city}, {companyDetails.country} {companyDetails.zip}</p>
+              <p>{companyDetails.city}, {companyDetails.state} {companyDetails.zip}</p>
+              <p>{companyDetails.country}</p>
             </div>
           </div>
           <div>

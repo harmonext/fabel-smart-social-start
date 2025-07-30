@@ -70,7 +70,8 @@ const ProfileSurvey = () => {
                 <div className="space-y-1">
                   <div>{companyDetails.street_address1}</div>
                   {companyDetails.street_address2 && <div>{companyDetails.street_address2}</div>}
-                  <div>{companyDetails.city}, {companyDetails.country} {companyDetails.zip}</div>
+                  <div>{companyDetails.city}, {companyDetails.state} {companyDetails.zip}</div>
+                  <div>{companyDetails.country}</div>
                 </div>
               ) : "Not provided"}
             </div>
