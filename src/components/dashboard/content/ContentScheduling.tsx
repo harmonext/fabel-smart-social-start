@@ -7,6 +7,8 @@ import { Facebook, Instagram, Linkedin, Twitter } from "lucide-react";
 import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { useState } from "react";
 import { useScheduledContent, ScheduledContent } from "@/hooks/useScheduledContent";
+import { useSocialConnections } from "@/hooks/useSocialConnections";
+import { usePersonas } from "@/hooks/usePersonas";
 import { DndContext, DragOverlay, DragStartEvent, DragEndEvent, useSensor, useSensors, PointerSensor, KeyboardSensor } from '@dnd-kit/core';
 import { useDraggable, useDroppable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
@@ -605,50 +607,7 @@ const ListView = ({ posts, allContent, currentDate, setCurrentDate, onReschedule
           })}
         </div>
         
-        {/* Legend */}
-        <div className="mt-6 pt-4 border-t">
-          <div className="text-sm font-medium text-foreground mb-3">Legend</div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <div className="text-xs font-medium text-muted-foreground mb-2">Social Platforms</div>
-              <div className="flex flex-wrap gap-2">
-                <div className="flex items-center gap-1.5 text-xs">
-                  {getSocialIcon('facebook', 'sm')}
-                  <span>Facebook</span>
-                </div>
-                <div className="flex items-center gap-1.5 text-xs">
-                  {getSocialIcon('instagram', 'sm')}
-                  <span>Instagram</span>
-                </div>
-                <div className="flex items-center gap-1.5 text-xs">
-                  {getSocialIcon('linkedin', 'sm')}
-                  <span>LinkedIn</span>
-                </div>
-                <div className="flex items-center gap-1.5 text-xs">
-                  {getSocialIcon('twitter', 'sm')}
-                  <span>Twitter</span>
-                </div>
-                <div className="flex items-center gap-1.5 text-xs">
-                  {getSocialIcon('pinterest', 'sm')}
-                  <span>Pinterest</span>
-                </div>
-                <div className="flex items-center gap-1.5 text-xs">
-                  {getSocialIcon('tiktok', 'sm')}
-                  <span>TikTok</span>
-                </div>
-              </div>
-            </div>
-            <div>
-              <div className="text-xs font-medium text-muted-foreground mb-2">Personas</div>
-              <div className="flex items-center gap-1.5 text-xs">
-                <div className="w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold bg-white/80 border">
-                  A
-                </div>
-                <span>Persona initial shown in circle</span>
-              </div>
-            </div>
-          </div>
-        </div>
+        <Legend posts={posts} />
       </CardContent>
     </Card>
   );
@@ -827,52 +786,65 @@ const CalendarView = ({ posts, allContent, currentDate, setCurrentDate, onResche
           })}
         </div>
         
-        {/* Legend */}
-        <div className="mt-6 pt-4 border-t">
-          <div className="text-sm font-medium text-foreground mb-3">Legend</div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <div className="text-xs font-medium text-muted-foreground mb-2">Social Platforms</div>
-              <div className="flex flex-wrap gap-2">
-                <div className="flex items-center gap-1.5 text-xs">
-                  {getSocialIcon('facebook', 'sm')}
-                  <span>Facebook</span>
-                </div>
-                <div className="flex items-center gap-1.5 text-xs">
-                  {getSocialIcon('instagram', 'sm')}
-                  <span>Instagram</span>
-                </div>
-                <div className="flex items-center gap-1.5 text-xs">
-                  {getSocialIcon('linkedin', 'sm')}
-                  <span>LinkedIn</span>
-                </div>
-                <div className="flex items-center gap-1.5 text-xs">
-                  {getSocialIcon('twitter', 'sm')}
-                  <span>Twitter</span>
-                </div>
-                <div className="flex items-center gap-2 text-xs">
-                  {getSocialIcon('pinterest', 'sm')}
-                  <span>Pinterest</span>
-                </div>
-                <div className="flex items-center gap-2 text-xs">
-                  {getSocialIcon('tiktok', 'sm')}
-                  <span>TikTok</span>
-                </div>
-              </div>
-            </div>
-            <div>
-              <div className="text-xs font-medium text-muted-foreground mb-2">Personas</div>
-              <div className="flex items-center gap-1.5 text-xs">
-                <div className="w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold bg-white/80 border">
-                  A
-                </div>
-                <span>Persona initial shown in circle</span>
-              </div>
-            </div>
-          </div>
-        </div>
+        <Legend posts={posts} />
       </CardContent>
     </Card>
+  );
+};
+
+// Legend Component
+const Legend = ({ posts }: { posts: ScheduledContent[] }) => {
+  const { getConnectedPlatforms } = useSocialConnections();
+  const { personas } = usePersonas();
+  
+  // Get unique platforms from connected platforms that are actually used in posts
+  const connectedPlatforms = getConnectedPlatforms();
+  const usedPlatforms = [...new Set(posts.map(post => post.platform.toLowerCase()))];
+  const activePlatforms = connectedPlatforms.filter(platform => usedPlatforms.includes(platform));
+  
+  // Get unique personas that are actually used in posts
+  const usedPersonas = [...new Set(posts.map(post => post.persona_name).filter(Boolean))];
+  
+  return (
+    <div className="mt-6 pt-4 border-t">
+      <div className="text-sm font-medium text-foreground mb-3">Legend</div>
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <div className="text-xs font-medium text-muted-foreground mb-2">Connected Platforms</div>
+          <div className="flex flex-wrap gap-2">
+            {activePlatforms.map(platform => (
+              <div key={platform} className="flex items-center gap-1.5 text-xs">
+                {getSocialIcon(platform, 'sm')}
+                <span className="capitalize">{platform}</span>
+              </div>
+            ))}
+            {activePlatforms.length === 0 && (
+              <div className="text-xs text-muted-foreground italic">
+                No connected platforms with scheduled posts
+              </div>
+            )}
+          </div>
+        </div>
+        <div>
+          <div className="text-xs font-medium text-muted-foreground mb-2">Active Personas</div>
+          <div className="flex flex-wrap gap-2">
+            {usedPersonas.map(persona => (
+              <div key={persona} className="flex items-center gap-1.5 text-xs">
+                <div className="w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold bg-white/80 border">
+                  {getPersonaAvatar(persona)}
+                </div>
+                <span>{persona}</span>
+              </div>
+            ))}
+            {usedPersonas.length === 0 && (
+              <div className="text-xs text-muted-foreground italic">
+                No personas assigned to posts
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 
