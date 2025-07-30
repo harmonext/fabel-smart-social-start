@@ -16,6 +16,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import Onboarding from "./pages/Onboarding";
 import MarketingOnboarding from "./pages/MarketingOnboarding";
+import AddressCollection from "./pages/AddressCollection";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -35,6 +36,14 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
+            <Route 
+              path="/address-collection" 
+              element={
+                <ProtectedRoute>
+                  <AddressCollection />
+                </ProtectedRoute>
+              } 
+            />
             <Route 
               path="/onboarding" 
               element={

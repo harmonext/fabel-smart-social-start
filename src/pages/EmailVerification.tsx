@@ -69,7 +69,7 @@ const EmailVerification = () => {
         });
         // Clear the stored email
         sessionStorage.removeItem('verificationEmail');
-        navigate('/dashboard');
+        navigate('/address-collection');
       }
     } catch (error: any) {
       console.error('Unexpected OTP verification error:', error);
