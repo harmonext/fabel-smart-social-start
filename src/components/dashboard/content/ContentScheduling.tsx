@@ -797,10 +797,8 @@ const Legend = ({ posts }: { posts: ScheduledContent[] }) => {
   const { getConnectedPlatforms } = useSocialConnections();
   const { personas } = usePersonas();
   
-  // Get unique platforms from connected platforms that are actually used in posts
+  // Get all connected platforms for the current user
   const connectedPlatforms = getConnectedPlatforms();
-  const usedPlatforms = [...new Set(posts.map(post => post.platform.toLowerCase()))];
-  const activePlatforms = connectedPlatforms.filter(platform => usedPlatforms.includes(platform));
   
   // Get unique personas that are actually used in posts
   const usedPersonas = [...new Set(posts.map(post => post.persona_name).filter(Boolean))];
@@ -812,15 +810,15 @@ const Legend = ({ posts }: { posts: ScheduledContent[] }) => {
         <div>
           <div className="text-xs font-medium text-muted-foreground mb-2">Connected Platforms</div>
           <div className="flex flex-wrap gap-2">
-            {activePlatforms.map(platform => (
+            {connectedPlatforms.map(platform => (
               <div key={platform} className="flex items-center gap-1.5 text-xs">
                 {getSocialIcon(platform, 'sm')}
                 <span className="capitalize">{platform}</span>
               </div>
             ))}
-            {activePlatforms.length === 0 && (
+            {connectedPlatforms.length === 0 && (
               <div className="text-xs text-muted-foreground italic">
-                No connected platforms with scheduled posts
+                No connected platforms
               </div>
             )}
           </div>

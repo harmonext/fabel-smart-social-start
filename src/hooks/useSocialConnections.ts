@@ -45,9 +45,9 @@ export const useSocialConnections = () => {
       },
       {
         name: "Pinterest",
-        connected: false,
-        account: "",
-        followers: "",
+        connected: true,
+        account: "@acme_designs",
+        followers: "3.2K",
         platform: "pinterest"
       },
       {
