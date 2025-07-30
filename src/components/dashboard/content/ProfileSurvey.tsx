@@ -60,7 +60,13 @@ const ProfileSurvey = () => {
           <div className="space-y-2">
             <label className="text-sm font-medium text-foreground">Company Address</label>
             <div className="p-3 border rounded-lg bg-muted min-h-20">
-              {companyDetails?.company_address || "Not provided"}
+              {companyDetails ? (
+                <div className="space-y-1">
+                  <div>{companyDetails.street_address1}</div>
+                  {companyDetails.street_address2 && <div>{companyDetails.street_address2}</div>}
+                  <div>{companyDetails.city}, {companyDetails.country} {companyDetails.zip}</div>
+                </div>
+              ) : "Not provided"}
             </div>
           </div>
           

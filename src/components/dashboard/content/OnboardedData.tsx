@@ -55,7 +55,11 @@ const OnboardedData = () => {
           </div>
           <div>
             <label className="text-sm font-medium text-muted-foreground">Address</label>
-            <p className="text-lg">{companyDetails.company_address}</p>
+            <div className="text-lg space-y-1">
+              <p>{companyDetails.street_address1}</p>
+              {companyDetails.street_address2 && <p>{companyDetails.street_address2}</p>}
+              <p>{companyDetails.city}, {companyDetails.country} {companyDetails.zip}</p>
+            </div>
           </div>
         </CardContent>
       </Card>

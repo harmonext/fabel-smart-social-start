@@ -17,7 +17,11 @@ const CompanyDetailsForm = ({ onContinue }: CompanyDetailsFormProps) => {
   const [formData, setFormData] = useState<CompanyDetailsData>({
     company_name: companyDetails?.company_name || "",
     company_industry: companyDetails?.company_industry || "",
-    company_address: companyDetails?.company_address || ""
+    street_address1: companyDetails?.street_address1 || "",
+    street_address2: companyDetails?.street_address2 || "",
+    city: companyDetails?.city || "",
+    country: companyDetails?.country || "",
+    zip: companyDetails?.zip || ""
   });
 
   const industryOptions = [
@@ -47,7 +51,10 @@ const CompanyDetailsForm = ({ onContinue }: CompanyDetailsFormProps) => {
   const validateForm = (): boolean => {
     return formData.company_name.trim() !== '' && 
            formData.company_industry.trim() !== '' && 
-           formData.company_address.trim() !== '';
+           formData.street_address1.trim() !== '' &&
+           formData.city.trim() !== '' &&
+           formData.country.trim() !== '' &&
+           formData.zip.trim() !== '';
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -109,17 +116,45 @@ const CompanyDetailsForm = ({ onContinue }: CompanyDetailsFormProps) => {
 
             {/* Company Address */}
             <div className="space-y-3">
-              <Label htmlFor="company_address" className="text-base font-medium">
-                Company Address *
-              </Label>
-              <Textarea
-                id="company_address"
-                placeholder="Enter your company's full address"
-                value={formData.company_address}
-                onChange={(e) => handleInputChange('company_address', e.target.value)}
-                className="min-h-[100px]"
-                required
-              />
+              <Label className="text-base font-medium">Company Address *</Label>
+              
+              <div className="space-y-3">
+                <Input
+                  placeholder="Street Address 1"
+                  value={formData.street_address1}
+                  onChange={(e) => handleInputChange('street_address1', e.target.value)}
+                  required
+                />
+                
+                <Input
+                  placeholder="Street Address 2 (Optional)"
+                  value={formData.street_address2}
+                  onChange={(e) => handleInputChange('street_address2', e.target.value)}
+                />
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <Input
+                    placeholder="City"
+                    value={formData.city}
+                    onChange={(e) => handleInputChange('city', e.target.value)}
+                    required
+                  />
+                  
+                  <Input
+                    placeholder="Country"
+                    value={formData.country}
+                    onChange={(e) => handleInputChange('country', e.target.value)}
+                    required
+                  />
+                  
+                  <Input
+                    placeholder="ZIP/Postal Code"
+                    value={formData.zip}
+                    onChange={(e) => handleInputChange('zip', e.target.value)}
+                    required
+                  />
+                </div>
+              </div>
             </div>
 
             <div className="pt-6">

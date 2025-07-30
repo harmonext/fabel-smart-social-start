@@ -7,7 +7,11 @@ import { useToast } from '@/hooks/use-toast';
 export interface CompanyDetailsData {
   company_name: string;
   company_industry: string;
-  company_address: string;
+  street_address1: string;
+  street_address2?: string;
+  city: string;
+  country: string;
+  zip: string;
   onboarded?: boolean;
 }
 
@@ -42,7 +46,11 @@ export const useCompanyDetails = () => {
           setCompanyDetails({
             company_name: data.company_name,
             company_industry: data.company_industry,
-            company_address: data.company_address,
+            street_address1: data.street_address1 || '',
+            street_address2: data.street_address2,
+            city: data.city || '',
+            country: data.country || '',
+            zip: data.zip || '',
             onboarded: data.onboarded
           });
           setIsOnboarded(data.onboarded || false);

@@ -16,37 +16,49 @@ export type Database = {
     Tables: {
       company_details: {
         Row: {
-          company_address: string
+          city: string | null
           company_industry: string
           company_name: string
+          country: string | null
           created_at: string
           id: string
           onboarded: boolean
           onboarding_persona_prompt: string | null
+          street_address1: string | null
+          street_address2: string | null
           updated_at: string
           user_id: string
+          zip: string | null
         }
         Insert: {
-          company_address: string
+          city?: string | null
           company_industry: string
           company_name: string
+          country?: string | null
           created_at?: string
           id?: string
           onboarded?: boolean
           onboarding_persona_prompt?: string | null
+          street_address1?: string | null
+          street_address2?: string | null
           updated_at?: string
           user_id: string
+          zip?: string | null
         }
         Update: {
-          company_address?: string
+          city?: string | null
           company_industry?: string
           company_name?: string
+          country?: string | null
           created_at?: string
           id?: string
           onboarded?: boolean
           onboarding_persona_prompt?: string | null
+          street_address1?: string | null
+          street_address2?: string | null
           updated_at?: string
           user_id?: string
+          zip?: string | null
         }
         Relationships: []
       }
