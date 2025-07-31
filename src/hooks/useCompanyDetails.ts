@@ -5,8 +5,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 
 export interface CompanyDetailsData {
-  company_name: string;
-  company_industry: string;
+  name: string;
+  industry: string;
   street_address1?: string;
   street_address2?: string;
   city?: string;
@@ -46,8 +46,8 @@ export const useCompanyDetails = () => {
 
         if (data) {
           setCompanyDetails({
-            company_name: data.company_name,
-            company_industry: data.company_industry,
+            name: data.name,
+            industry: data.industry,
             street_address1: data.street_address1 || '',
             street_address2: data.street_address2,
             city: data.city || '',

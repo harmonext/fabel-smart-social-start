@@ -17,11 +17,11 @@ export type Database = {
       company_details: {
         Row: {
           city: string | null
-          company_industry: string
-          company_name: string
           country: string | null
           created_at: string
           id: string
+          industry: string
+          name: string
           onboarded: boolean
           onboarding_persona_prompt: string | null
           phone_number: string | null
@@ -34,11 +34,11 @@ export type Database = {
         }
         Insert: {
           city?: string | null
-          company_industry: string
-          company_name: string
           country?: string | null
           created_at?: string
           id?: string
+          industry: string
+          name: string
           onboarded?: boolean
           onboarding_persona_prompt?: string | null
           phone_number?: string | null
@@ -51,11 +51,11 @@ export type Database = {
         }
         Update: {
           city?: string | null
-          company_industry?: string
-          company_name?: string
           country?: string | null
           created_at?: string
           id?: string
+          industry?: string
+          name?: string
           onboarded?: boolean
           onboarding_persona_prompt?: string | null
           phone_number?: string | null

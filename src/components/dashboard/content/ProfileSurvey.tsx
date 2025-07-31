@@ -46,13 +46,13 @@ const ProfileSurvey = () => {
             <div className="space-y-2">
               <label className="text-sm font-medium text-foreground">Company Name</label>
               <div className="p-3 border rounded-lg bg-muted">
-                {companyDetails?.company_name || "Not provided"}
+                {companyDetails?.name || "Not provided"}
               </div>
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium text-foreground">Industry</label>
               <div className="p-3 border rounded-lg bg-muted">
-                {companyDetails?.company_industry || "Not provided"}
+                {companyDetails?.industry || "Not provided"}
               </div>
             </div>
             <div className="space-y-2">

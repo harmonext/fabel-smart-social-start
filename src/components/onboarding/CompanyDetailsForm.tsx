@@ -15,8 +15,8 @@ interface CompanyDetailsFormProps {
 const CompanyDetailsForm = ({ onContinue }: CompanyDetailsFormProps) => {
   const { saveCompanyDetails, isSaving, companyDetails } = useCompanyDetails();
   const [formData, setFormData] = useState<CompanyDetailsData>({
-    company_name: companyDetails?.company_name || "",
-    company_industry: companyDetails?.company_industry || "",
+    name: companyDetails?.name || "",
+    industry: companyDetails?.industry || "",
     street_address1: "",
     city: "",
     state: "",
@@ -50,8 +50,8 @@ const CompanyDetailsForm = ({ onContinue }: CompanyDetailsFormProps) => {
   };
 
   const validateForm = (): boolean => {
-    return formData.company_name.trim() !== '' && 
-           formData.company_industry.trim() !== '';
+    return formData.name.trim() !== '' && 
+           formData.industry.trim() !== '';
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -80,24 +80,24 @@ const CompanyDetailsForm = ({ onContinue }: CompanyDetailsFormProps) => {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Company Name */}
             <div className="space-y-3">
-              <Label htmlFor="company_name" className="text-base font-medium">
+              <Label htmlFor="name" className="text-base font-medium">
                 Company Name *
               </Label>
               <Input
-                id="company_name"
+                id="name"
                 placeholder="Enter your company name"
-                value={formData.company_name}
-                onChange={(e) => handleInputChange('company_name', e.target.value)}
+                value={formData.name}
+                onChange={(e) => handleInputChange('name', e.target.value)}
                 required
               />
             </div>
 
             {/* Company Industry */}
             <div className="space-y-3">
-              <Label htmlFor="company_industry" className="text-base font-medium">
+              <Label htmlFor="industry" className="text-base font-medium">
                 Industry *
               </Label>
-              <Select value={formData.company_industry} onValueChange={(value) => handleInputChange('company_industry', value)}>
+              <Select value={formData.industry} onValueChange={(value) => handleInputChange('industry', value)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select your industry" />
                 </SelectTrigger>

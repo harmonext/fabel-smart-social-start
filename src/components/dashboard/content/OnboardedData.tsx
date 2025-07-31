@@ -47,11 +47,11 @@ const OnboardedData = () => {
         <CardContent className="space-y-4">
           <div>
             <label className="text-sm font-medium text-muted-foreground">Company Name</label>
-            <p className="text-lg">{companyDetails.company_name}</p>
+            <p className="text-lg">{companyDetails.name}</p>
           </div>
           <div>
             <label className="text-sm font-medium text-muted-foreground">Industry</label>
-            <p className="text-lg">{companyDetails.company_industry}</p>
+            <p className="text-lg">{companyDetails.industry}</p>
           </div>
           <div>
             <label className="text-sm font-medium text-muted-foreground">Address</label>
