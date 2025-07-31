@@ -47,9 +47,44 @@ const MarketingOnboardingForm = () => {
         setCompletedTabs(["about-you", "about-company", "about-goals", "about-customer"]);
       } else {
         // Pre-populate from user and company data
+        const formatUserName = () => {
+          // Try full_name first (if it exists and has spaces)
+          if (user?.user_metadata?.full_name && user.user_metadata.full_name.includes(' ')) {
+            return user.user_metadata.full_name;
+          }
+          
+          // Try combining first_name and last_name
+          if (user?.user_metadata?.first_name || user?.user_metadata?.last_name) {
+            const firstName = user.user_metadata.first_name || '';
+            const lastName = user.user_metadata.last_name || '';
+            return `${firstName} ${lastName}`.trim();
+          }
+          
+          // Try name field (if it exists, try to add space intelligently)
+          if (user?.user_metadata?.name) {
+            const name = user.user_metadata.name;
+            // If name has no spaces and is longer than 4 characters, try to split it
+            if (!name.includes(' ') && name.length > 4) {
+              // Simple heuristic: assume first name is first part, rest is last name
+              // Find likely split point (after lowercase letter before uppercase, or at middle)
+              const match = name.match(/^([a-z]+)([A-Z][a-z]*)/);
+              if (match) {
+                return `${match[1]} ${match[2]}`;
+              }
+              // Fallback: split roughly in middle
+              const mid = Math.ceil(name.length / 2);
+              return `${name.slice(0, mid)} ${name.slice(mid)}`;
+            }
+            return name;
+          }
+          
+          // Fallback to email username
+          return user?.email?.split('@')[0] || '';
+        };
+        
         setFormData(prev => ({
           ...prev,
-          name: user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email?.split('@')[0] || "",
+          name: formatUserName(),
           industry: companyDetails?.industry || ""
         }));
       }
