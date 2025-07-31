@@ -9,7 +9,7 @@ export interface MarketingOnboardingData {
   title: string;
   
   // Tab 2: About Your Company
-  category: string;
+  industry: string;
   product_types: string[];
   store_type: string[];
   
@@ -105,7 +105,7 @@ export const useMarketingOnboarding = () => {
         return {
           name: data.name,
           title: data.title,
-          category: data.category,
+          industry: data.industry,
           product_types: parseArrayField(data.product_types),
           store_type: parseArrayField(data.store_type),
           goals: parseArrayField(data.goals),
@@ -128,7 +128,7 @@ export const useMarketingOnboarding = () => {
     // Replace template variables with actual values using marketing_onboarding prefix
     prompt = prompt.replace(/\{\{marketing_onboarding\.name\}\}/g, data.name);
     prompt = prompt.replace(/\{\{marketing_onboarding\.title\}\}/g, data.title);
-    prompt = prompt.replace(/\{\{marketing_onboarding\.category\}\}/g, data.category);
+    prompt = prompt.replace(/\{\{marketing_onboarding\.industry\}\}/g, data.industry);
     prompt = prompt.replace(/\{\{marketing_onboarding\.product_types\}\}/g, data.product_types.join(', '));
     prompt = prompt.replace(/\{\{marketing_onboarding\.store_type\}\}/g, data.store_type.join(', '));
     prompt = prompt.replace(/\{\{marketing_onboarding\.goals\}\}/g, data.goals.join(', '));
@@ -139,7 +139,7 @@ export const useMarketingOnboarding = () => {
     // Also support legacy format for backward compatibility
     prompt = prompt.replace(/\{\{name\}\}/g, data.name);
     prompt = prompt.replace(/\{\{title\}\}/g, data.title);
-    prompt = prompt.replace(/\{\{category\}\}/g, data.category);
+    prompt = prompt.replace(/\{\{industry\}\}/g, data.industry);
     prompt = prompt.replace(/\{\{product_types\}\}/g, data.product_types.join(', '));
     prompt = prompt.replace(/\{\{store_type\}\}/g, data.store_type.join(', '));
     prompt = prompt.replace(/\{\{goals\}\}/g, data.goals.join(', '));

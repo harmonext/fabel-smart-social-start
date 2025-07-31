@@ -87,8 +87,8 @@ const OnboardedData = () => {
           </div>
 
           <div>
-            <label className="text-sm font-medium text-muted-foreground">Business Category</label>
-            <p className="text-lg">{marketingData.category}</p>
+            <label className="text-sm font-medium text-muted-foreground">Business Industry</label>
+            <p className="text-lg">{marketingData.industry}</p>
           </div>
 
           <div>

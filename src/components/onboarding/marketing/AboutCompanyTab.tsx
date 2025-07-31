@@ -54,10 +54,10 @@ const AboutCompanyTab = ({
 
       <div className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="category">Category *</Label>
-          <Select value={formData.category} onValueChange={value => onInputChange('category', value)}>
+          <Label htmlFor="industry">Industry *</Label>
+          <Select value={formData.industry} onValueChange={value => onInputChange('industry', value)}>
             <SelectTrigger>
-              <SelectValue placeholder="Select your category" />
+              <SelectValue placeholder="Select your industry" />
             </SelectTrigger>
             <SelectContent>
               {categoryOptions.map(option => (

@@ -70,13 +70,13 @@ export type Database = {
       }
       marketing_onboarding: {
         Row: {
-          category: string
           created_at: string
           customer_age_ranges: string[]
           customer_gender: string[]
           customer_income_ranges: string[]
           goals: string[]
           id: string
+          industry: string
           name: string
           product_types: string[]
           store_type: string[]
@@ -85,13 +85,13 @@ export type Database = {
           user_id: string
         }
         Insert: {
-          category: string
           created_at?: string
           customer_age_ranges?: string[]
           customer_gender?: string[]
           customer_income_ranges?: string[]
           goals?: string[]
           id?: string
+          industry: string
           name: string
           product_types?: string[]
           store_type: string[]
@@ -100,13 +100,13 @@ export type Database = {
           user_id: string
         }
         Update: {
-          category?: string
           created_at?: string
           customer_age_ranges?: string[]
           customer_gender?: string[]
           customer_income_ranges?: string[]
           goals?: string[]
           id?: string
+          industry?: string
           name?: string
           product_types?: string[]
           store_type?: string[]

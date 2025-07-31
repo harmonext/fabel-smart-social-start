@@ -25,7 +25,7 @@ const MarketingOnboardingForm = () => {
   const [formData, setFormData] = useState<MarketingOnboardingData>({
     name: user?.user_metadata?.full_name || user?.user_metadata?.name || "",
     title: "",
-    category: "",
+    industry: "",
     product_types: [],
     store_type: [],
     goals: [],
@@ -78,7 +78,7 @@ const MarketingOnboardingForm = () => {
       case "about-you":
         return formData.name.trim() !== "" && formData.title !== "";
       case "about-company":
-        return formData.category !== "" && 
+        return formData.industry !== "" && 
                formData.product_types.length > 0 &&
                formData.store_type.length > 0;
       case "about-goals":
