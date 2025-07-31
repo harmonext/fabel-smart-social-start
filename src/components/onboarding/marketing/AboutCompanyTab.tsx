@@ -15,7 +15,22 @@ const AboutCompanyTab = ({
   formData,
   onInputChange
 }: AboutCompanyTabProps) => {
-  const categoryOptions = ["Accessories", "Activities", "Advertising/Marketing", "Apparel", "Baby/Kids", "Beauty", "Food/Beverage", "Health & Wellness", "Home", "Legal", "Medical", "Other", "Pets", "Tech"];
+  const industryOptions = [
+    "Technology",
+    "Healthcare", 
+    "Finance",
+    "Education",
+    "Retail",
+    "Manufacturing",
+    "Real Estate",
+    "Consulting",
+    "Marketing & Advertising",
+    "Food & Beverage",
+    "Transportation",
+    "Entertainment",
+    "Non-profit",
+    "Other"
+  ];
   const stageOptions = ["Idea", "Prototype", "Launched", "Scaling", "Mature"];
   const productTypeOptions = ["Physical Goods", "Services", "Digital Goods"];
   const storeTypeOptions = ["Brick and Mortar", "E-Commerce Site", "Other", "Pop-Up Shops", "Wholesale"];
@@ -60,7 +75,7 @@ const AboutCompanyTab = ({
               <SelectValue placeholder="Select your industry" />
             </SelectTrigger>
             <SelectContent>
-              {categoryOptions.map(option => (
+              {industryOptions.map(option => (
                 <SelectItem key={option} value={option}>
                   {option}
                 </SelectItem>
