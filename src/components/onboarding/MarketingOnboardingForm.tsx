@@ -157,6 +157,7 @@ const MarketingOnboardingForm = () => {
       return;
     }
 
+    console.log('Submitting formData:', formData);
     const result = await saveOnboarding(formData);
     if (result.success && result.shouldGeneratePersonas) {
       setIsGeneratingPersonas(true);
