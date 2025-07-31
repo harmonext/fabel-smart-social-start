@@ -10,42 +10,42 @@ const SocialConnections = () => {
       connected: true,
       account: "@acmemarketing",
       followers: "2.1K",
-      icon: "📘"
+      icon: "fab fa-facebook text-blue-600"
     },
     {
       name: "Instagram",
       connected: true,
       account: "@acme_marketing",
       followers: "1.8K",
-      icon: "📷"
+      icon: "fab fa-instagram text-pink-500"
     },
     {
       name: "Twitter/X",
       connected: false,
       account: "",
       followers: "",
-      icon: "🐦"
+      icon: "fab fa-x-twitter text-gray-900"
     },
     {
       name: "LinkedIn",
       connected: true,
       account: "Acme Marketing Solutions",
       followers: "856",
-      icon: "💼"
+      icon: "fab fa-linkedin text-blue-700"
     },
     {
       name: "Pinterest",
       connected: false,
       account: "",
       followers: "",
-      icon: "📌"
+      icon: "fab fa-pinterest text-red-600"
     },
     {
       name: "TikTok",
       connected: false,
       account: "",
       followers: "",
-      icon: "🎵"
+      icon: "fab fa-tiktok text-gray-900"
     }
   ];
 
@@ -62,7 +62,7 @@ const SocialConnections = () => {
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center justify-between text-lg">
                 <div className="flex items-center gap-3">
-                  <span className="text-2xl">{platform.icon}</span>
+                  <i className={`${platform.icon} text-xl`}></i>
                   <span>{platform.name}</span>
                 </div>
                 {platform.connected ? (
