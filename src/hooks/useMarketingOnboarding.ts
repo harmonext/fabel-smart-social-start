@@ -164,12 +164,15 @@ export const useMarketingOnboarding = () => {
 
     try {
       // Save marketing onboarding data
+      console.log('Saving marketing onboarding data:', data);
+      const dataToSave = {
+        user_id: user.id,
+        ...data
+      };
+      console.log('Data being sent to Supabase:', dataToSave);
       const { error: onboardingError } = await supabase
         .from('marketing_onboarding')
-        .upsert({
-          user_id: user.id,
-          ...data
-        });
+        .upsert(dataToSave);
 
       if (onboardingError) {
         console.error('Error saving marketing onboarding:', onboardingError);
