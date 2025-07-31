@@ -794,11 +794,8 @@ const CalendarView = ({ posts, allContent, currentDate, setCurrentDate, onResche
 
 // Legend Component
 const Legend = ({ posts }: { posts: ScheduledContent[] }) => {
-  const { getConnectedPlatforms } = useSocialConnections();
+  const { connections } = useSocialConnections();
   const { personas } = usePersonas();
-  
-  // Get all connected platforms for the current user
-  const connectedPlatforms = getConnectedPlatforms();
   
   // Get unique personas that are actually used in posts
   const usedPersonas = [...new Set(posts.map(post => post.persona_name).filter(Boolean))];
@@ -808,19 +805,25 @@ const Legend = ({ posts }: { posts: ScheduledContent[] }) => {
       <div className="text-sm font-medium text-foreground mb-3">Legend</div>
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <div className="text-xs font-medium text-muted-foreground mb-2">Connected Platforms</div>
+          <div className="text-xs font-medium text-muted-foreground mb-2">Social Platforms</div>
           <div className="flex flex-wrap gap-2">
-            {connectedPlatforms.map(platform => (
-              <div key={platform} className="flex items-center gap-1.5 text-xs">
-                {getSocialIcon(platform, 'sm')}
-                <span className="capitalize">{platform}</span>
+            {connections.map(connection => (
+              <div key={connection.platform} className="flex items-center gap-1.5 text-xs relative">
+                <div className={`relative ${connection.connected ? '' : 'opacity-50'}`}>
+                  {getSocialIcon(connection.platform, 'md')}
+                  {!connection.connected && (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="w-5 h-5 rounded-full bg-muted-foreground/80 flex items-center justify-center">
+                        <span className="text-[8px] text-background font-bold">✕</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <span className={`capitalize ${connection.connected ? 'text-foreground' : 'text-muted-foreground'}`}>
+                  {connection.name}
+                </span>
               </div>
             ))}
-            {connectedPlatforms.length === 0 && (
-              <div className="text-xs text-muted-foreground italic">
-                No connected platforms
-              </div>
-            )}
           </div>
         </div>
         <div>
@@ -828,7 +831,7 @@ const Legend = ({ posts }: { posts: ScheduledContent[] }) => {
           <div className="flex flex-wrap gap-2">
             {usedPersonas.map(persona => (
               <div key={persona} className="flex items-center gap-1.5 text-xs">
-                <div className="w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold bg-white/80 border">
+                <div className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold bg-white/80 border">
                   {getPersonaAvatar(persona)}
                 </div>
                 <span>{persona}</span>
