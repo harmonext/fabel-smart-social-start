@@ -7,13 +7,13 @@ import { useToast } from '@/hooks/use-toast';
 export interface CompanyDetailsData {
   company_name: string;
   company_industry: string;
-  street_address1: string;
+  street_address1?: string;
   street_address2?: string;
-  city: string;
-  state: string;
-  country: string;
-  zip: string;
-  phone_number: string;
+  city?: string;
+  state?: string;
+  country?: string;
+  zip?: string;
+  phone_number?: string;
   onboarded?: boolean;
 }
 
