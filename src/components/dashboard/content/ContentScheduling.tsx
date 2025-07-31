@@ -806,18 +806,13 @@ const Legend = ({ posts }: { posts: ScheduledContent[] }) => {
       <div className="grid grid-cols-2 gap-4">
         <div>
           <div className="text-xs font-medium text-muted-foreground mb-2">Social Platforms</div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-3">
             {connections.map(connection => (
-              <div key={connection.platform} className="flex items-center gap-1.5 text-xs relative">
-                <div className={`relative ${connection.connected ? '' : 'opacity-50'}`}>
-                  {getSocialIcon(connection.platform, 'md')}
-                  {!connection.connected && (
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-5 h-5 rounded-full bg-muted-foreground/80 flex items-center justify-center">
-                        <span className="text-[8px] text-background font-bold">✕</span>
-                      </div>
-                    </div>
-                  )}
+              <div key={connection.platform} className="flex items-center gap-2 text-xs">
+                <div className={`${connection.connected ? '' : 'grayscale opacity-60'}`}>
+                  <div className="w-6 h-6 flex items-center justify-center">
+                    {getSocialIcon(connection.platform, 'md')}
+                  </div>
                 </div>
                 <span className={`capitalize ${connection.connected ? 'text-foreground' : 'text-muted-foreground'}`}>
                   {connection.name}
@@ -828,10 +823,10 @@ const Legend = ({ posts }: { posts: ScheduledContent[] }) => {
         </div>
         <div>
           <div className="text-xs font-medium text-muted-foreground mb-2">Active Personas</div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-3">
             {usedPersonas.map(persona => (
-              <div key={persona} className="flex items-center gap-1.5 text-xs">
-                <div className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold bg-white/80 border">
+              <div key={persona} className="flex items-center gap-2 text-xs">
+                <div className="w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold bg-white/80 border">
                   {getPersonaAvatar(persona)}
                 </div>
                 <span>{persona}</span>
