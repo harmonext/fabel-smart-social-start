@@ -25,9 +25,9 @@ const MarketingOnboardingForm = () => {
   const [completedTabs, setCompletedTabs] = useState<string[]>([]);
   
   const [formData, setFormData] = useState<MarketingOnboardingData>({
-    name: user?.user_metadata?.full_name || user?.user_metadata?.name || "",
+    name: "",
     title: "",
-    industry: companyDetails?.industry || "",
+    industry: "",
     product_types: [],
     store_type: [],
     goals: [],
@@ -45,18 +45,20 @@ const MarketingOnboardingForm = () => {
         setFormData(existingData);
         // Mark all tabs as completed if data exists
         setCompletedTabs(["about-you", "about-company", "about-goals", "about-customer"]);
-      } else if (user || companyDetails) {
-        // If no existing data but user/company details are available, pre-populate from available data
+      } else {
+        // Pre-populate from user and company data
         setFormData(prev => ({
           ...prev,
-          name: user?.user_metadata?.full_name || user?.user_metadata?.name || "",
+          name: user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email?.split('@')[0] || "",
           industry: companyDetails?.industry || ""
         }));
       }
       setIsLoadingData(false);
     };
 
-    loadExistingData();
+    if (user) {
+      loadExistingData();
+    }
   }, [fetchOnboardingData, user, companyDetails]);
 
   const handleInputChange = (field: keyof MarketingOnboardingData, value: string | string[]) => {
