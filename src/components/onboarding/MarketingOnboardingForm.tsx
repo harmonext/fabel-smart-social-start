@@ -7,6 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import { MarketingOnboardingData, useMarketingOnboarding } from "@/hooks/useMarketingOnboarding";
 import { usePersonas } from "@/hooks/usePersonas";
 import { useOnboarding } from "@/hooks/useOnboarding";
+import { useCompanyDetails } from "@/hooks/useCompanyDetails";
 import { useAuth } from "@/contexts/AuthContext";
 import AboutYouTab from "./marketing/AboutYouTab";
 import AboutCompanyTab from "./marketing/AboutCompanyTab";
@@ -19,13 +20,14 @@ const MarketingOnboardingForm = () => {
   const { saveOnboarding, isSaving, fetchOnboardingData } = useMarketingOnboarding();
   const { generatePersonas } = usePersonas();
   const { isCompleted: onboardingCompleted } = useOnboarding();
+  const { companyDetails } = useCompanyDetails();
   const [activeTab, setActiveTab] = useState("about-you");
   const [completedTabs, setCompletedTabs] = useState<string[]>([]);
   
   const [formData, setFormData] = useState<MarketingOnboardingData>({
     name: user?.user_metadata?.full_name || user?.user_metadata?.name || "",
     title: "",
-    industry: "",
+    industry: companyDetails?.industry || "",
     product_types: [],
     store_type: [],
     goals: [],
@@ -43,18 +45,19 @@ const MarketingOnboardingForm = () => {
         setFormData(existingData);
         // Mark all tabs as completed if data exists
         setCompletedTabs(["about-you", "about-company", "about-goals", "about-customer"]);
-      } else if (user) {
-        // If no existing data but user is available, pre-populate name from user metadata
+      } else if (user || companyDetails) {
+        // If no existing data but user/company details are available, pre-populate from available data
         setFormData(prev => ({
           ...prev,
-          name: user.user_metadata?.full_name || user.user_metadata?.name || ""
+          name: user?.user_metadata?.full_name || user?.user_metadata?.name || "",
+          industry: companyDetails?.industry || ""
         }));
       }
       setIsLoadingData(false);
     };
 
     loadExistingData();
-  }, [fetchOnboardingData, user]);
+  }, [fetchOnboardingData, user, companyDetails]);
 
   const handleInputChange = (field: keyof MarketingOnboardingData, value: string | string[]) => {
     setFormData(prev => ({
