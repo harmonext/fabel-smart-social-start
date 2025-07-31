@@ -148,9 +148,7 @@ const getSocialIcon = (platform: string, size: 'xs' | 'sm' | 'md' = 'sm') => {
     case 'pinterest': return <div className={`${sizeClasses} bg-red-600 rounded-full flex items-center justify-center`}>
       <span className="text-white text-xs font-bold">P</span>
     </div>;
-    case 'tiktok': return <div className={`${sizeClasses} bg-black rounded-full flex items-center justify-center`}>
-      <span className="text-white text-xs font-bold">T</span>
-    </div>;
+    case 'tiktok': return <i className={`fab fa-tiktok ${sizeClasses} text-black`}></i>;
     default: return <div className={`${sizeClasses} bg-gray-400 rounded`}></div>;
   }
 };
