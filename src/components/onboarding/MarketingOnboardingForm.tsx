@@ -85,7 +85,7 @@ const MarketingOnboardingForm = () => {
         setFormData(prev => ({
           ...prev,
           name: formatUserName(),
-          industry: companyDetails?.industry || ""
+          industry: prev.industry || companyDetails?.industry || ""
         }));
       }
       setIsLoadingData(false);
