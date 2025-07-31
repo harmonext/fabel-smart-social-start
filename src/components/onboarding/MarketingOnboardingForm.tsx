@@ -7,6 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import { MarketingOnboardingData, useMarketingOnboarding } from "@/hooks/useMarketingOnboarding";
 import { usePersonas } from "@/hooks/usePersonas";
 import { useOnboarding } from "@/hooks/useOnboarding";
+import { useAuth } from "@/contexts/AuthContext";
 import AboutYouTab from "./marketing/AboutYouTab";
 import AboutCompanyTab from "./marketing/AboutCompanyTab";
 import AboutGoalsTab from "./marketing/AboutGoalsTab";
@@ -14,6 +15,7 @@ import AboutCustomerTab from "./marketing/AboutCustomerTab";
 
 const MarketingOnboardingForm = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { saveOnboarding, isSaving, fetchOnboardingData } = useMarketingOnboarding();
   const { generatePersonas } = usePersonas();
   const { isCompleted: onboardingCompleted } = useOnboarding();
@@ -21,7 +23,7 @@ const MarketingOnboardingForm = () => {
   const [completedTabs, setCompletedTabs] = useState<string[]>([]);
   
   const [formData, setFormData] = useState<MarketingOnboardingData>({
-    name: "",
+    name: user?.user_metadata?.full_name || user?.user_metadata?.name || "",
     title: "",
     category: "",
     product_types: [],
@@ -41,12 +43,18 @@ const MarketingOnboardingForm = () => {
         setFormData(existingData);
         // Mark all tabs as completed if data exists
         setCompletedTabs(["about-you", "about-company", "about-goals", "about-customer"]);
+      } else if (user) {
+        // If no existing data but user is available, pre-populate name from user metadata
+        setFormData(prev => ({
+          ...prev,
+          name: user.user_metadata?.full_name || user.user_metadata?.name || ""
+        }));
       }
       setIsLoadingData(false);
     };
 
     loadExistingData();
-  }, [fetchOnboardingData]);
+  }, [fetchOnboardingData, user]);
 
   const handleInputChange = (field: keyof MarketingOnboardingData, value: string | string[]) => {
     setFormData(prev => ({
