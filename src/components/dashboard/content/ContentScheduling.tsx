@@ -806,17 +806,17 @@ const Legend = ({ posts }: { posts: ScheduledContent[] }) => {
       <div className="grid grid-cols-2 gap-6">
         <div>
           <div className="text-xs font-medium text-muted-foreground mb-3">Social Platforms</div>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-3 gap-2">
             {connections.map(connection => (
-              <div key={connection.platform} className="flex flex-col items-center gap-2 text-xs">
+              <div key={connection.platform} className="flex items-center gap-2 text-xs">
                 <div className={`${connection.connected ? '' : 'grayscale opacity-60'}`}>
-                  <div className="w-12 h-12 flex items-center justify-center">
+                  <div className="w-8 h-8 flex items-center justify-center">
                     <div className="scale-[2]">
                       {getSocialIcon(connection.platform, 'md')}
                     </div>
                   </div>
                 </div>
-                <span className={`capitalize text-center ${connection.connected ? 'text-foreground' : 'text-muted-foreground'}`}>
+                <span className={`capitalize ${connection.connected ? 'text-foreground' : 'text-muted-foreground'}`}>
                   {connection.name}
                 </span>
               </div>
