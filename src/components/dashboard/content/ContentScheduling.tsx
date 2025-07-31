@@ -806,7 +806,7 @@ const Legend = ({ posts }: { posts: ScheduledContent[] }) => {
       <div className="grid grid-cols-2 gap-6">
         <div>
           <div className="text-xs font-medium text-muted-foreground mb-3">Social Platforms</div>
-          <div className="grid grid-cols-3 gap-1">
+          <div className="grid grid-cols-3 gap-0.5">
             {connections.map(connection => (
               <div key={connection.platform} className="flex items-center gap-2 text-xs">
                 <div className={`${connection.connected ? '' : 'grayscale opacity-60'}`}>
