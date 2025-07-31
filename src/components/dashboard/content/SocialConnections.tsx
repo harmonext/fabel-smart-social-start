@@ -24,7 +24,7 @@ const SocialConnections = () => {
       connected: false,
       account: "",
       followers: "",
-      icon: "fab fa-x-twitter text-gray-900"
+      icon: "fab fa-twitter text-sky-500"
     },
     {
       name: "LinkedIn",
