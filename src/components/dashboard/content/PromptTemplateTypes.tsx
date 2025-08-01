@@ -15,7 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useToast } from "@/hooks/use-toast";
-import { Pencil, Trash2, Plus, CalendarIcon, X, ArrowUpDown } from "lucide-react";
+import { Pencil, Trash2, Plus, CalendarIcon, X, ArrowUpDown, Search } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/utils";
 
@@ -48,6 +48,7 @@ export default function PromptTemplateTypes() {
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
   const [sortField, setSortField] = useState<'name' | 'created_at'>('created_at');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
+  const [searchQuery, setSearchQuery] = useState("");
   const { toast } = useToast();
 
   const form = useForm<FormData>({
@@ -227,23 +228,35 @@ export default function PromptTemplateTypes() {
     }
   };
 
-  // Filter and sort types based on date range and sorting preferences
+  // Filter and sort types based on date range, search query, and sorting preferences
   const filteredAndSortedTypes = types
     .filter((type) => {
-      if (!dateRange?.from) return true;
+      // Date range filter
+      if (dateRange?.from) {
+        const typeDate = new Date(type.created_at);
+        const fromDate = dateRange.from;
+        const toDate = dateRange.to || dateRange.from;
+        
+        // Set time to start/end of day for proper comparison
+        const start = new Date(fromDate);
+        start.setHours(0, 0, 0, 0);
+        
+        const end = new Date(toDate);
+        end.setHours(23, 59, 59, 999);
+        
+        if (!(typeDate >= start && typeDate <= end)) {
+          return false;
+        }
+      }
       
-      const typeDate = new Date(type.created_at);
-      const fromDate = dateRange.from;
-      const toDate = dateRange.to || dateRange.from;
+      // Search filter - search in description field
+      if (searchQuery.trim()) {
+        const query = searchQuery.toLowerCase();
+        const description = type.description?.toLowerCase() || "";
+        return description.includes(query);
+      }
       
-      // Set time to start/end of day for proper comparison
-      const start = new Date(fromDate);
-      start.setHours(0, 0, 0, 0);
-      
-      const end = new Date(toDate);
-      end.setHours(23, 59, 59, 999);
-      
-      return typeDate >= start && typeDate <= end;
+      return true;
     })
     .sort((a, b) => {
       let comparison = 0;
@@ -347,7 +360,7 @@ export default function PromptTemplateTypes() {
         </Dialog>
       </div>
 
-      {/* Date Range Filter */}
+      {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
         <div className="flex items-center gap-2">
           <Popover>
@@ -397,7 +410,30 @@ export default function PromptTemplateTypes() {
             </Button>
           )}
         </div>
-        {dateRange?.from && (
+        
+        {/* Search Input */}
+        <div className="relative w-full sm:w-[300px]">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            type="text"
+            placeholder="Search descriptions..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10"
+          />
+          {searchQuery && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setSearchQuery("")}
+              className="absolute right-1 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0"
+            >
+              <X className="h-3 w-3" />
+            </Button>
+          )}
+        </div>
+        
+        {(dateRange?.from || searchQuery) && (
           <Badge variant="secondary" className="text-xs">
             {filteredAndSortedTypes.length} of {types.length} results
           </Badge>
