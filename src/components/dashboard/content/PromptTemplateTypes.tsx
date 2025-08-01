@@ -443,7 +443,7 @@ export default function PromptTemplateTypes() {
                   <TableHead>
                     <Button 
                       variant="ghost" 
-                      className="h-auto p-0 font-semibold justify-start"
+                      className="h-auto p-0 font-semibold hover:bg-muted flex items-center"
                       onClick={() => handleSort('name')}
                     >
                       Name
@@ -454,7 +454,7 @@ export default function PromptTemplateTypes() {
                   <TableHead>
                     <Button 
                       variant="ghost" 
-                      className="h-auto p-0 font-semibold justify-start"
+                      className="h-auto p-0 font-semibold hover:bg-muted flex items-center"
                       onClick={() => handleSort('created_at')}
                     >
                       Created
