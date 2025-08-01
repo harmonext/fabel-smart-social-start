@@ -15,7 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useToast } from "@/hooks/use-toast";
-import { Pencil, Trash2, Plus, CalendarIcon, X } from "lucide-react";
+import { Pencil, Trash2, Plus, CalendarIcon, X, ArrowUpDown } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/utils";
 
@@ -46,6 +46,8 @@ export default function PromptTemplateTypes() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingType, setEditingType] = useState<PromptTemplateType | null>(null);
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
+  const [sortField, setSortField] = useState<'name' | 'created_at'>('created_at');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const { toast } = useToast();
 
   const form = useForm<FormData>({
@@ -216,23 +218,44 @@ export default function PromptTemplateTypes() {
     setDateRange(undefined);
   };
 
-  // Filter types based on date range
-  const filteredTypes = types.filter((type) => {
-    if (!dateRange?.from) return true;
-    
-    const typeDate = new Date(type.created_at);
-    const fromDate = dateRange.from;
-    const toDate = dateRange.to || dateRange.from;
-    
-    // Set time to start/end of day for proper comparison
-    const start = new Date(fromDate);
-    start.setHours(0, 0, 0, 0);
-    
-    const end = new Date(toDate);
-    end.setHours(23, 59, 59, 999);
-    
-    return typeDate >= start && typeDate <= end;
-  });
+  const handleSort = (field: 'name' | 'created_at') => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('asc');
+    }
+  };
+
+  // Filter and sort types based on date range and sorting preferences
+  const filteredAndSortedTypes = types
+    .filter((type) => {
+      if (!dateRange?.from) return true;
+      
+      const typeDate = new Date(type.created_at);
+      const fromDate = dateRange.from;
+      const toDate = dateRange.to || dateRange.from;
+      
+      // Set time to start/end of day for proper comparison
+      const start = new Date(fromDate);
+      start.setHours(0, 0, 0, 0);
+      
+      const end = new Date(toDate);
+      end.setHours(23, 59, 59, 999);
+      
+      return typeDate >= start && typeDate <= end;
+    })
+    .sort((a, b) => {
+      let comparison = 0;
+      
+      if (sortField === 'name') {
+        comparison = a.name.localeCompare(b.name);
+      } else if (sortField === 'created_at') {
+        comparison = new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+      }
+      
+      return sortDirection === 'asc' ? comparison : -comparison;
+    });
 
   if (loading) {
     return (
@@ -376,7 +399,7 @@ export default function PromptTemplateTypes() {
         </div>
         {dateRange?.from && (
           <Badge variant="secondary" className="text-xs">
-            {filteredTypes.length} of {types.length} results
+            {filteredAndSortedTypes.length} of {types.length} results
           </Badge>
         )}
       </div>
@@ -389,7 +412,7 @@ export default function PromptTemplateTypes() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {filteredTypes.length === 0 ? (
+          {filteredAndSortedTypes.length === 0 ? (
             types.length === 0 ? (
             <div className="text-center py-8">
               <p className="text-muted-foreground">No template types found.</p>
@@ -417,14 +440,32 @@ export default function PromptTemplateTypes() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Name</TableHead>
+                  <TableHead>
+                    <Button 
+                      variant="ghost" 
+                      className="h-auto p-0 font-semibold justify-start"
+                      onClick={() => handleSort('name')}
+                    >
+                      Name
+                      <ArrowUpDown className="ml-2 h-4 w-4" />
+                    </Button>
+                  </TableHead>
                   <TableHead>Description</TableHead>
-                  <TableHead>Created</TableHead>
+                  <TableHead>
+                    <Button 
+                      variant="ghost" 
+                      className="h-auto p-0 font-semibold justify-start"
+                      onClick={() => handleSort('created_at')}
+                    >
+                      Created
+                      <ArrowUpDown className="ml-2 h-4 w-4" />
+                    </Button>
+                  </TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredTypes.map((type) => (
+                {filteredAndSortedTypes.map((type) => (
                   <TableRow key={type.id}>
                     <TableCell className="font-medium">{type.name}</TableCell>
                     <TableCell>
