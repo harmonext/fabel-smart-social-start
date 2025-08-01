@@ -14,8 +14,9 @@ import { Badge } from "@/components/ui/badge";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Edit, Trash2, Search, ArrowUpDown, Calendar as CalendarIcon, X } from "lucide-react";
+import { Plus, Edit, Trash2, Search, ArrowUpDown, Calendar as CalendarIcon, X, Power } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { Switch } from "@/components/ui/switch";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -26,6 +27,7 @@ interface SystemPromptTemplate {
   name: string;
   value: string;
   prompt_template_type_id: string | null;
+  is_active: boolean;
   created_at: string;
   updated_at: string;
   prompt_template_type?: {
@@ -44,6 +46,7 @@ const formSchema = z.object({
   name: z.string().min(1, "Name is required").max(100, "Name must be less than 100 characters"),
   value: z.string().min(1, "Template value is required"),
   prompt_template_type_id: z.string().optional(),
+  is_active: z.boolean().default(true),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -61,12 +64,38 @@ const SystemPromptTemplates = () => {
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
   const { toast } = useToast();
 
+  const toggleActiveStatus = async (template: SystemPromptTemplate) => {
+    try {
+      const { error } = await supabase
+        .from('system_prompt_template')
+        .update({ is_active: !template.is_active })
+        .eq('id', template.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: `Template ${!template.is_active ? 'activated' : 'deactivated'} successfully`,
+      });
+
+      await fetchTemplates();
+    } catch (error) {
+      console.error('Error toggling template status:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update template status",
+        variant: "destructive",
+      });
+    }
+  };
+
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
       value: "",
       prompt_template_type_id: "no-type",
+      is_active: true,
     },
   });
 
@@ -129,6 +158,7 @@ const SystemPromptTemplates = () => {
         name: data.name,
         value: data.value,
         prompt_template_type_id: data.prompt_template_type_id === "no-type" ? null : data.prompt_template_type_id || null,
+        is_active: data.is_active,
       };
 
       if (editingTemplate) {
@@ -176,6 +206,7 @@ const SystemPromptTemplates = () => {
       name: template.name,
       value: template.value,
       prompt_template_type_id: template.prompt_template_type_id || "no-type",
+      is_active: template.is_active,
     });
     setIsDialogOpen(true);
   };
@@ -350,6 +381,27 @@ const SystemPromptTemplates = () => {
 
                       <FormField
                         control={form.control}
+                        name="is_active"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                            <div className="space-y-0.5">
+                              <FormLabel className="text-base">Active Status</FormLabel>
+                              <p className="text-sm text-muted-foreground">
+                                Enable this template for use in the system
+                              </p>
+                            </div>
+                            <FormControl>
+                              <Switch
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                              />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
                         name="value"
                         render={({ field }) => (
                           <FormItem>
@@ -453,6 +505,7 @@ const SystemPromptTemplates = () => {
                     </Button>
                   </TableHead>
                   <TableHead>Type</TableHead>
+                  <TableHead>Status</TableHead>
                   <TableHead>Template Preview</TableHead>
                   <TableHead>
                     <Button 
@@ -470,7 +523,7 @@ const SystemPromptTemplates = () => {
               <TableBody>
                 {filteredAndSortedTemplates.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                    <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
                       {searchTerm || dateRange?.from || dateRange?.to ? "No templates match your filters." : "No templates found."}
                     </TableCell>
                   </TableRow>
@@ -488,6 +541,17 @@ const SystemPromptTemplates = () => {
                         ) : (
                           <span className="text-muted-foreground text-sm">No type</span>
                         )}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center space-x-2">
+                          <Switch
+                            checked={template.is_active}
+                            onCheckedChange={() => toggleActiveStatus(template)}
+                          />
+                          <Badge variant={template.is_active ? "default" : "secondary"}>
+                            {template.is_active ? "Active" : "Inactive"}
+                          </Badge>
+                        </div>
                       </TableCell>
                       <TableCell className="max-w-xs">
                         <p className="truncate text-sm text-muted-foreground">

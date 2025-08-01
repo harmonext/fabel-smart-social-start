@@ -255,6 +255,7 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          is_active: boolean
           name: string
           prompt_template_type_id: string | null
           updated_at: string
@@ -263,6 +264,7 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
+          is_active?: boolean
           name: string
           prompt_template_type_id?: string | null
           updated_at?: string
@@ -271,6 +273,7 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
+          is_active?: boolean
           name?: string
           prompt_template_type_id?: string | null
           updated_at?: string
