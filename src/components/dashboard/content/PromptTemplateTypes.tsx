@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -51,6 +52,7 @@ export default function PromptTemplateTypes() {
   const [sortField, setSortField] = useState<'name' | 'created_at'>('created_at');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
   const { toast } = useToast();
 
   const form = useForm<FormData>({
@@ -288,7 +290,17 @@ export default function PromptTemplateTypes() {
       if (searchQuery.trim()) {
         const query = searchQuery.toLowerCase();
         const description = type.description?.toLowerCase() || "";
-        return description.includes(query);
+        if (!description.includes(query)) {
+          return false;
+        }
+      }
+      
+      // Status filter
+      if (statusFilter === "active" && !type.is_active) {
+        return false;
+      }
+      if (statusFilter === "inactive" && type.is_active) {
+        return false;
       }
       
       return true;
@@ -468,7 +480,19 @@ export default function PromptTemplateTypes() {
           )}
         </div>
         
-        {(dateRange?.from || searchQuery) && (
+        {/* Status Filter */}
+        <Select value={statusFilter} onValueChange={setStatusFilter}>
+          <SelectTrigger className="w-[150px]">
+            <SelectValue placeholder="Filter by status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Status</SelectItem>
+            <SelectItem value="active">Active Only</SelectItem>
+            <SelectItem value="inactive">Inactive Only</SelectItem>
+          </SelectContent>
+        </Select>
+        
+        {(dateRange?.from || searchQuery || statusFilter !== "all") && (
           <Badge variant="secondary" className="text-xs">
             {filteredAndSortedTypes.length} of {types.length} results
           </Badge>
