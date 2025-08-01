@@ -254,6 +254,57 @@ export type Database = {
         }
         Relationships: []
       }
+      social_connections: {
+        Row: {
+          access_token: string
+          account_name: string
+          connected_at: string
+          created_at: string
+          followers_count: number | null
+          id: string
+          is_active: boolean
+          last_sync_at: string | null
+          platform: string
+          platform_user_id: string
+          refresh_token: string | null
+          token_expires_at: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          access_token: string
+          account_name: string
+          connected_at?: string
+          created_at?: string
+          followers_count?: number | null
+          id?: string
+          is_active?: boolean
+          last_sync_at?: string | null
+          platform: string
+          platform_user_id: string
+          refresh_token?: string | null
+          token_expires_at?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          access_token?: string
+          account_name?: string
+          connected_at?: string
+          created_at?: string
+          followers_count?: number | null
+          id?: string
+          is_active?: boolean
+          last_sync_at?: string | null
+          platform?: string
+          platform_user_id?: string
+          refresh_token?: string | null
+          token_expires_at?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       system_prompt_template: {
         Row: {
           created_at: string
