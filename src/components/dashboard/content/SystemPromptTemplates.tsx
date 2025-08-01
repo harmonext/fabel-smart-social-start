@@ -62,6 +62,7 @@ const SystemPromptTemplates = () => {
   const [sortField, setSortField] = useState<'name' | 'created_at'>('created_at');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
+  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
   const { toast } = useToast();
 
   const toggleActiveStatus = async (template: SystemPromptTemplate) => {
@@ -277,7 +278,12 @@ const SystemPromptTemplates = () => {
         }
       }
 
-      return matchesSearch && matchesDateRange;
+      // Status filter
+      const matchesStatus = statusFilter === 'all' || 
+        (statusFilter === 'active' && template.is_active) ||
+        (statusFilter === 'inactive' && !template.is_active);
+
+      return matchesSearch && matchesDateRange && matchesStatus;
     })
     .sort((a, b) => {
       let comparison = 0;
@@ -436,8 +442,21 @@ const SystemPromptTemplates = () => {
               </Dialog>
             </div>
             
-            {/* Date Range Filter */}
+            {/* Filters */}
             <div className="flex flex-col sm:flex-row gap-4 items-center">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-muted-foreground">Status:</span>
+                <Select value={statusFilter} onValueChange={(value: 'all' | 'active' | 'inactive') => setStatusFilter(value)}>
+                  <SelectTrigger className="w-32">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All</SelectItem>
+                    <SelectItem value="active">Active</SelectItem>
+                    <SelectItem value="inactive">Inactive</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               <div className="flex items-center gap-2">
                 <span className="text-sm font-medium text-muted-foreground">Filter by date:</span>
                 <Popover>
