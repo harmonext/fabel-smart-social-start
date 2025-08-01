@@ -9,6 +9,7 @@ import SystemPromptTemplates from "./content/SystemPromptTemplates";
 import PromptTemplateTypes from "./content/PromptTemplateTypes";
 import OnboardingFlow from "@/components/onboarding/OnboardingFlow";
 import OnboardedData from "./content/OnboardedData";
+import RoleProtectedComponent from "@/components/RoleProtectedComponent";
 import { useOnboarding } from "@/hooks/useOnboarding";
 
 interface DashboardContentProps {
@@ -47,6 +48,28 @@ const DashboardContent = ({ activeTab, activeSubTab }: DashboardContentProps) =>
       return <SocialConnections />; // Default to social connections
     }
     
+    
+    if (activeTab === "system-management") {
+      if (activeSubTab === "prompt-template-types") {
+        return (
+          <RoleProtectedComponent requiredRole="super_admin">
+            <PromptTemplateTypes />
+          </RoleProtectedComponent>
+        );
+      }
+      if (activeSubTab === "system-prompt-templates") {
+        return (
+          <RoleProtectedComponent requiredRole="super_admin">
+            <SystemPromptTemplates />
+          </RoleProtectedComponent>
+        );
+      }
+      return (
+        <RoleProtectedComponent requiredRole="super_admin">
+          <PromptTemplateTypes />
+        </RoleProtectedComponent>
+      ); // Default to template types
+    }
     
     if (activeTab === "settings") {
       return <DashboardSettings />;

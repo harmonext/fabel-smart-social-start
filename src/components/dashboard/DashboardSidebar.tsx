@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useOnboarding } from "@/hooks/useOnboarding";
+import { useUserRole } from "@/hooks/useUserRole";
 import { Button } from "@/components/ui/button";
 import { 
   Sidebar, 
@@ -43,6 +44,7 @@ const DashboardSidebar = ({
   const [expandedSections, setExpandedSections] = useState<string[]>(["company-profile", "content-management", "personas", "system-management"]);
   const navigate = useNavigate();
   const { isCompleted: onboardingCompleted } = useOnboarding();
+  const { isSuperAdmin } = useUserRole();
 
   const toggleSection = (section: string) => {
     setExpandedSections(prev => 
@@ -205,6 +207,56 @@ const DashboardSidebar = ({
             )}
           </div>
 
+          {/* System Management - Only for Super Admins */}
+          {isSuperAdmin && (
+            <div>
+              <Button
+                variant="ghost"
+                className={cn(
+                  "w-full justify-between text-left h-10",
+                  activeTab === "system-management" && "bg-fabel-primary/10 text-fabel-primary"
+                )}
+                onClick={() => toggleSection("system-management")}
+              >
+                <div className="flex items-center">
+                  <Database className="h-4 w-4 mr-3" />
+                  System Management
+                </div>
+                {isExpanded("system-management") ? (
+                  <ChevronDown className="h-4 w-4" />
+                ) : (
+                  <ChevronRight className="h-4 w-4" />
+                )}
+              </Button>
+              
+              {isExpanded("system-management") && (
+                <div className="ml-7 mt-1 space-y-1">
+                  <Button
+                    variant="ghost"
+                    className={cn(
+                      "w-full justify-start text-left h-9 text-sm",
+                      activeTab === "system-management" && activeSubTab === "prompt-template-types" && "bg-fabel-primary/10 text-fabel-primary"
+                    )}
+                    onClick={() => handleTabClick("system-management", "prompt-template-types")}
+                  >
+                    <Tag className="h-3 w-3 mr-3" />
+                    Template Types
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    className={cn(
+                      "w-full justify-start text-left h-9 text-sm",
+                      activeTab === "system-management" && activeSubTab === "system-prompt-templates" && "bg-fabel-primary/10 text-fabel-primary"
+                    )}
+                    onClick={() => handleTabClick("system-management", "system-prompt-templates")}
+                  >
+                    <FileText className="h-3 w-3 mr-3" />
+                    System Templates
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Settings */}
           <Button
