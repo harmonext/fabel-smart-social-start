@@ -11,6 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -28,6 +29,7 @@ type PromptTemplateType = {
   id: string;
   name: string;
   description: string | null;
+  is_active: boolean;
   created_at: string;
   updated_at: string;
 };
@@ -192,6 +194,39 @@ export default function PromptTemplateTypes() {
       await fetchTypes();
     } catch (error) {
       console.error("Error in handleDelete:", error);
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleToggleStatus = async (id: string, currentStatus: boolean) => {
+    try {
+      const { error } = await supabase
+        .from("prompt_template_type")
+        .update({ is_active: !currentStatus })
+        .eq("id", id);
+
+      if (error) {
+        console.error("Error updating template type status:", error);
+        toast({
+          title: "Error",
+          description: "Failed to update template type status",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      toast({
+        title: "Success",
+        description: `Template type ${!currentStatus ? 'activated' : 'deactivated'} successfully`,
+      });
+
+      await fetchTypes();
+    } catch (error) {
+      console.error("Error in handleToggleStatus:", error);
       toast({
         title: "Error",
         description: "An unexpected error occurred",
@@ -487,6 +522,7 @@ export default function PromptTemplateTypes() {
                     </Button>
                   </TableHead>
                   <TableHead>Description</TableHead>
+                  <TableHead>Status</TableHead>
                   <TableHead>
                     <Button 
                       variant="ghost" 
@@ -503,21 +539,32 @@ export default function PromptTemplateTypes() {
               <TableBody>
                 {filteredAndSortedTypes.map((type) => (
                   <TableRow key={type.id}>
-                    <TableCell className="font-medium">{type.name}</TableCell>
-                    <TableCell>
-                      {type.description ? (
-                        <span className="text-sm text-muted-foreground">
-                          {type.description.length > 100
-                            ? `${type.description.substring(0, 100)}...`
-                            : type.description}
-                        </span>
-                      ) : (
-                        <Badge variant="secondary">No description</Badge>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      {new Date(type.created_at).toLocaleDateString()}
-                    </TableCell>
+                     <TableCell className="font-medium">{type.name}</TableCell>
+                     <TableCell>
+                       {type.description ? (
+                         <span className="text-sm text-muted-foreground">
+                           {type.description.length > 100
+                             ? `${type.description.substring(0, 100)}...`
+                             : type.description}
+                         </span>
+                       ) : (
+                         <Badge variant="secondary">No description</Badge>
+                       )}
+                     </TableCell>
+                     <TableCell>
+                       <div className="flex items-center gap-2">
+                         <Switch
+                           checked={type.is_active}
+                           onCheckedChange={() => handleToggleStatus(type.id, type.is_active)}
+                         />
+                         <Badge variant={type.is_active ? "default" : "secondary"}>
+                           {type.is_active ? "Active" : "Inactive"}
+                         </Badge>
+                       </div>
+                     </TableCell>
+                     <TableCell>
+                       {new Date(type.created_at).toLocaleDateString()}
+                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
                         <Button
