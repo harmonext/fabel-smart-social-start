@@ -59,7 +59,7 @@ const SystemPromptTemplates = () => {
   const [editingTemplate, setEditingTemplate] = useState<SystemPromptTemplate | null>(null);
   const [deleteTemplate, setDeleteTemplate] = useState<SystemPromptTemplate | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortField, setSortField] = useState<'name' | 'created_at'>('created_at');
+  const [sortField, setSortField] = useState<'name' | 'created_at' | 'type'>('created_at');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
@@ -247,7 +247,7 @@ const SystemPromptTemplates = () => {
     setIsDialogOpen(true);
   };
 
-  const handleSort = (field: 'name' | 'created_at') => {
+  const handleSort = (field: 'name' | 'created_at' | 'type') => {
     if (sortField === field) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     } else {
@@ -298,6 +298,10 @@ const SystemPromptTemplates = () => {
         comparison = a.name.localeCompare(b.name);
       } else if (sortField === 'created_at') {
         comparison = new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+      } else if (sortField === 'type') {
+        const aType = a.prompt_template_type?.name || 'No type';
+        const bType = b.prompt_template_type?.name || 'No type';
+        comparison = aType.localeCompare(bType);
       }
       
       return sortDirection === 'asc' ? comparison : -comparison;
@@ -546,7 +550,16 @@ const SystemPromptTemplates = () => {
                       <ArrowUpDown className="ml-2 h-4 w-4" />
                     </Button>
                   </TableHead>
-                  <TableHead>Type</TableHead>
+                  <TableHead>
+                    <Button 
+                      variant="ghost" 
+                      className="h-auto p-0 font-semibold justify-start"
+                      onClick={() => handleSort('type')}
+                    >
+                      Type
+                      <ArrowUpDown className="ml-2 h-4 w-4" />
+                    </Button>
+                  </TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Template Preview</TableHead>
                   <TableHead>
