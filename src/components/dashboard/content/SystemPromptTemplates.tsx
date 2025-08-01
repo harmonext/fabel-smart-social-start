@@ -63,6 +63,7 @@ const SystemPromptTemplates = () => {
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
+  const [typeFilter, setTypeFilter] = useState<string>('all');
   const { toast } = useToast();
 
   const toggleActiveStatus = async (template: SystemPromptTemplate) => {
@@ -283,7 +284,12 @@ const SystemPromptTemplates = () => {
         (statusFilter === 'active' && template.is_active) ||
         (statusFilter === 'inactive' && !template.is_active);
 
-      return matchesSearch && matchesDateRange && matchesStatus;
+      // Type filter
+      const matchesType = typeFilter === 'all' || 
+        (typeFilter === 'no-type' && !template.prompt_template_type_id) ||
+        (typeFilter !== 'no-type' && template.prompt_template_type_id === typeFilter);
+
+      return matchesSearch && matchesDateRange && matchesStatus && matchesType;
     })
     .sort((a, b) => {
       let comparison = 0;
@@ -337,6 +343,23 @@ const SystemPromptTemplates = () => {
                     <SelectItem value="all">All</SelectItem>
                     <SelectItem value="active">Active</SelectItem>
                     <SelectItem value="inactive">Inactive</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-muted-foreground">Type:</span>
+                <Select value={typeFilter} onValueChange={setTypeFilter}>
+                  <SelectTrigger className="w-40">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Types</SelectItem>
+                    <SelectItem value="no-type">No Type</SelectItem>
+                    {types.map((type) => (
+                      <SelectItem key={type.id} value={type.id}>
+                        {type.name}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
