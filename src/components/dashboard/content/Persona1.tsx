@@ -261,15 +261,36 @@ const Persona1 = ({ persona }: Persona1Props) => {
 
               {/* Right Columns - Expanded Content */}
               <div className="lg:col-span-2 space-y-6">
-                {/* Psychographics */}
-                <div>
-                  <h3 className="text-lg font-bold mb-3">PSYCHOGRAPHICS</h3>
-                  <ul className="space-y-2 text-sm text-muted-foreground">
-                    <li>• Values craftsmanship, design integrity, and subtle status symbols</li>
-                    <li>• Seeks individuality and authenticity in personal style</li>
-                    <li>• Often shops from brands with a story, ethics, or sustainable practices</li>
-                    <li>• Believes that accessories are statements, not just add-ons</li>
-                  </ul>
+                {/* Psychographics and Upgrade to Unlock side by side */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Psychographics */}
+                  <div>
+                    <h3 className="text-lg font-bold mb-3">PSYCHOGRAPHICS</h3>
+                    <ul className="space-y-2 text-sm text-muted-foreground">
+                      <li>• Values craftsmanship, design integrity, and subtle status symbols</li>
+                      <li>• Seeks individuality and authenticity in personal style</li>
+                      <li>• Often shops from brands with a story, ethics, or sustainable practices</li>
+                      <li>• Believes that accessories are statements, not just add-ons</li>
+                    </ul>
+                  </div>
+
+                  {/* Upgrade to Unlock */}
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <i className="fa-solid fa-lock text-foreground"></i>
+                      <span className="font-bold text-sm">Upgrade to Unlock:</span>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="bg-green-100 rounded p-2">
+                        <div className="text-xs font-semibold text-green-800">ESTIMATED LTV</div>
+                        <div className="text-sm text-muted-foreground">~$600-$900</div>
+                      </div>
+                      <div className="bg-green-100 rounded p-2">
+                        <div className="text-xs font-semibold text-green-800">ESTIMATED CAC</div>
+                        <div className="text-sm text-muted-foreground">~$70</div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Three columns section */}
@@ -303,23 +324,6 @@ const Persona1 = ({ persona }: Persona1Props) => {
                   </div>
                 </div>
 
-                {/* Upgrade to Unlock */}
-                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <i className="fa-solid fa-lock text-foreground"></i>
-                    <span className="font-bold text-sm">Upgrade to Unlock:</span>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-green-100 rounded p-2">
-                      <div className="text-xs font-semibold text-green-800">ESTIMATED LTV</div>
-                      <div className="text-sm text-muted-foreground">~$600-$900</div>
-                    </div>
-                    <div className="bg-green-100 rounded p-2">
-                      <div className="text-xs font-semibold text-green-800">ESTIMATED CAC</div>
-                      <div className="text-sm text-muted-foreground">~$70</div>
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
