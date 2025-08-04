@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Share2, Sparkles } from "lucide-react";
+import { Share2, Sparkles, ChevronRight, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -29,6 +29,7 @@ const Persona1 = ({ persona }: Persona1Props) => {
   const [modalText, setModalText] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [isExpanded, setIsExpanded] = useState(false);
   const getSocialMediaIcon = (platform: string) => {
     const platformName = platform?.toLowerCase();
     
@@ -168,6 +169,175 @@ const Persona1 = ({ persona }: Persona1Props) => {
       setIsGenerating(false);
     }
   };
+  if (isExpanded) {
+    return (
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className="bg-card border border-border rounded-2xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="p-8">
+            {/* Header with close button */}
+            <div className="flex justify-between items-start mb-6">
+              <div className="flex items-center gap-4">
+                <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center">
+                  <div className="w-16 h-16 rounded-full bg-card border border-border"></div>
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold text-foreground">{persona?.name || "The Ambitious Entrepreneur"}</h1>
+                  <p className="text-muted-foreground">{persona?.description || "Small business owners who are growth-focused and tech-savvy"}</p>
+                </div>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsExpanded(false)}
+                className="shrink-0"
+              >
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
+
+            {/* Age, Gender, Income */}
+            <div className="flex gap-4 mb-6">
+              <div className="bg-muted px-4 py-2 rounded-full">
+                <span className="text-sm font-medium">{persona?.age_ranges || "28-37 YEARS OLD"}</span>
+              </div>
+              <div className="bg-muted px-4 py-2 rounded-full">
+                <span className="text-sm font-medium">{persona?.genders || "FEMALE"}</span>
+              </div>
+              <div className="bg-green-100 text-green-800 px-4 py-2 rounded-full">
+                <span className="text-sm font-medium">{persona?.income_level || "$75K - $125K"}</span>
+              </div>
+            </div>
+
+            {/* Social Media Icons */}
+            <div className="flex gap-4 mb-6">
+              <TooltipProvider>
+                {socialMediaPlatforms.slice(0, 3).map((platform, index) => {
+                  const { icon: Icon, color, name } = getSocialMediaIcon(platform);
+                  return (
+                    <Tooltip key={index}>
+                      <TooltipTrigger asChild>
+                        <div className="w-12 h-12 bg-muted rounded-full flex items-center justify-center">
+                          <div className="text-xl">
+                            <Icon />
+                          </div>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>{name}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  );
+                })}
+              </TooltipProvider>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Left Column */}
+              <div className="space-y-6">
+                {/* Psychographics */}
+                <div>
+                  <h3 className="text-lg font-bold mb-3">PSYCHOGRAPHICS</h3>
+                  <ul className="space-y-2 text-sm text-muted-foreground">
+                    <li>• Values craftsmanship, design integrity, and subtle status symbols</li>
+                    <li>• Seeks individuality and authenticity in personal style</li>
+                    <li>• Often shops from brands with a story, ethics, or sustainable practices</li>
+                    <li>• Believes that accessories are statements, not just add-ons</li>
+                  </ul>
+                </div>
+
+                {/* Upgrade to Unlock */}
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <i className="fa-solid fa-lock text-foreground"></i>
+                    <span className="font-bold text-sm">Upgrade to Unlock:</span>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="bg-green-100 rounded p-2">
+                      <div className="text-xs font-semibold text-green-800">ESTIMATED LTV</div>
+                      <div className="text-sm text-muted-foreground">~$600-$900</div>
+                    </div>
+                    <div className="bg-green-100 rounded p-2">
+                      <div className="text-xs font-semibold text-green-800">ESTIMATED CAC</div>
+                      <div className="text-sm text-muted-foreground">~$70</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Column */}
+              <div className="space-y-6">
+                {/* Three columns section */}
+                <div className="bg-muted rounded-lg p-4">
+                  <div className="grid grid-cols-3 gap-4 text-center">
+                    <div>
+                      <h4 className="font-bold text-sm text-green-600 mb-2">COMPETITORS</h4>
+                      <div className="space-y-1 text-xs">
+                        <div>CUYANA</div>
+                        <div>POLÈNE</div>
+                        <div className="text-muted-foreground">MANSUR GAVRIEL</div>
+                      </div>
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-sm text-orange-600 mb-2">PAIN POINTS</h4>
+                      <ul className="space-y-1 text-xs text-left">
+                        <li>• Fatigue with overexposed "it" brands</li>
+                        <li>• Lack of unique, high-quality options that align with values</li>
+                        <li>• Overpriced designer goods with unclear origin</li>
+                      </ul>
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-sm text-purple-600 mb-2">HOW TO APPEAL</h4>
+                      <ul className="space-y-1 text-xs text-left">
+                        <li>• Focus on storytelling: emphasize the materials, artisans, and heritage behind each item</li>
+                        <li>• Highlight sustainable practices and slow fashion ethos</li>
+                        <li>• Collaborate with style influencers and micro-creatives in art/fashion</li>
+                        <li>• Offer limited runs or customizable options</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Generate Content Button */}
+                <Button 
+                  className="bg-fabel-primary hover:bg-fabel-primary/90 w-full"
+                  onClick={handleGenerateContentClick}
+                  disabled={isGenerating}
+                >
+                  {isGenerating ? "Generating..." : "Generate Content"}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Progress Overlay for expanded view */}
+        {isGenerating && (
+          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm z-10 flex items-center justify-center">
+            <div className="bg-card/95 backdrop-blur-md border border-border rounded-2xl p-6 shadow-2xl max-w-sm mx-4">
+              <div className="flex flex-col items-center space-y-4">
+                <div className="relative">
+                  <div className="w-12 h-12 bg-fabel-primary rounded-full flex items-center justify-center animate-pulse-gentle">
+                    <Sparkles className="h-6 w-6 text-white animate-spin-slow" />
+                  </div>
+                  <div className="absolute inset-0 w-12 h-12 border-4 border-fabel-primary/30 rounded-full animate-spin-slow"></div>
+                </div>
+                <div className="text-center space-y-1">
+                  <h3 className="text-sm font-semibold text-foreground">Generating Content</h3>
+                  <p className="text-xs text-muted-foreground">
+                    Creating social media posts for {persona?.name || "this persona"}...
+                  </p>
+                </div>
+                <div className="w-full bg-secondary rounded-full h-1.5 overflow-hidden">
+                  <div className="h-full bg-fabel-primary rounded-full animate-pulse"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="relative bg-muted rounded-lg p-6 space-y-4 h-full flex flex-col">
       {/* Progress Overlay */}
@@ -201,91 +371,71 @@ const Persona1 = ({ persona }: Persona1Props) => {
           </div>
         </div>
       )}
-      <div>
-        <div className="flex items-center gap-3 mb-1">
-          <h1 className="text-lg font-bold text-muted-foreground">{persona?.name || "The Ambitious Entrepreneur"}</h1>
+
+      {/* Regular View Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 rounded-full bg-card border border-border"></div>
+          <div>
+            <h1 className="text-lg font-bold text-foreground">{persona?.name || "Urban Creative"}</h1>
+          </div>
         </div>
-        <p className="text-sm font-medium text-muted-foreground">{persona?.description || "Small business owners who are growth-focused and tech-savvy"}</p>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setIsExpanded(true)}
+          className="text-muted-foreground hover:text-foreground"
+        >
+          More <ChevronRight className="h-4 w-4 ml-1" />
+        </Button>
       </div>
 
+      {/* Age, Gender, Income */}
+      <div className="flex flex-wrap gap-2">
+        <div className="bg-card px-3 py-1 rounded-full text-xs font-medium">
+          {persona?.age_ranges || "28-37 YEARS OLD"}
+        </div>
+        <div className="bg-card px-3 py-1 rounded-full text-xs font-medium">
+          {persona?.genders || "FEMALE"}
+        </div>
+      </div>
+
+      {/* Income */}
       <div className="text-center">
-        <h2 className="font-bold text-sm mb-2">Social Media Platforms:</h2>
+        <div className="bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm font-medium inline-block">
+          {persona?.income_level || "$75K - $125K"}
+        </div>
+      </div>
+
+      {/* Social Media Icons */}
+      <div className="text-center">
         <TooltipProvider>
-          <div className="flex items-center justify-center space-x-8">
+          <div className="flex items-center justify-center space-x-6">
             {socialMediaPlatforms.slice(0, 3).map((platform, index) => {
               const { icon: Icon, color, name } = getSocialMediaIcon(platform);
               return (
-                <div key={index} className="flex flex-col items-center space-y-2">
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div className="text-xl">
+                <Tooltip key={index}>
+                  <TooltipTrigger asChild>
+                    <div className="w-10 h-10 bg-card rounded-full flex items-center justify-center">
+                      <div className="text-lg">
                         <Icon />
                       </div>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>{name}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                  <Checkbox disabled />
-                </div>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{name}</p>
+                  </TooltipContent>
+                </Tooltip>
               );
             })}
-            {/* Fill remaining slots with empty spaces if less than 3 platforms */}
-            {Array.from({ length: Math.max(0, 3 - socialMediaPlatforms.length) }).map((_, index) => (
-              <div key={`empty-${index}`} className="flex flex-col items-center space-y-2">
-                <Share2 className="w-6 h-6 text-muted-foreground opacity-30" />
-                <Checkbox disabled />
-              </div>
-            ))}
           </div>
         </TooltipProvider>
       </div>
 
+      {/* Location */}
       <div className="text-center">
-        <h2 className="font-bold text-sm mb-1">Location:</h2>
-        <p className="text-xs text-muted-foreground">
-          {persona?.location || "Urban/Suburban"}
-        </p>
-      </div>
-
-      <div className="text-center">
-        <h2 className="font-bold text-sm mb-1">Psychographics:</h2>
-        <p className="text-xs text-muted-foreground">
-          {persona?.psychographics || "Growth-focused, tech-savvy, efficiency-oriented"}
-        </p>
-      </div>
-
-      <div className="flex justify-center space-x-8">
-        <div className="text-center">
-          <h2 className="font-bold text-sm">Age Range:</h2>
-          <p className="text-xs text-muted-foreground">{persona?.age_ranges || "28-45"}</p>
-        </div>
-        <div className="text-center">
-          <h2 className="font-bold text-sm">Gender:</h2>
-          <p className="text-xs text-muted-foreground">{persona?.genders || "All"}</p>
-        </div>
-      </div>
-        
-      <div className="pt-2 text-center">
-        <div className="flex items-center justify-center space-x-2 mb-2">
-          <i className="fa-solid fa-lock text-lg text-muted-foreground"></i>
-          <h2 className="font-bold text-sm">Unlock for:</h2>
-        </div>
-        <p className="text-xs text-muted-foreground flex items-start justify-start">
-          <i className="fa-solid fa-users mr-1"></i>
-          Top Competitors: {persona?.top_competitors || "Competitors analysis"}
-        </p>
-        <p className="text-xs text-muted-foreground flex items-center justify-center gap-1">
-          <i className="fa-solid fa-dollar-sign"></i>
-          CAC: {persona?.cac_estimate || "$50-100"}
-        </p>
-        <p className="text-xs text-muted-foreground flex items-center justify-center gap-1">
-          <i className="fa-solid fa-infinity"></i>
-          LTV: {persona?.ltv_estimate || "$500-1000"}
-        </p>
-        <p className="text-xs text-muted-foreground flex items-start justify-start">
-          <i className="fa-solid fa-heart mr-0.5"></i>
-          Appeal: {persona?.appeal_how_to || "Appeal strategies"}
+        <p className="text-sm text-muted-foreground font-medium">
+          {persona?.location || "BROOKLYN, AUSTIN, SILVER LAKE"}
         </p>
       </div>
 
