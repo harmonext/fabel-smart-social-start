@@ -174,9 +174,8 @@ const Persona1 = ({ persona }: Persona1Props) => {
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div className="bg-card border border-border rounded-2xl shadow-2xl max-w-7xl w-full max-h-[90vh] overflow-y-auto">
           <div className="p-8">
-            {/* Header with close button */}
-            <div className="flex justify-between items-start mb-6">
-              <h1 className="text-2xl font-bold text-foreground">{persona?.name || "The Ambitious Entrepreneur"}</h1>
+            {/* Close button */}
+            <div className="flex justify-end mb-6">
               <Button
                 variant="ghost"
                 size="icon"
