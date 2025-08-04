@@ -243,7 +243,7 @@ const Persona1 = ({ persona }: Persona1Props) => {
                   {/* Location */}
                   <div className="text-center">
                     <p className="text-sm text-muted-foreground font-medium">
-                      {persona?.location || "BROOKLYN, AUSTIN, SILVER LAKE"}
+                      {(persona?.location || "BROOKLYN, AUSTIN, SILVER LAKE").replace(/,/g, ' |')}
                     </p>
                   </div>
 
@@ -454,7 +454,7 @@ const Persona1 = ({ persona }: Persona1Props) => {
       {/* Location */}
       <div className="text-center">
         <p className="text-sm text-muted-foreground font-medium">
-          {persona?.location || "BROOKLYN, AUSTIN, SILVER LAKE"}
+          {(persona?.location || "BROOKLYN, AUSTIN, SILVER LAKE").replace(/,/g, ' |')}
         </p>
       </div>
 
