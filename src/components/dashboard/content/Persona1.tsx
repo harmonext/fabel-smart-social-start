@@ -6,16 +6,19 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Persona } from "@/hooks/usePersonas";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+
 interface PlatformData {
   name: string;
   icon: React.ComponentType<any>;
   color: string;
   content: string;
 }
+
 interface GeneratedContent {
   platform: string;
   text: string;
 }
+
 interface Persona1Props {
   persona?: Persona | any; // Allow fallback default personas
 }
@@ -30,6 +33,7 @@ const Persona1 = ({ persona }: Persona1Props) => {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
+
   const getSocialMediaIcon = (platform: string) => {
     const platformName = platform?.toLowerCase();
     
@@ -86,9 +90,11 @@ const Persona1 = ({ persona }: Persona1Props) => {
       content: `Watch how our alumni went from entry-level to C-suite in just 5 years! Get the insider strategies that transformed their careers. Subscribe for more success stories! #CareerTransformation #ExecutiveCoaching`
     }
   };
+
   const handlePlatformToggle = (platform: string) => {
     setSelectedPlatforms(prev => prev.includes(platform) ? prev.filter(p => p !== platform) : [...prev, platform]);
   };
+
   const handleGenerateContent = () => {
     if (selectedPlatforms.length === 0) {
       return;
@@ -104,6 +110,7 @@ const Persona1 = ({ persona }: Persona1Props) => {
       setIsGenerating(false);
     }, 1500);
   };
+
   const handleEditContent = (platform: string) => {
     const currentContent = generatedContent.find(c => c.platform === platform);
     setCurrentEditingPlatform(platform);
@@ -112,6 +119,7 @@ const Persona1 = ({ persona }: Persona1Props) => {
     setImagePreview(null);
     setShowModal(true);
   };
+
   const handleSaveChanges = () => {
     if (currentEditingPlatform) {
       setGeneratedContent(prev => prev.map(content => content.platform === currentEditingPlatform ? {
@@ -121,6 +129,7 @@ const Persona1 = ({ persona }: Persona1Props) => {
       handleCloseModal();
     }
   };
+
   const handleCloseModal = () => {
     setShowModal(false);
     setCurrentEditingPlatform(null);
@@ -128,6 +137,7 @@ const Persona1 = ({ persona }: Persona1Props) => {
     setImageFile(null);
     setImagePreview(null);
   };
+
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -169,6 +179,7 @@ const Persona1 = ({ persona }: Persona1Props) => {
       setIsGenerating(false);
     }
   };
+
   if (isExpanded) {
     return (
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -243,7 +254,7 @@ const Persona1 = ({ persona }: Persona1Props) => {
                   {/* Location */}
                   <div className="text-center">
                     <p className="text-sm text-muted-foreground font-medium">
-                      {(persona?.location || "BROOKLYN | AUSTIN | SILVER LAKE")}
+                      {(persona?.location || "Portland, Oregon | San Francisco, California | Austin, Texas")}
                     </p>
                   </div>
 
@@ -454,7 +465,7 @@ const Persona1 = ({ persona }: Persona1Props) => {
       {/* Location */}
       <div className="text-center">
         <p className="text-sm text-muted-foreground font-medium">
-          {(persona?.location || "BROOKLYN | AUSTIN | SILVER LAKE")}
+          {(persona?.location || "Portland, Oregon | San Francisco, California | Austin, Texas")}
         </p>
       </div>
 
@@ -470,4 +481,5 @@ const Persona1 = ({ persona }: Persona1Props) => {
     </div>
   );
 };
+
 export default Persona1;
