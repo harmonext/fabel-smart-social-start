@@ -199,7 +199,7 @@ const Persona1 = ({ persona }: Persona1Props) => {
                   </div>
 
                   {/* Age, Gender, Income */}
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-2 justify-center">
                     <div className="bg-card px-3 py-1 rounded-full text-xs font-medium">
                       {persona?.age_ranges || "28-37 YEARS OLD"}
                     </div>
@@ -410,7 +410,7 @@ const Persona1 = ({ persona }: Persona1Props) => {
       </div>
 
       {/* Age, Gender, Income */}
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2 justify-center">
         <div className="bg-card px-3 py-1 rounded-full text-xs font-medium">
           {persona?.age_ranges || "28-37 YEARS OLD"}
         </div>
