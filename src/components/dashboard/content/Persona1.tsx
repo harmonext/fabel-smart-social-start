@@ -358,7 +358,7 @@ const Persona1 = ({ persona }: Persona1Props) => {
   }
 
   return (
-    <div className="relative bg-muted rounded-lg p-6 space-y-4 h-full flex flex-col">
+    <div className="relative bg-muted rounded-lg p-6 space-y-4 flex flex-col">
       {/* Progress Overlay */}
       {isGenerating && (
         <div className="absolute inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center rounded-lg">
