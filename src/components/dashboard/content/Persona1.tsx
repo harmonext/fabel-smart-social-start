@@ -319,7 +319,7 @@ const Persona1 = ({ persona }: Persona1Props) => {
                       </div>
                     </div>
                     <div>
-                      <h4 className="font-bold text-sm text-orange-600 mb-2">PAIN POINTS</h4>
+                      <h4 className="font-bold text-sm text-orange-600 mb-2 text-left">PAIN POINTS</h4>
                       <ul className="space-y-1 text-xs text-left">
                         <li>• Fatigue with overexposed "it" brands</li>
                         <li>• Lack of unique, high-quality options that align with values</li>
@@ -327,7 +327,7 @@ const Persona1 = ({ persona }: Persona1Props) => {
                       </ul>
                     </div>
                     <div>
-                      <h4 className="font-bold text-sm text-purple-600 mb-2">HOW TO APPEAL</h4>
+                      <h4 className="font-bold text-sm text-purple-600 mb-2 text-left">HOW TO APPEAL</h4>
                       <ul className="space-y-1 text-xs text-left">
                         <li>• Focus on storytelling: emphasize the materials, artisans, and heritage behind each item</li>
                         <li>• Highlight sustainable practices and slow fashion ethos</li>
