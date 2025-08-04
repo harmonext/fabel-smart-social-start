@@ -254,7 +254,7 @@ const Persona1 = ({ persona }: Persona1Props) => {
                   {/* Location */}
                   <div className="text-center">
                     <p className="text-sm text-muted-foreground font-medium">
-                      {(persona?.location || "Portland, Oregon | San Francisco, California | Austin, Texas")}
+                      {persona?.location || "Portland, Oregon | San Francisco, California | Austin, Texas"}
                     </p>
                   </div>
 
@@ -465,7 +465,7 @@ const Persona1 = ({ persona }: Persona1Props) => {
       {/* Location */}
       <div className="text-center">
         <p className="text-sm text-muted-foreground font-medium">
-          {(persona?.location || "Portland, Oregon | San Francisco, California | Austin, Texas")}
+          {persona?.location || "Portland, Oregon | San Francisco, California | Austin, Texas"}
         </p>
       </div>
 
