@@ -176,7 +176,7 @@ const Persona1 = ({ persona }: Persona1Props) => {
           <div className="p-8">
             {/* Header with close button */}
             <div className="flex justify-between items-start mb-6">
-              <h1 className="text-2xl font-bold text-foreground">{persona?.name || "The Ambitious Entrepreneur"} - Expanded View</h1>
+              <h1 className="text-2xl font-bold text-foreground">{persona?.name || "The Ambitious Entrepreneur"}</h1>
               <Button
                 variant="ghost"
                 size="icon"
