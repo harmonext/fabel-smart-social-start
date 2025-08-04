@@ -172,19 +172,11 @@ const Persona1 = ({ persona }: Persona1Props) => {
   if (isExpanded) {
     return (
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div className="bg-card border border-border rounded-2xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="bg-card border border-border rounded-2xl shadow-2xl max-w-7xl w-full max-h-[90vh] overflow-y-auto">
           <div className="p-8">
             {/* Header with close button */}
             <div className="flex justify-between items-start mb-6">
-              <div className="flex items-center gap-4">
-                <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center">
-                  <div className="w-16 h-16 rounded-full bg-card border border-border"></div>
-                </div>
-                <div>
-                  <h1 className="text-2xl font-bold text-foreground">{persona?.name || "The Ambitious Entrepreneur"}</h1>
-                  <p className="text-muted-foreground">{persona?.description || "Small business owners who are growth-focused and tech-savvy"}</p>
-                </div>
-              </div>
+              <h1 className="text-2xl font-bold text-foreground">{persona?.name || "The Ambitious Entrepreneur"} - Expanded View</h1>
               <Button
                 variant="ghost"
                 size="icon"
@@ -195,45 +187,81 @@ const Persona1 = ({ persona }: Persona1Props) => {
               </Button>
             </div>
 
-            {/* Age, Gender, Income */}
-            <div className="flex gap-4 mb-6">
-              <div className="bg-muted px-4 py-2 rounded-full">
-                <span className="text-sm font-medium">{persona?.age_ranges || "28-37 YEARS OLD"}</span>
-              </div>
-              <div className="bg-muted px-4 py-2 rounded-full">
-                <span className="text-sm font-medium">{persona?.genders || "FEMALE"}</span>
-              </div>
-              <div className="bg-green-100 text-green-800 px-4 py-2 rounded-full">
-                <span className="text-sm font-medium">{persona?.income_level || "$75K - $125K"}</span>
-              </div>
-            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Left Column - Embedded Normal View */}
+              <div className="lg:col-span-1">
+                <div className="bg-muted rounded-lg p-6 space-y-4 h-full flex flex-col">
+                  {/* Normal View Header */}
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-full bg-card border border-border"></div>
+                    <div>
+                      <h1 className="text-lg font-bold text-foreground">{persona?.name || "Urban Creative"}</h1>
+                    </div>
+                  </div>
 
-            {/* Social Media Icons */}
-            <div className="flex gap-4 mb-6">
-              <TooltipProvider>
-                {socialMediaPlatforms.slice(0, 3).map((platform, index) => {
-                  const { icon: Icon, color, name } = getSocialMediaIcon(platform);
-                  return (
-                    <Tooltip key={index}>
-                      <TooltipTrigger asChild>
-                        <div className="w-12 h-12 bg-muted rounded-full flex items-center justify-center">
-                          <div className="text-xl">
-                            <Icon />
-                          </div>
-                        </div>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>{name}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  );
-                })}
-              </TooltipProvider>
-            </div>
+                  {/* Age, Gender, Income */}
+                  <div className="flex flex-wrap gap-2">
+                    <div className="bg-card px-3 py-1 rounded-full text-xs font-medium">
+                      {persona?.age_ranges || "28-37 YEARS OLD"}
+                    </div>
+                    <div className="bg-card px-3 py-1 rounded-full text-xs font-medium">
+                      {persona?.genders || "FEMALE"}
+                    </div>
+                  </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* Left Column */}
-              <div className="space-y-6">
+                  {/* Income */}
+                  <div className="text-center">
+                    <div className="bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm font-medium inline-block">
+                      {persona?.income_level || "$75K - $125K"}
+                    </div>
+                  </div>
+
+                  {/* Social Media Icons */}
+                  <div className="text-center">
+                    <TooltipProvider>
+                      <div className="flex items-center justify-center space-x-6">
+                        {socialMediaPlatforms.slice(0, 3).map((platform, index) => {
+                          const { icon: Icon, color, name } = getSocialMediaIcon(platform);
+                          return (
+                            <Tooltip key={index}>
+                              <TooltipTrigger asChild>
+                                <div className="w-10 h-10 bg-card rounded-full flex items-center justify-center">
+                                  <div className="text-lg">
+                                    <Icon />
+                                  </div>
+                                </div>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>{name}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          );
+                        })}
+                      </div>
+                    </TooltipProvider>
+                  </div>
+
+                  {/* Location */}
+                  <div className="text-center">
+                    <p className="text-sm text-muted-foreground font-medium">
+                      {persona?.location || "BROOKLYN, AUSTIN, SILVER LAKE"}
+                    </p>
+                  </div>
+
+                  <div className="mt-auto pt-4">
+                    <Button 
+                      className="bg-fabel-primary hover:bg-fabel-primary/90 w-full"
+                      onClick={handleGenerateContentClick}
+                      disabled={isGenerating}
+                    >
+                      {isGenerating ? "Generating..." : "Generate Content"}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Columns - Expanded Content */}
+              <div className="lg:col-span-2 space-y-6">
                 {/* Psychographics */}
                 <div>
                   <h3 className="text-lg font-bold mb-3">PSYCHOGRAPHICS</h3>
@@ -245,27 +273,6 @@ const Persona1 = ({ persona }: Persona1Props) => {
                   </ul>
                 </div>
 
-                {/* Upgrade to Unlock */}
-                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <i className="fa-solid fa-lock text-foreground"></i>
-                    <span className="font-bold text-sm">Upgrade to Unlock:</span>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="bg-green-100 rounded p-2">
-                      <div className="text-xs font-semibold text-green-800">ESTIMATED LTV</div>
-                      <div className="text-sm text-muted-foreground">~$600-$900</div>
-                    </div>
-                    <div className="bg-green-100 rounded p-2">
-                      <div className="text-xs font-semibold text-green-800">ESTIMATED CAC</div>
-                      <div className="text-sm text-muted-foreground">~$70</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Right Column */}
-              <div className="space-y-6">
                 {/* Three columns section */}
                 <div className="bg-muted rounded-lg p-4">
                   <div className="grid grid-cols-3 gap-4 text-center">
@@ -297,14 +304,23 @@ const Persona1 = ({ persona }: Persona1Props) => {
                   </div>
                 </div>
 
-                {/* Generate Content Button */}
-                <Button 
-                  className="bg-fabel-primary hover:bg-fabel-primary/90 w-full"
-                  onClick={handleGenerateContentClick}
-                  disabled={isGenerating}
-                >
-                  {isGenerating ? "Generating..." : "Generate Content"}
-                </Button>
+                {/* Upgrade to Unlock */}
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <i className="fa-solid fa-lock text-foreground"></i>
+                    <span className="font-bold text-sm">Upgrade to Unlock:</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-green-100 rounded p-2">
+                      <div className="text-xs font-semibold text-green-800">ESTIMATED LTV</div>
+                      <div className="text-sm text-muted-foreground">~$600-$900</div>
+                    </div>
+                    <div className="bg-green-100 rounded p-2">
+                      <div className="text-xs font-semibold text-green-800">ESTIMATED CAC</div>
+                      <div className="text-sm text-muted-foreground">~$70</div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
