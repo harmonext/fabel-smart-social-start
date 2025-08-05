@@ -6,7 +6,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Persona } from "@/hooks/usePersonas";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import persona1Avatar from "@/assets/persona1-avatar.jpg";
+
 
 interface PlatformData {
   name: string;
@@ -31,8 +31,6 @@ const Persona1 = ({ persona }: Persona1Props) => {
   const [showModal, setShowModal] = useState(false);
   const [currentEditingPlatform, setCurrentEditingPlatform] = useState<string | null>(null);
   const [modalText, setModalText] = useState("");
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
 
   const getSocialMediaIcon = (platform: string) => {
@@ -116,8 +114,6 @@ const Persona1 = ({ persona }: Persona1Props) => {
     const currentContent = generatedContent.find(c => c.platform === platform);
     setCurrentEditingPlatform(platform);
     setModalText(currentContent?.text || '');
-    setImageFile(null);
-    setImagePreview(null);
     setShowModal(true);
   };
 
@@ -135,21 +131,8 @@ const Persona1 = ({ persona }: Persona1Props) => {
     setShowModal(false);
     setCurrentEditingPlatform(null);
     setModalText("");
-    setImageFile(null);
-    setImagePreview(null);
   };
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      setImageFile(file);
-      const reader = new FileReader();
-      reader.onload = e => {
-        setImagePreview(e.target?.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
 
   const handleGenerateContentClick = async () => {
     const personaName = persona?.name || "The Ambitious Entrepreneur";
@@ -204,9 +187,6 @@ const Persona1 = ({ persona }: Persona1Props) => {
                 <div className="bg-muted rounded-lg p-6 space-y-4 h-full flex flex-col">
                   {/* Normal View Header */}
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-full bg-card border border-border overflow-hidden">
-                      <img src={persona1Avatar} alt="Persona Avatar" className="w-full h-full object-cover" />
-                    </div>
                     <div>
                       <h1 className="text-lg font-bold text-foreground">{persona?.name || "Urban Creative"}</h1>
                     </div>
@@ -409,9 +389,6 @@ const Persona1 = ({ persona }: Persona1Props) => {
       {/* Regular View Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-full bg-card border border-border overflow-hidden">
-            <img src={persona1Avatar} alt="Persona Avatar" className="w-full h-full object-cover" />
-          </div>
           <div>
             <h1 className="text-lg font-bold text-foreground">{persona?.name || "Urban Creative"}</h1>
           </div>
