@@ -820,12 +820,17 @@ const Legend = ({ posts }: { posts: ScheduledContent[] }) => {
           <div className="grid grid-cols-3 gap-0.5">
             {platformStatus.map(({ platform, isConnected, isActive }) => (
               <div key={platform} className="flex items-center gap-2 text-xs">
-                <div className={`${isConnected && isActive ? '' : 'grayscale opacity-40'}`}>
+                <div className={`relative ${isConnected && isActive ? '' : 'grayscale opacity-40'}`}>
                   <div className="w-8 h-8 flex items-center justify-center">
                     <div className="scale-[2]">
                       {getSocialIcon(platform, 'md')}
                     </div>
                   </div>
+                  {(!isConnected || !isActive) && (
+                    <div className="absolute -top-1 -left-1 w-3 h-3 bg-destructive rounded-full flex items-center justify-center">
+                      <span className="text-destructive-foreground text-[8px] font-bold">!</span>
+                    </div>
+                  )}
                 </div>
                 <span className={`capitalize ${isConnected && isActive ? 'text-foreground' : 'text-muted-foreground opacity-60'}`}>
                   {platform}
