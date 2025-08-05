@@ -261,7 +261,8 @@ const Persona1 = ({ persona }: Persona1Props) => {
                     </p>
                   </div>
 
-                  <div className="mt-auto pt-4">
+                  <div className="flex-1"></div>
+                  <div className="pt-4">
                     <Button 
                       className="bg-fabel-primary hover:bg-fabel-primary/90 w-full"
                       onClick={handleGenerateContentClick}
@@ -474,7 +475,8 @@ const Persona1 = ({ persona }: Persona1Props) => {
         </p>
       </div>
 
-      <div className="mt-auto pt-4">
+      <div className="flex-1"></div>
+      <div className="pt-4">
         <Button 
           className="bg-fabel-primary hover:bg-fabel-primary/90 w-full"
           onClick={handleGenerateContentClick}
