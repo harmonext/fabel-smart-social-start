@@ -795,8 +795,21 @@ const Legend = ({ posts }: { posts: ScheduledContent[] }) => {
   const { connections } = useSocialConnections();
   const { personas } = usePersonas();
   
+  // Define all available social platforms
+  const allPlatforms = ['facebook', 'instagram', 'linkedin', 'twitter', 'pinterest', 'tiktok'];
+  
   // Get unique personas that are actually used in posts
   const usedPersonas = [...new Set(posts.map(post => post.persona_name).filter(Boolean))];
+  
+  // Create platform status map
+  const platformStatus = allPlatforms.map(platform => {
+    const connection = connections.find(conn => conn.platform.toLowerCase() === platform.toLowerCase());
+    return {
+      platform,
+      isConnected: !!connection,
+      isActive: connection?.is_active || false
+    };
+  });
   
   return (
     <div className="mt-6 pt-4 border-t">
@@ -805,17 +818,17 @@ const Legend = ({ posts }: { posts: ScheduledContent[] }) => {
         <div>
           <div className="text-xs font-medium text-muted-foreground mb-3">Social Platforms</div>
           <div className="grid grid-cols-3 gap-0.5">
-            {connections.map(connection => (
-              <div key={connection.platform} className="flex items-center gap-2 text-xs">
-                <div className={`${connection.is_active ? '' : 'grayscale opacity-60'}`}>
+            {platformStatus.map(({ platform, isConnected, isActive }) => (
+              <div key={platform} className="flex items-center gap-2 text-xs">
+                <div className={`${isConnected && isActive ? '' : 'grayscale opacity-40'}`}>
                   <div className="w-8 h-8 flex items-center justify-center">
                     <div className="scale-[2]">
-                      {getSocialIcon(connection.platform, 'md')}
+                      {getSocialIcon(platform, 'md')}
                     </div>
                   </div>
                 </div>
-                <span className={`capitalize ${connection.is_active ? 'text-foreground' : 'text-muted-foreground'}`}>
-                  {connection.platform}
+                <span className={`capitalize ${isConnected && isActive ? 'text-foreground' : 'text-muted-foreground opacity-60'}`}>
+                  {platform}
                 </span>
               </div>
             ))}
