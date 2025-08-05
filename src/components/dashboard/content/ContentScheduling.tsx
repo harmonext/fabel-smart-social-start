@@ -1084,7 +1084,6 @@ const ContentScheduling = () => {
               <div className="text-sm text-orange-700">Draft Posts</div>
             </div>
           </div>
-          <Legend posts={content} />
         </CardContent>
       </Card>
     </div>
