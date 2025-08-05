@@ -33,7 +33,26 @@ export const useSocialConnections = () => {
 
       if (error) throw error;
 
-      setConnections(data || []);
+      const realConnections = data || [];
+      
+      // Mock Facebook connection for testing
+      const mockFacebookConnection: SocialConnection = {
+        id: 'mock-facebook-id',
+        platform: 'facebook',
+        platform_user_id: 'mock-facebook-user-123',
+        account_name: 'Test Facebook Page',
+        followers_count: 15420,
+        access_token: 'mock-token',
+        is_active: true,
+        connected_at: new Date().toISOString(),
+        last_sync_at: new Date().toISOString()
+      };
+
+      // Add mock connection if Facebook isn't already connected
+      const hasFacebook = realConnections.some(conn => conn.platform === 'facebook');
+      const allConnections = hasFacebook ? realConnections : [...realConnections, mockFacebookConnection];
+
+      setConnections(allConnections);
     } catch (err) {
       console.error('Error fetching social connections:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch connections');
