@@ -12,8 +12,8 @@ const SocialConnections = () => {
     connections, 
     isLoading, 
     error, 
-    connectFacebook, 
-    handleFacebookCallback, 
+    connectPlatform, 
+    handlePlatformCallback, 
     disconnectConnection, 
     refreshConnection,
     getConnectionByPlatform 
@@ -21,31 +21,35 @@ const SocialConnections = () => {
   const { toast } = useToast();
   const [isConnecting, setIsConnecting] = useState<string | null>(null);
 
-  // Handle Facebook OAuth callback
+  // Handle OAuth callback for all platforms
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const code = urlParams.get('code');
     const state = urlParams.get('state');
     
     if (code && state) {
-      handleFacebookCallback(code)
-        .then(() => {
-          toast({
-            title: "Success",
-            description: "Facebook account connected successfully!",
+      // Extract platform from state (format: userId_platform)
+      const platform = state.split('_')[1];
+      if (platform) {
+        handlePlatformCallback(code, platform)
+          .then(() => {
+            toast({
+              title: "Success",
+              description: `${platform.charAt(0).toUpperCase() + platform.slice(1)} account connected successfully!`,
+            });
+            // Clean up URL
+            window.history.replaceState({}, document.title, window.location.pathname);
+          })
+          .catch((err) => {
+            toast({
+              title: "Error",
+              description: err.message || `Failed to connect ${platform} account`,
+              variant: "destructive",
+            });
           });
-          // Clean up URL
-          window.history.replaceState({}, document.title, window.location.pathname);
-        })
-        .catch((err) => {
-          toast({
-            title: "Error",
-            description: err.message || "Failed to connect Facebook account",
-            variant: "destructive",
-          });
-        });
+      }
     }
-  }, []);
+  }, [handlePlatformCallback, toast]);
 
   const socialPlatforms = [
     {
@@ -81,15 +85,18 @@ const SocialConnections = () => {
   ];
 
   const handleConnect = async (platform: string) => {
-    if (platform === 'facebook') {
+    // Support for implemented platforms
+    const supportedPlatforms = ['facebook', 'instagram', 'twitter', 'linkedin'];
+    
+    if (supportedPlatforms.includes(platform)) {
       try {
         setIsConnecting(platform);
-        const authUrl = await connectFacebook();
+        const authUrl = await connectPlatform(platform);
         window.location.href = authUrl;
       } catch (err) {
         toast({
           title: "Error",
-          description: "Failed to initiate Facebook connection",
+          description: `Failed to initiate ${platform} connection`,
           variant: "destructive",
         });
         setIsConnecting(null);

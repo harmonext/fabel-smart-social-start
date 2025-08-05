@@ -1,1 +1,13 @@
 project_id = "wsqshdjljgejrrbthjha"
+
+[functions.social-auth]
+verify_jwt = true
+
+[functions.facebook-auth]
+verify_jwt = true
+
+[functions.generate-content]
+verify_jwt = true
+
+[functions.generate-personas]
+verify_jwt = true

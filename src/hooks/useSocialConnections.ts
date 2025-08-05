@@ -65,27 +65,61 @@ export const useSocialConnections = () => {
     fetchConnections();
   }, [user]);
 
-  const connectFacebook = async (): Promise<string> => {
-    const facebookAppId = "1062833901736033"; // Replace with your actual Facebook App ID
+  const connectPlatform = async (platform: string): Promise<string> => {
     const redirectUri = `${window.location.origin}/dashboard?tab=social&subtab=connections`;
     
-    const authUrl = `https://www.facebook.com/v18.0/dialog/oauth?` +
-      `client_id=${facebookAppId}&` +
-      `redirect_uri=${encodeURIComponent(redirectUri)}&` +
-      `scope=pages_manage_posts,pages_read_engagement,pages_show_list&` +
-      `response_type=code&` +
-      `state=${user?.id}`;
-
-    return authUrl;
+    switch (platform) {
+      case 'facebook':
+        const facebookAppId = "1062833901736033"; // Replace with your actual Facebook App ID
+        return `https://www.facebook.com/v18.0/dialog/oauth?` +
+          `client_id=${facebookAppId}&` +
+          `redirect_uri=${encodeURIComponent(redirectUri)}&` +
+          `scope=pages_manage_posts,pages_read_engagement,pages_show_list&` +
+          `response_type=code&` +
+          `state=${user?.id}_${platform}`;
+      
+      case 'instagram':
+        const instagramAppId = "1062833901736033"; // Same as Facebook for Instagram Business
+        return `https://www.facebook.com/v18.0/dialog/oauth?` +
+          `client_id=${instagramAppId}&` +
+          `redirect_uri=${encodeURIComponent(redirectUri)}&` +
+          `scope=instagram_basic,instagram_content_publish&` +
+          `response_type=code&` +
+          `state=${user?.id}_${platform}`;
+      
+      case 'twitter':
+        const twitterClientId = "YOUR_TWITTER_CLIENT_ID"; // Replace with your Twitter Client ID
+        return `https://twitter.com/i/oauth2/authorize?` +
+          `response_type=code&` +
+          `client_id=${twitterClientId}&` +
+          `redirect_uri=${encodeURIComponent(redirectUri)}&` +
+          `scope=tweet.read%20tweet.write%20users.read&` +
+          `state=${user?.id}_${platform}&` +
+          `code_challenge=challenge&` +
+          `code_challenge_method=plain`;
+      
+      case 'linkedin':
+        const linkedinClientId = "YOUR_LINKEDIN_CLIENT_ID"; // Replace with your LinkedIn Client ID
+        return `https://www.linkedin.com/oauth/v2/authorization?` +
+          `response_type=code&` +
+          `client_id=${linkedinClientId}&` +
+          `redirect_uri=${encodeURIComponent(redirectUri)}&` +
+          `scope=r_liteprofile%20w_member_social&` +
+          `state=${user?.id}_${platform}`;
+      
+      default:
+        throw new Error(`Unsupported platform: ${platform}`);
+    }
   };
 
-  const handleFacebookCallback = async (code: string) => {
+  const handlePlatformCallback = async (code: string, platform: string) => {
     if (!user) throw new Error('User not authenticated');
 
     try {
-      const { data, error } = await supabase.functions.invoke('facebook-auth', {
+      const { data, error } = await supabase.functions.invoke('social-auth', {
         body: {
           action: 'connect',
+          platform,
           code,
           userId: user.id,
         },
@@ -96,7 +130,7 @@ export const useSocialConnections = () => {
       await fetchConnections();
       return data;
     } catch (err) {
-      console.error('Error connecting Facebook:', err);
+      console.error(`Error connecting ${platform}:`, err);
       throw err;
     }
   };
@@ -105,7 +139,7 @@ export const useSocialConnections = () => {
     if (!user) throw new Error('User not authenticated');
 
     try {
-      const { error } = await supabase.functions.invoke('facebook-auth', {
+      const { error } = await supabase.functions.invoke('social-auth', {
         body: {
           action: 'disconnect',
           connectionId,
@@ -126,7 +160,7 @@ export const useSocialConnections = () => {
     if (!user) throw new Error('User not authenticated');
 
     try {
-      const { error } = await supabase.functions.invoke('facebook-auth', {
+      const { error } = await supabase.functions.invoke('social-auth', {
         body: {
           action: 'refresh',
           connectionId,
@@ -155,8 +189,8 @@ export const useSocialConnections = () => {
     connections,
     isLoading,
     error,
-    connectFacebook,
-    handleFacebookCallback,
+    connectPlatform,
+    handlePlatformCallback,
     disconnectConnection,
     refreshConnection,
     getConnectionByPlatform,
