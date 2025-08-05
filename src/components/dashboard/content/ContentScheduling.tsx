@@ -827,8 +827,8 @@ const Legend = ({ posts }: { posts: ScheduledContent[] }) => {
                     </div>
                   </div>
                   {(!isConnected || !isActive) && (
-                    <div className="absolute -top-1 -left-1 w-3 h-3 bg-destructive rounded-full flex items-center justify-center">
-                      <span className="text-destructive-foreground text-[8px] font-bold">!</span>
+                    <div className="absolute -top-1 -left-1 w-3 h-3 bg-red-500 rounded-full flex items-center justify-center">
+                      <span className="text-white text-[8px] font-bold">!</span>
                     </div>
                   )}
                 </div>
