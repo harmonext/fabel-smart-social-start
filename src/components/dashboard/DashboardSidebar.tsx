@@ -24,7 +24,8 @@ import {
   ChevronRight,
   ClipboardList,
   Database,
-  Tag
+  Tag,
+  Shield
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -231,6 +232,17 @@ const DashboardSidebar = ({
               
               {isExpanded("system-management") && (
                 <div className="ml-7 mt-1 space-y-1">
+                  <Button
+                    variant="ghost"
+                    className={cn(
+                      "w-full justify-start text-left h-9 text-sm",
+                      activeTab === "system-management" && activeSubTab === "content-moderation" && "bg-fabel-primary/10 text-fabel-primary"
+                    )}
+                    onClick={() => handleTabClick("system-management", "content-moderation")}
+                  >
+                    <Shield className="h-3 w-3 mr-3" />
+                    Content Moderation
+                  </Button>
                   <Button
                     variant="ghost"
                     className={cn(

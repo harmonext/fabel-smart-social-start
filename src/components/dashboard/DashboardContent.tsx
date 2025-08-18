@@ -10,6 +10,7 @@ import PromptTemplateTypes from "./content/PromptTemplateTypes";
 import OnboardingFlow from "@/components/onboarding/OnboardingFlow";
 import OnboardedData from "./content/OnboardedData";
 import RoleProtectedComponent from "@/components/RoleProtectedComponent";
+import AdminContentModeration from "./content/AdminContentModeration";
 import { useOnboarding } from "@/hooks/useOnboarding";
 
 interface DashboardContentProps {
@@ -50,6 +51,13 @@ const DashboardContent = ({ activeTab, activeSubTab }: DashboardContentProps) =>
     
     
     if (activeTab === "system-management") {
+      if (activeSubTab === "content-moderation") {
+        return (
+          <RoleProtectedComponent requiredRole="super_admin">
+            <AdminContentModeration />
+          </RoleProtectedComponent>
+        );
+      }
       if (activeSubTab === "prompt-template-types") {
         return (
           <RoleProtectedComponent requiredRole="super_admin">
@@ -66,9 +74,9 @@ const DashboardContent = ({ activeTab, activeSubTab }: DashboardContentProps) =>
       }
       return (
         <RoleProtectedComponent requiredRole="super_admin">
-          <PromptTemplateTypes />
+          <AdminContentModeration />
         </RoleProtectedComponent>
-      ); // Default to template types
+      ); // Default to content moderation
     }
     
     if (activeTab === "settings") {
