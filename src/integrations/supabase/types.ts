@@ -7,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
@@ -205,6 +205,17 @@ export type Database = {
       }
       scheduled_content: {
         Row: {
+          admin_moderated_at: string | null
+          admin_moderated_by: string | null
+          admin_moderation_reason: string | null
+          admin_moderation_status: string | null
+          ai_moderated_at: string | null
+          ai_moderation_confidence: number | null
+          ai_moderation_reasons: string[] | null
+          ai_moderation_recommendations: string[] | null
+          ai_moderation_risk_level: string | null
+          ai_moderation_status: string | null
+          ai_moderation_violations: string[] | null
           content: string | null
           created_at: string
           engagement_data: Json | null
@@ -221,6 +232,17 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          admin_moderated_at?: string | null
+          admin_moderated_by?: string | null
+          admin_moderation_reason?: string | null
+          admin_moderation_status?: string | null
+          ai_moderated_at?: string | null
+          ai_moderation_confidence?: number | null
+          ai_moderation_reasons?: string[] | null
+          ai_moderation_recommendations?: string[] | null
+          ai_moderation_risk_level?: string | null
+          ai_moderation_status?: string | null
+          ai_moderation_violations?: string[] | null
           content?: string | null
           created_at?: string
           engagement_data?: Json | null
@@ -237,6 +259,17 @@ export type Database = {
           user_id: string
         }
         Update: {
+          admin_moderated_at?: string | null
+          admin_moderated_by?: string | null
+          admin_moderation_reason?: string | null
+          admin_moderation_status?: string | null
+          ai_moderated_at?: string | null
+          ai_moderation_confidence?: number | null
+          ai_moderation_reasons?: string[] | null
+          ai_moderation_recommendations?: string[] | null
+          ai_moderation_risk_level?: string | null
+          ai_moderation_status?: string | null
+          ai_moderation_violations?: string[] | null
           content?: string | null
           created_at?: string
           engagement_data?: Json | null
@@ -369,7 +402,38 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      admin_content_moderation: {
+        Row: {
+          admin_moderated_at: string | null
+          admin_moderated_by: string | null
+          admin_moderation_reason: string | null
+          admin_moderation_status: string | null
+          ai_moderated_at: string | null
+          ai_moderation_confidence: number | null
+          ai_moderation_reasons: string[] | null
+          ai_moderation_recommendations: string[] | null
+          ai_moderation_risk_level: string | null
+          ai_moderation_status: string | null
+          ai_moderation_violations: string[] | null
+          company_industry: string | null
+          company_name: string | null
+          content: string | null
+          created_at: string | null
+          engagement_data: Json | null
+          goal: string | null
+          id: string | null
+          media_url: string | null
+          persona_name: string | null
+          platform: string | null
+          published_at: string | null
+          scheduled_at: string | null
+          status: string | null
+          title: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       get_user_role: {
@@ -378,8 +442,8 @@ export type Database = {
       }
       has_role: {
         Args: {
-          _user_id: string
           _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
         }
         Returns: boolean
       }
