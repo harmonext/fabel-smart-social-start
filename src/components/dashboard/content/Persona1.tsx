@@ -277,22 +277,19 @@ const Persona1 = ({ persona }: Persona1Props) => {
                           return (
                             <div key={index} className="flex flex-col items-center space-y-2">
                               <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <div className="w-10 h-10 bg-card rounded-full flex items-center justify-center">
-                                    <div className="text-lg">
-                                      <Icon />
-                                    </div>
-                                  </div>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p>{name}</p>
-                                </TooltipContent>
-                              </Tooltip>
-                              <Checkbox
-                                checked={isActive !== false}
-                                onCheckedChange={(checked) => handlePlatformActiveToggle(index, checked as boolean)}
-                                className="h-3 w-3"
-                              />
+                                 <TooltipTrigger asChild>
+                                   <div className="text-xl">
+                                     <Icon />
+                                   </div>
+                                 </TooltipTrigger>
+                                 <TooltipContent>
+                                   <p>{name}</p>
+                                 </TooltipContent>
+                               </Tooltip>
+                               <Checkbox
+                                 checked={isActive !== false}
+                                 onCheckedChange={(checked) => handlePlatformActiveToggle(index, checked as boolean)}
+                               />
                             </div>
                           );
                         })}
@@ -498,22 +495,19 @@ const Persona1 = ({ persona }: Persona1Props) => {
               return (
                 <div key={index} className="flex flex-col items-center space-y-2">
                   <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div className="w-10 h-10 bg-card rounded-full flex items-center justify-center">
-                        <div className="text-lg">
-                          <Icon />
-                        </div>
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>{name}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                  <Checkbox
-                    checked={isActive !== false}
-                    onCheckedChange={(checked) => handlePlatformActiveToggle(index, checked as boolean)}
-                    className="h-3 w-3"
-                  />
+                     <TooltipTrigger asChild>
+                       <div className="text-xl">
+                         <Icon />
+                       </div>
+                     </TooltipTrigger>
+                     <TooltipContent>
+                       <p>{name}</p>
+                     </TooltipContent>
+                   </Tooltip>
+                   <Checkbox
+                     checked={isActive !== false}
+                     onCheckedChange={(checked) => handlePlatformActiveToggle(index, checked as boolean)}
+                   />
                 </div>
               );
             })}
