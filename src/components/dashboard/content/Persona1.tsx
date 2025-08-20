@@ -3,7 +3,7 @@ import { Share2, Sparkles, ChevronRight, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Persona } from "@/hooks/usePersonas";
+import { Persona, usePersonas } from "@/hooks/usePersonas";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -25,6 +25,7 @@ interface Persona1Props {
 }
 
 const Persona1 = ({ persona }: Persona1Props) => {
+  const { savePersonas } = usePersonas();
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
   const [generatedContent, setGeneratedContent] = useState<GeneratedContent[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -133,6 +134,61 @@ const Persona1 = ({ persona }: Persona1Props) => {
     setModalText("");
   };
 
+  const handlePlatformActiveToggle = async (platformIndex: number, isActive: boolean) => {
+    if (!persona) return;
+    
+    try {
+      // Update the persona in the database
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) {
+        toast.error("Authentication error");
+        return;
+      }
+
+      // Determine which field to update based on the platform index
+      let updateField: string;
+      switch (platformIndex) {
+        case 0:
+          updateField = 'social_media_top_1_active';
+          break;
+        case 1:
+          updateField = 'social_media_top_2_active';
+          break;
+        case 2:
+          updateField = 'social_media_top_3_active';
+          break;
+        default:
+          return;
+      }
+
+      const { error } = await supabase
+        .from('saved_personas')
+        .update({ [updateField]: isActive })
+        .eq('user_id', user.id)
+        .eq('name', persona.name);
+
+      if (error) {
+        console.error('Error updating platform active state:', error);
+        toast.error("Failed to update platform state");
+        return;
+      }
+
+      // Update the local persona object
+      if (platformIndex === 0) {
+        persona.social_media_top_1_active = isActive;
+      } else if (platformIndex === 1) {
+        persona.social_media_top_2_active = isActive;
+      } else if (platformIndex === 2) {
+        persona.social_media_top_3_active = isActive;
+      }
+
+      toast.success(`Platform ${isActive ? 'activated' : 'deactivated'}`);
+    } catch (error) {
+      console.error('Error updating platform active state:', error);
+      toast.error("Failed to update platform state");
+    }
+  };
+
 
   const handleGenerateContentClick = async () => {
     const personaName = persona?.name || "The Ambitious Entrepreneur";
@@ -215,19 +271,29 @@ const Persona1 = ({ persona }: Persona1Props) => {
                       <div className="flex items-center justify-center space-x-6">
                         {socialMediaPlatforms.slice(0, 3).map((platform, index) => {
                           const { icon: Icon, color, name } = getSocialMediaIcon(platform);
+                          const isActive = index === 0 ? persona?.social_media_top_1_active : 
+                                          index === 1 ? persona?.social_media_top_2_active : 
+                                          persona?.social_media_top_3_active;
                           return (
-                            <Tooltip key={index}>
-                              <TooltipTrigger asChild>
-                                <div className="w-10 h-10 bg-card rounded-full flex items-center justify-center">
-                                  <div className="text-lg">
-                                    <Icon />
+                            <div key={index} className="flex flex-col items-center space-y-2">
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <div className="w-10 h-10 bg-card rounded-full flex items-center justify-center">
+                                    <div className="text-lg">
+                                      <Icon />
+                                    </div>
                                   </div>
-                                </div>
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                <p>{name}</p>
-                              </TooltipContent>
-                            </Tooltip>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>{name}</p>
+                                </TooltipContent>
+                              </Tooltip>
+                              <Checkbox
+                                checked={isActive !== false}
+                                onCheckedChange={(checked) => handlePlatformActiveToggle(index, checked as boolean)}
+                                className="h-3 w-3"
+                              />
+                            </div>
                           );
                         })}
                       </div>
@@ -426,19 +492,29 @@ const Persona1 = ({ persona }: Persona1Props) => {
           <div className="flex items-center justify-center space-x-6">
             {socialMediaPlatforms.slice(0, 3).map((platform, index) => {
               const { icon: Icon, color, name } = getSocialMediaIcon(platform);
+              const isActive = index === 0 ? persona?.social_media_top_1_active : 
+                              index === 1 ? persona?.social_media_top_2_active : 
+                              persona?.social_media_top_3_active;
               return (
-                <Tooltip key={index}>
-                  <TooltipTrigger asChild>
-                    <div className="w-10 h-10 bg-card rounded-full flex items-center justify-center">
-                      <div className="text-lg">
-                        <Icon />
+                <div key={index} className="flex flex-col items-center space-y-2">
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="w-10 h-10 bg-card rounded-full flex items-center justify-center">
+                        <div className="text-lg">
+                          <Icon />
+                        </div>
                       </div>
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>{name}</p>
-                  </TooltipContent>
-                </Tooltip>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>{name}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                  <Checkbox
+                    checked={isActive !== false}
+                    onCheckedChange={(checked) => handlePlatformActiveToggle(index, checked as boolean)}
+                    className="h-3 w-3"
+                  />
+                </div>
               );
             })}
           </div>
