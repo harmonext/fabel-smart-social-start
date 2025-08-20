@@ -8,10 +8,10 @@ export interface SocialConnection {
   platform_user_id: string;
   account_name: string;
   followers_count: number;
-  access_token: string;
   is_active: boolean;
   connected_at: string;
   last_sync_at: string | null;
+  token_expires_at: string | null;
 }
 
 export const useSocialConnections = () => {
@@ -25,15 +25,15 @@ export const useSocialConnections = () => {
 
     try {
       setIsLoading(true);
-      const { data, error } = await supabase
-        .from('social_connections')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('is_active', true);
+      
+      // Use secure edge function that doesn't expose tokens
+      const { data, error } = await supabase.functions.invoke('secure-social-connections', {
+        body: { action: 'list' },
+      });
 
       if (error) throw error;
 
-      const realConnections = data || [];
+      const realConnections = data?.connections || [];
       
       // Mock Facebook connection for testing
       const mockFacebookConnection: SocialConnection = {
@@ -42,14 +42,14 @@ export const useSocialConnections = () => {
         platform_user_id: 'mock-facebook-user-123',
         account_name: 'Test Facebook Page',
         followers_count: 15420,
-        access_token: 'mock-token',
         is_active: true,
         connected_at: new Date().toISOString(),
-        last_sync_at: new Date().toISOString()
+        last_sync_at: new Date().toISOString(),
+        token_expires_at: null
       };
 
       // Add mock connection if Facebook isn't already connected
-      const hasFacebook = realConnections.some(conn => conn.platform === 'facebook');
+      const hasFacebook = realConnections.some((conn: any) => conn.platform === 'facebook');
       const allConnections = hasFacebook ? realConnections : [...realConnections, mockFacebookConnection];
 
       setConnections(allConnections);
@@ -139,11 +139,10 @@ export const useSocialConnections = () => {
     if (!user) throw new Error('User not authenticated');
 
     try {
-      const { error } = await supabase.functions.invoke('social-auth', {
+      const { error } = await supabase.functions.invoke('secure-social-connections', {
         body: {
           action: 'disconnect',
           connectionId,
-          userId: user.id,
         },
       });
 
@@ -160,11 +159,10 @@ export const useSocialConnections = () => {
     if (!user) throw new Error('User not authenticated');
 
     try {
-      const { error } = await supabase.functions.invoke('social-auth', {
+      const { error } = await supabase.functions.invoke('secure-social-connections', {
         body: {
           action: 'refresh',
           connectionId,
-          userId: user.id,
         },
       });
 
