@@ -440,6 +440,20 @@ export type Database = {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["app_role"]
       }
+      get_user_social_connections: {
+        Args: { _user_id: string }
+        Returns: {
+          account_name: string
+          connected_at: string
+          followers_count: number
+          id: string
+          is_active: boolean
+          last_sync_at: string
+          platform: string
+          platform_user_id: string
+          token_expires_at: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
