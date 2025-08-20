@@ -448,6 +448,14 @@ export type Database = {
         }
         Returns: boolean
       }
+      rotate_social_connection_tokens: {
+        Args: {
+          _connection_id: string
+          _new_access_token: string
+          _new_refresh_token?: string
+        }
+        Returns: boolean
+      }
       store_encrypted_social_connection: {
         Args: {
           _account_name: string

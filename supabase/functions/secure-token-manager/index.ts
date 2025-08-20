@@ -1,8 +1,10 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Origin': 'https://id-preview--0a76fc0b-7626-492c-92d8-8ab1b3bad5ca.lovable.app',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Max-Age': '86400'
 }
 
 interface TokenRequest {
@@ -26,7 +28,13 @@ async function getEncryptionKey(): Promise<CryptoKey> {
     throw new Error('Encryption key not configured')
   }
   
-  const keyData = new TextEncoder().encode(keyString.substring(0, 32)) // Ensure 32 bytes
+  // Ensure minimum 32 bytes for AES-256, with proper validation
+  if (keyString.length < 32) {
+    throw new Error('Encryption key must be at least 32 characters')
+  }
+  
+  // Use first 32 bytes and normalize to prevent timing attacks
+  const keyData = new TextEncoder().encode(keyString.substring(0, 32))
   return await crypto.subtle.importKey(
     'raw',
     keyData,

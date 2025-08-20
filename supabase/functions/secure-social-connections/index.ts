@@ -1,8 +1,10 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.0'
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Origin': 'https://id-preview--0a76fc0b-7626-492c-92d8-8ab1b3bad5ca.lovable.app',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Max-Age': '86400'
 }
 
 interface SocialConnectionsRequest {
@@ -79,7 +81,7 @@ Deno.serve(async (req) => {
 
         if (connError || !connection) {
           return new Response(
-            JSON.stringify({ error: 'Connection not found' }),
+            JSON.stringify({ error: 'Resource not found' }),
             { 
               status: 404, 
               headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
