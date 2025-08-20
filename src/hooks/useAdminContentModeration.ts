@@ -44,19 +44,18 @@ export const useAdminContentModeration = () => {
     if (!user) return;
 
     try {
-      const { data, error } = await supabase
-        .from('admin_content_moderation')
-        .select('*')
-        .order('created_at', { ascending: false });
+      const { data, error } = await supabase.functions.invoke('secure-admin-moderation', {
+        body: { action: 'list' },
+      });
 
       if (error) throw error;
       
-      setContent(data || []);
+      setContent(data?.content || []);
     } catch (error) {
       console.error('Error fetching admin content:', error);
       toast({
         title: "Error",
-        description: "Failed to fetch content for moderation",
+        description: "Failed to fetch content for moderation. Admin access required.",
         variant: "destructive",
       });
     } finally {
@@ -72,15 +71,14 @@ export const useAdminContentModeration = () => {
     if (!user) return false;
 
     try {
-      const { error } = await supabase
-        .from('scheduled_content')
-        .update({
-          admin_moderation_status: decision,
-          admin_moderation_reason: reason || null,
-          admin_moderated_by: user.id,
-          admin_moderated_at: new Date().toISOString()
-        })
-        .eq('id', contentId);
+      const { data, error } = await supabase.functions.invoke('secure-admin-moderation', {
+        body: {
+          action: 'moderate',
+          contentId,
+          decision,
+          reason
+        },
+      });
 
       if (error) throw error;
 
@@ -107,7 +105,7 @@ export const useAdminContentModeration = () => {
       console.error('Error moderating content:', error);
       toast({
         title: "Error",
-        description: "Failed to moderate content",
+        description: "Failed to moderate content. Admin access required.",
         variant: "destructive",
       });
       return false;
@@ -122,15 +120,14 @@ export const useAdminContentModeration = () => {
     if (!user || contentIds.length === 0) return false;
 
     try {
-      const { error } = await supabase
-        .from('scheduled_content')
-        .update({
-          admin_moderation_status: decision,
-          admin_moderation_reason: reason || null,
-          admin_moderated_by: user.id,
-          admin_moderated_at: new Date().toISOString()
-        })
-        .in('id', contentIds);
+      const { data, error } = await supabase.functions.invoke('secure-admin-moderation', {
+        body: {
+          action: 'bulk_moderate',
+          contentIds,
+          decision,
+          reason
+        },
+      });
 
       if (error) throw error;
 
@@ -160,7 +157,7 @@ export const useAdminContentModeration = () => {
       console.error('Error bulk moderating content:', error);
       toast({
         title: "Error",
-        description: "Failed to bulk moderate content",
+        description: "Failed to bulk moderate content. Admin access required.",
         variant: "destructive",
       });
       return false;
