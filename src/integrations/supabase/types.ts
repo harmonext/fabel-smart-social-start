@@ -157,8 +157,11 @@ export type Database = {
           name: string
           psychographics: string
           social_media_top_1: string
+          social_media_top_1_active: boolean | null
           social_media_top_2: string | null
+          social_media_top_2_active: boolean | null
           social_media_top_3: string | null
+          social_media_top_3_active: boolean | null
           top_competitors: string
           updated_at: string
           user_id: string
@@ -176,8 +179,11 @@ export type Database = {
           name: string
           psychographics?: string
           social_media_top_1?: string
+          social_media_top_1_active?: boolean | null
           social_media_top_2?: string | null
+          social_media_top_2_active?: boolean | null
           social_media_top_3?: string | null
+          social_media_top_3_active?: boolean | null
           top_competitors?: string
           updated_at?: string
           user_id: string
@@ -195,8 +201,11 @@ export type Database = {
           name?: string
           psychographics?: string
           social_media_top_1?: string
+          social_media_top_1_active?: boolean | null
           social_media_top_2?: string | null
+          social_media_top_2_active?: boolean | null
           social_media_top_3?: string | null
+          social_media_top_3_active?: boolean | null
           top_competitors?: string
           updated_at?: string
           user_id?: string
