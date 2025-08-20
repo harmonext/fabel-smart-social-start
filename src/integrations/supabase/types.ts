@@ -405,11 +405,29 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_encrypted_social_token: {
+        Args: { _platform: string; _token_type?: string; _user_id: string }
+        Returns: string
+      }
       get_user_role: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["app_role"]
       }
       get_user_social_connections: {
+        Args: { _user_id: string }
+        Returns: {
+          account_name: string
+          connected_at: string
+          followers_count: number
+          id: string
+          is_active: boolean
+          last_sync_at: string
+          platform: string
+          platform_user_id: string
+          token_expires_at: string
+        }[]
+      }
+      get_user_social_connections_safe: {
         Args: { _user_id: string }
         Returns: {
           account_name: string
@@ -429,6 +447,19 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      store_encrypted_social_connection: {
+        Args: {
+          _account_name: string
+          _encrypted_access_token: string
+          _encrypted_refresh_token?: string
+          _followers_count?: number
+          _platform: string
+          _platform_user_id: string
+          _token_expires_at?: string
+          _user_id: string
+        }
+        Returns: string
       }
     }
     Enums: {

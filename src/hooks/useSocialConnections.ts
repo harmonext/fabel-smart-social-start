@@ -26,9 +26,9 @@ export const useSocialConnections = () => {
     try {
       setIsLoading(true);
       
-      // Use secure edge function that doesn't expose tokens
-      const { data, error } = await supabase.functions.invoke('secure-social-connections', {
-        body: { action: 'list' },
+      // Use secure token manager that doesn't expose tokens
+      const { data, error } = await supabase.functions.invoke('secure-token-manager', {
+        body: { action: 'get' },
       });
 
       if (error) throw error;
@@ -99,6 +99,26 @@ export const useSocialConnections = () => {
       });
 
       if (error) throw error;
+
+      // Store connection with encrypted tokens
+      if (data.access_token) {
+        const { error: storeError } = await supabase.functions.invoke('secure-token-manager', {
+          body: {
+            action: 'store',
+            platform,
+            tokenData: {
+              access_token: data.access_token,
+              refresh_token: data.refresh_token,
+              platform_user_id: data.platform_user_id,
+              account_name: data.account_name,
+              followers_count: data.followers_count,
+              token_expires_at: data.token_expires_at
+            }
+          }
+        });
+
+        if (storeError) throw new Error('Failed to store encrypted tokens');
+      }
 
       await fetchConnections();
       return data;

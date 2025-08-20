@@ -45,7 +45,7 @@ Deno.serve(async (req) => {
       case 'list': {
         // Use the secure function to get connections without tokens
         const { data: connections, error } = await supabaseClient
-          .rpc('get_user_social_connections', { _user_id: user.id });
+          .rpc('get_user_social_connections_safe', { _user_id: user.id });
 
         if (error) {
           console.error('Error fetching connections:', error);
