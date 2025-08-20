@@ -402,38 +402,7 @@ export type Database = {
       }
     }
     Views: {
-      admin_content_moderation: {
-        Row: {
-          admin_moderated_at: string | null
-          admin_moderated_by: string | null
-          admin_moderation_reason: string | null
-          admin_moderation_status: string | null
-          ai_moderated_at: string | null
-          ai_moderation_confidence: number | null
-          ai_moderation_reasons: string[] | null
-          ai_moderation_recommendations: string[] | null
-          ai_moderation_risk_level: string | null
-          ai_moderation_status: string | null
-          ai_moderation_violations: string[] | null
-          company_industry: string | null
-          company_name: string | null
-          content: string | null
-          created_at: string | null
-          engagement_data: Json | null
-          goal: string | null
-          id: string | null
-          media_url: string | null
-          persona_name: string | null
-          platform: string | null
-          published_at: string | null
-          scheduled_at: string | null
-          status: string | null
-          title: string | null
-          updated_at: string | null
-          user_id: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       get_user_role: {

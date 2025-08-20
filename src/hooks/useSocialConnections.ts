@@ -66,62 +66,35 @@ export const useSocialConnections = () => {
   }, [user]);
 
   const connectPlatform = async (platform: string): Promise<string> => {
-    const redirectUri = `${window.location.origin}/dashboard?tab=social&subtab=connections`;
-    
-    switch (platform) {
-      case 'facebook':
-        const facebookAppId = "1062833901736033"; // Replace with your actual Facebook App ID
-        return `https://www.facebook.com/v18.0/dialog/oauth?` +
-          `client_id=${facebookAppId}&` +
-          `redirect_uri=${encodeURIComponent(redirectUri)}&` +
-          `scope=pages_manage_posts,pages_read_engagement,pages_show_list&` +
-          `response_type=code&` +
-          `state=${user?.id}_${platform}`;
-      
-      case 'instagram':
-        const instagramAppId = "1062833901736033"; // Same as Facebook for Instagram Business
-        return `https://www.facebook.com/v18.0/dialog/oauth?` +
-          `client_id=${instagramAppId}&` +
-          `redirect_uri=${encodeURIComponent(redirectUri)}&` +
-          `scope=instagram_basic,instagram_content_publish&` +
-          `response_type=code&` +
-          `state=${user?.id}_${platform}`;
-      
-      case 'twitter':
-        const twitterClientId = "YOUR_TWITTER_CLIENT_ID"; // Replace with your Twitter Client ID
-        return `https://twitter.com/i/oauth2/authorize?` +
-          `response_type=code&` +
-          `client_id=${twitterClientId}&` +
-          `redirect_uri=${encodeURIComponent(redirectUri)}&` +
-          `scope=tweet.read%20tweet.write%20users.read&` +
-          `state=${user?.id}_${platform}&` +
-          `code_challenge=challenge&` +
-          `code_challenge_method=plain`;
-      
-      case 'linkedin':
-        const linkedinClientId = "YOUR_LINKEDIN_CLIENT_ID"; // Replace with your LinkedIn Client ID
-        return `https://www.linkedin.com/oauth/v2/authorization?` +
-          `response_type=code&` +
-          `client_id=${linkedinClientId}&` +
-          `redirect_uri=${encodeURIComponent(redirectUri)}&` +
-          `scope=r_liteprofile%20w_member_social&` +
-          `state=${user?.id}_${platform}`;
-      
-      default:
-        throw new Error(`Unsupported platform: ${platform}`);
-    }
-  };
-
-  const handlePlatformCallback = async (code: string, platform: string) => {
     if (!user) throw new Error('User not authenticated');
 
     try {
-      const { data, error } = await supabase.functions.invoke('social-auth', {
+      const { data, error } = await supabase.functions.invoke('secure-social-auth', {
         body: {
           action: 'connect',
           platform,
+        },
+      });
+
+      if (error) throw error;
+
+      return data.authUrl;
+    } catch (err) {
+      console.error(`Error generating auth URL for ${platform}:`, err);
+      throw err;
+    }
+  };
+
+  const handlePlatformCallback = async (code: string, platform: string, state: string) => {
+    if (!user) throw new Error('User not authenticated');
+
+    try {
+      const { data, error } = await supabase.functions.invoke('secure-social-auth', {
+        body: {
+          action: 'callback',
+          platform,
           code,
-          userId: user.id,
+          state,
         },
       });
 

@@ -28,10 +28,10 @@ const SocialConnections = () => {
     const state = urlParams.get('state');
     
     if (code && state) {
-      // Extract platform from state (format: userId_platform)
+      // Extract platform from state (format: userId_platform_nonce)
       const platform = state.split('_')[1];
       if (platform) {
-        handlePlatformCallback(code, platform)
+        handlePlatformCallback(code, platform, state)
           .then(() => {
             toast({
               title: "Success",

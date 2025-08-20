@@ -17,3 +17,6 @@ verify_jwt = true
 
 [functions.secure-admin-moderation]
 verify_jwt = true
+
+[functions.secure-social-auth]
+verify_jwt = true
