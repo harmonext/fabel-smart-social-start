@@ -242,7 +242,7 @@ const Persona1 = ({ persona }: Persona1Props) => {
               <div className="lg:col-span-1">
                 <div className="bg-muted rounded-lg p-6 space-y-4 h-full flex flex-col">
                   {/* Normal View Header */}
-                  <div className="flex items-center gap-3">
+                  <div className="text-center">
                     <div>
                       <h1 className="text-lg font-bold text-foreground">{persona?.name || "Urban Creative"}</h1>
                     </div>
@@ -459,7 +459,7 @@ const Persona1 = ({ persona }: Persona1Props) => {
 
       {/* Regular View Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
+        <div className="flex-1 text-center">
           <div>
             <h1 className="text-lg font-bold text-foreground">{persona?.name || "Urban Creative"}</h1>
           </div>
