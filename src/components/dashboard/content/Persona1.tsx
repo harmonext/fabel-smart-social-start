@@ -34,6 +34,8 @@ const Persona1 = ({ persona }: Persona1Props) => {
   const [currentEditingPlatform, setCurrentEditingPlatform] = useState<string | null>(null);
   const [modalText, setModalText] = useState("");
   const [isExpanded, setIsExpanded] = useState(false);
+  // Local state for checkbox states since this is mock data
+  const [platformStates, setPlatformStates] = useState<boolean[]>([false, false, false]);
 
   const getSocialMediaIcon = (platform: string) => {
     const platformName = platform?.toLowerCase();
@@ -133,6 +135,15 @@ const Persona1 = ({ persona }: Persona1Props) => {
     setShowModal(false);
     setCurrentEditingPlatform(null);
     setModalText("");
+  };
+
+  // Simple handler for mock data - just updates local state
+  const handleMockPlatformToggle = (platformIndex: number, isActive: boolean) => {
+    setPlatformStates(prev => {
+      const newStates = [...prev];
+      newStates[platformIndex] = isActive;
+      return newStates;
+    });
   };
 
   const handlePlatformActiveToggle = async (platformIndex: number, isActive: boolean) => {
@@ -273,31 +284,27 @@ const Persona1 = ({ persona }: Persona1Props) => {
                   <div className="text-center">
                     <TooltipProvider>
                       <div className="flex items-center justify-center space-x-6">
-                        {socialMediaPlatforms.slice(0, 3).map((platform, index) => {
-                          const { icon: Icon, color, name } = getSocialMediaIcon(platform);
-                          const isActive = index === 0 ? persona?.social_media_top_1_active : 
-                                          index === 1 ? persona?.social_media_top_2_active : 
-                                          persona?.social_media_top_3_active;
-                          console.log(`Platform ${index}: ${platform}, isActive:`, isActive, typeof isActive);
-                          return (
-                            <div key={index} className="flex flex-col items-center space-y-2">
-                              <Tooltip>
-                                 <TooltipTrigger asChild>
-                                   <div className="text-xl">
-                                     <Icon />
-                                   </div>
-                                 </TooltipTrigger>
-                                 <TooltipContent>
-                                   <p>{name}</p>
-                                 </TooltipContent>
-                               </Tooltip>
-                               <Checkbox
-                                 checked={isActive === true}
-                                 onCheckedChange={(checked) => handlePlatformActiveToggle(index, checked as boolean)}
-                               />
-                            </div>
-                          );
-                        })}
+                         {socialMediaPlatforms.slice(0, 3).map((platform, index) => {
+                           const { icon: Icon, color, name } = getSocialMediaIcon(platform);
+                           return (
+                             <div key={index} className="flex flex-col items-center space-y-2">
+                               <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <div className="text-xl">
+                                      <Icon />
+                                    </div>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>{name}</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                                <Checkbox
+                                  checked={platformStates[index]}
+                                  onCheckedChange={(checked) => handleMockPlatformToggle(index, checked as boolean)}
+                                />
+                             </div>
+                           );
+                         })}
                       </div>
                     </TooltipProvider>
                   </div>
@@ -503,10 +510,6 @@ const Persona1 = ({ persona }: Persona1Props) => {
           <div className="flex items-center justify-center space-x-6">
             {socialMediaPlatforms.slice(0, 3).map((platform, index) => {
               const { icon: Icon, color, name } = getSocialMediaIcon(platform);
-              const isActive = index === 0 ? persona?.social_media_top_1_active : 
-                              index === 1 ? persona?.social_media_top_2_active : 
-                              persona?.social_media_top_3_active;
-              console.log(`Regular view Platform ${index}: ${platform}, isActive:`, isActive, typeof isActive);
               return (
                 <div key={index} className="flex flex-col items-center space-y-2">
                   <Tooltip>
@@ -520,8 +523,8 @@ const Persona1 = ({ persona }: Persona1Props) => {
                      </TooltipContent>
                    </Tooltip>
                    <Checkbox
-                     checked={isActive === true}
-                     onCheckedChange={(checked) => handlePlatformActiveToggle(index, checked as boolean)}
+                     checked={platformStates[index]}
+                     onCheckedChange={(checked) => handleMockPlatformToggle(index, checked as boolean)}
                    />
                 </div>
               );
