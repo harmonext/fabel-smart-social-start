@@ -867,7 +867,11 @@ const ContentScheduling = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [activeId, setActiveId] = useState<string | null>(null);
   const [editMode, setEditMode] = useState(false);
+  const [platformFilter, setPlatformFilter] = useState<string>('all');
+  const [personaFilter, setPersonaFilter] = useState<string>('all');
   const { content, isLoading, getContentByStatus, deleteContent, updateContent } = useScheduledContent();
+  const { connections } = useSocialConnections();
+  const { personas } = usePersonas();
   const { toast } = useToast();
 
   const sensors = useSensors(
@@ -950,6 +954,13 @@ const ContentScheduling = () => {
     }
   };
 
+  // Filter content based on selected filters
+  const filteredContent = content.filter(post => {
+    const platformMatch = platformFilter === 'all' || post.platform === platformFilter;
+    const personaMatch = personaFilter === 'all' || post.persona_name === personaFilter;
+    return platformMatch && personaMatch;
+  });
+
   const getDraggedPost = () => {
     if (!activeId) return null;
     return content.find(p => p.id === activeId);
@@ -1005,6 +1016,123 @@ const ContentScheduling = () => {
         </div>
       </div>
 
+      {/* Filter Controls */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-lg">
+            Filters
+          </CardTitle>
+          <CardDescription>
+            Filter content by platform and persona to focus on specific types of posts
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex gap-4">
+            <div className="flex-1">
+              <label className="text-sm font-medium text-foreground mb-2 block">
+                Platform
+              </label>
+              <Select value={platformFilter} onValueChange={setPlatformFilter}>
+                <SelectTrigger className="bg-background">
+                  <SelectValue placeholder="Filter by platform" />
+                </SelectTrigger>
+                <SelectContent className="bg-background border border-border z-50">
+                  <SelectItem value="all">All Platforms</SelectItem>
+                  {['facebook', 'instagram', 'twitter', 'linkedin', 'pinterest', 'tiktok']
+                    .filter(platform => content.some(post => post.platform === platform))
+                    .map(platform => (
+                      <SelectItem key={platform} value={platform}>
+                        <div className="flex items-center gap-2">
+                          {getSocialIcon(platform, 'sm')}
+                          <span className="capitalize">{platform}</span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="flex-1">
+              <label className="text-sm font-medium text-foreground mb-2 block">
+                Persona
+              </label>
+              <Select value={personaFilter} onValueChange={setPersonaFilter}>
+                <SelectTrigger className="bg-background">
+                  <SelectValue placeholder="Filter by persona" />
+                </SelectTrigger>
+                <SelectContent className="bg-background border border-border z-50">
+                  <SelectItem value="all">All Personas</SelectItem>
+                  {personas.map(persona => (
+                    <SelectItem key={persona.name} value={persona.name}>
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 rounded-full flex items-center justify-center text-xs font-bold bg-primary/20 border">
+                          {getPersonaAvatar(persona.name)}
+                        </div>
+                        <span>{persona.name}</span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                  {content.some(post => post.persona_name && !personas.some(p => p.name === post.persona_name)) && (
+                    <>
+                      {Array.from(new Set(content
+                        .map(post => post.persona_name)
+                        .filter(name => name && !personas.some(p => p.name === name))
+                      )).map(personaName => (
+                        <SelectItem key={personaName} value={personaName || ''}>
+                          <div className="flex items-center gap-2">
+                            <div className="w-4 h-4 rounded-full flex items-center justify-center text-xs font-bold bg-gray-200 border">
+                              {getPersonaAvatar(personaName || '')}
+                            </div>
+                            <span>{personaName}</span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </>
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {(platformFilter !== 'all' || personaFilter !== 'all') && (
+              <div className="flex items-end">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setPlatformFilter('all');
+                    setPersonaFilter('all');
+                  }}
+                  className="whitespace-nowrap"
+                >
+                  Clear Filters
+                </Button>
+              </div>
+            )}
+          </div>
+
+          {(platformFilter !== 'all' || personaFilter !== 'all') && (
+            <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="text-sm text-blue-800">
+                <span className="font-medium">Active Filters:</span>
+                {platformFilter !== 'all' && (
+                  <span className="ml-2 inline-flex items-center gap-1 bg-blue-100 px-2 py-1 rounded-full text-xs">
+                    {getSocialIcon(platformFilter, 'xs')}
+                    <span className="capitalize">{platformFilter}</span>
+                  </span>
+                )}
+                {personaFilter !== 'all' && (
+                  <span className="ml-2 inline-flex items-center gap-1 bg-blue-100 px-2 py-1 rounded-full text-xs">
+                    <div className="w-3 h-3 rounded-full flex items-center justify-center text-[8px] font-bold bg-blue-200">
+                      {getPersonaAvatar(personaFilter)}
+                    </div>
+                    {personaFilter}
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
       {editMode ? (
         <DndContext
           sensors={sensors}
@@ -1013,8 +1141,8 @@ const ContentScheduling = () => {
         >
           {viewMode === 'calendar' ? (
             <CalendarView 
-              posts={content.filter(post => post.scheduled_at)} 
-              allContent={content}
+              posts={filteredContent.filter(post => post.scheduled_at)} 
+              allContent={filteredContent}
               currentDate={currentDate}
               setCurrentDate={setCurrentDate}
               onReschedule={handleReschedule}
@@ -1022,8 +1150,8 @@ const ContentScheduling = () => {
             />
           ) : (
             <ListView 
-              posts={content.filter(post => post.scheduled_at)} 
-              allContent={content}
+              posts={filteredContent.filter(post => post.scheduled_at)} 
+              allContent={filteredContent}
               currentDate={currentDate}
               setCurrentDate={setCurrentDate}
               onReschedule={handleReschedule}
@@ -1044,8 +1172,8 @@ const ContentScheduling = () => {
         // When edit mode is disabled, render without DndContext to enable hover
         viewMode === 'calendar' ? (
           <CalendarView 
-            posts={content.filter(post => post.scheduled_at)} 
-            allContent={content}
+            posts={filteredContent.filter(post => post.scheduled_at)} 
+            allContent={filteredContent}
             currentDate={currentDate}
             setCurrentDate={setCurrentDate}
             onReschedule={handleReschedule}
@@ -1053,8 +1181,8 @@ const ContentScheduling = () => {
           />
         ) : (
           <ListView 
-            posts={content.filter(post => post.scheduled_at)} 
-            allContent={content}
+            posts={filteredContent.filter(post => post.scheduled_at)} 
+            allContent={filteredContent}
             currentDate={currentDate}
             setCurrentDate={setCurrentDate}
             onReschedule={handleReschedule}
@@ -1073,20 +1201,20 @@ const ContentScheduling = () => {
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <div className="text-2xl font-bold text-blue-600">{content.filter(post => post.status === 'scheduled').length}</div>
-              <div className="text-sm text-blue-700">Scheduled Posts</div>
+              <div className="text-2xl font-bold text-blue-600">{filteredContent.filter(post => post.status === 'scheduled').length}</div>
+              <div className="text-sm text-blue-700">Scheduled Posts{(platformFilter !== 'all' || personaFilter !== 'all') ? ' (filtered)' : ''}</div>
             </div>
             <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-              <div className="text-2xl font-bold text-green-600">{content.filter(post => post.status === 'published').length}</div>
-              <div className="text-sm text-green-700">Published Posts</div>
+              <div className="text-2xl font-bold text-green-600">{filteredContent.filter(post => post.status === 'published').length}</div>
+              <div className="text-sm text-green-700">Published Posts{(platformFilter !== 'all' || personaFilter !== 'all') ? ' (filtered)' : ''}</div>
             </div>
             <div className="p-4 bg-purple-50 border border-purple-200 rounded-lg">
-              <div className="text-2xl font-bold text-purple-600">{new Set(content.map(post => post.platform)).size}</div>
-              <div className="text-sm text-purple-700">Active Platforms</div>
+              <div className="text-2xl font-bold text-purple-600">{new Set(filteredContent.map(post => post.platform)).size}</div>
+              <div className="text-sm text-purple-700">Active Platforms{(platformFilter !== 'all' || personaFilter !== 'all') ? ' (filtered)' : ''}</div>
             </div>
             <div className="p-4 bg-orange-50 border border-orange-200 rounded-lg">
-              <div className="text-2xl font-bold text-orange-600">{content.filter(post => post.status === 'draft').length}</div>
-              <div className="text-sm text-orange-700">Draft Posts</div>
+              <div className="text-2xl font-bold text-orange-600">{filteredContent.filter(post => post.status === 'draft').length}</div>
+              <div className="text-sm text-orange-700">Draft Posts{(platformFilter !== 'all' || personaFilter !== 'all') ? ' (filtered)' : ''}</div>
             </div>
           </div>
         </CardContent>
