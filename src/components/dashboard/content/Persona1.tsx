@@ -290,7 +290,7 @@ const Persona1 = ({ persona }: Persona1Props) => {
                                  </TooltipContent>
                                </Tooltip>
                                <Checkbox
-                                 checked={isActive !== false}
+                                 checked={isActive === true}
                                  onCheckedChange={(checked) => handlePlatformActiveToggle(index, checked as boolean)}
                                />
                             </div>
@@ -517,7 +517,7 @@ const Persona1 = ({ persona }: Persona1Props) => {
                      </TooltipContent>
                    </Tooltip>
                    <Checkbox
-                     checked={isActive !== false}
+                     checked={isActive === true}
                      onCheckedChange={(checked) => handlePlatformActiveToggle(index, checked as boolean)}
                    />
                 </div>
