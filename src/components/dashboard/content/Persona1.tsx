@@ -461,23 +461,21 @@ const Persona1 = ({ persona }: Persona1Props) => {
       )}
 
       {/* Regular View Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div>
-            <h1 className="text-lg font-bold text-foreground">{persona?.name || "Urban Creative"}</h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              {persona?.description || "Barry is a savvy shopper who prioritizes value without compromising quality. He enjoys finding deals and is often seen researching products online before making a purchase."}
-            </p>
-          </div>
+      <div>
+        <div className="flex items-center justify-between">
+          <h1 className="text-lg font-bold text-foreground">{persona?.name || "Urban Creative"}</h1>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setIsExpanded(true)}
+            className="text-muted-foreground hover:text-foreground"
+          >
+            More <ChevronRight className="h-4 w-4 ml-1" />
+          </Button>
         </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => setIsExpanded(true)}
-          className="text-muted-foreground hover:text-foreground"
-        >
-          More <ChevronRight className="h-4 w-4 ml-1" />
-        </Button>
+        <p className="text-sm text-muted-foreground mt-1">
+          {persona?.description || "Barry is a savvy shopper who prioritizes value without compromising quality. He enjoys finding deals and is often seen researching products online before making a purchase."}
+        </p>
       </div>
 
       {/* Age, Gender, Income */}
