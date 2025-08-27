@@ -152,9 +152,11 @@ export type Database = {
           description: string
           genders: string
           id: string
+          income_range: string | null
           location: string
           ltv_estimate: string | null
           name: string
+          pain_points: string | null
           psychographics: string
           social_media_top_1: string
           social_media_top_1_active: boolean | null
@@ -174,9 +176,11 @@ export type Database = {
           description: string
           genders?: string
           id?: string
+          income_range?: string | null
           location?: string
           ltv_estimate?: string | null
           name: string
+          pain_points?: string | null
           psychographics?: string
           social_media_top_1?: string
           social_media_top_1_active?: boolean | null
@@ -196,9 +200,11 @@ export type Database = {
           description?: string
           genders?: string
           id?: string
+          income_range?: string | null
           location?: string
           ltv_estimate?: string | null
           name?: string
+          pain_points?: string | null
           psychographics?: string
           social_media_top_1?: string
           social_media_top_1_active?: boolean | null
