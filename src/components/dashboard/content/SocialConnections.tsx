@@ -241,19 +241,44 @@ const SocialConnections = () => {
                     <p className="text-sm text-muted-foreground">
                       Connect your {platform.name} account to start posting content automatically.
                     </p>
-                    <Button 
-                      size="sm" 
-                      className="bg-primary hover:bg-primary/90"
-                      onClick={() => handleConnect(platform.platform)}
-                      disabled={isConnecting === platform.platform}
-                    >
-                      {isConnecting === platform.platform ? (
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      ) : (
-                        <Plus className="h-4 w-4 mr-2" />
-                      )}
-                      Connect {platform.name}
-                    </Button>
+                    <div className="space-x-2">
+                      <Button 
+                        size="sm" 
+                        className="bg-primary hover:bg-primary/90"
+                        onClick={() => handleConnect(platform.platform)}
+                        disabled={isConnecting === platform.platform}
+                      >
+                        {isConnecting === platform.platform ? (
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        ) : (
+                          <Plus className="h-4 w-4 mr-2" />
+                        )}
+                        Connect {platform.name}
+                      </Button>
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button variant="outline" size="sm">
+                            <Settings className="h-4 w-4 mr-2" />
+                            Manage
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Manage {platform.name} Connection</DialogTitle>
+                            <DialogDescription>
+                              Set up your {platform.name} connection settings.
+                            </DialogDescription>
+                          </DialogHeader>
+                          <div className="space-y-4">
+                            <div>
+                              <p className="text-sm text-muted-foreground">
+                                This {platform.name} account is not yet connected. Use the Connect button to authorize your account.
+                              </p>
+                            </div>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
+                    </div>
                   </div>
                 )}
               </CardContent>
