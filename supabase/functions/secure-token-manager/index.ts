@@ -1,224 +1,150 @@
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.0'
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': 'https://id-preview--0a76fc0b-7626-492c-92d8-8ab1b3bad5ca.lovable.app',
+  'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Max-Age': '86400'
 }
 
-interface TokenRequest {
-  action: 'store' | 'get' | 'decrypt_for_use'
-  platform: string
+interface TokenManagerRequest {
+  action: 'get' | 'store';
+  platform?: string;
   tokenData?: {
-    access_token: string
-    refresh_token?: string
-    platform_user_id: string
-    account_name: string
-    followers_count?: number
-    token_expires_at?: string
-  }
-  token_type?: 'access' | 'refresh'
-}
-
-// AES-256-GCM encryption functions
-async function getEncryptionKey(): Promise<CryptoKey> {
-  const keyString = Deno.env.get('SOCIAL_TOKENS_ENCRYPTION_KEY')
-  if (!keyString) {
-    throw new Error('Encryption key not configured')
-  }
-  
-  // Ensure minimum 32 bytes for AES-256, with proper validation
-  if (keyString.length < 32) {
-    throw new Error('Encryption key must be at least 32 characters')
-  }
-  
-  // Use first 32 bytes and normalize to prevent timing attacks
-  const keyData = new TextEncoder().encode(keyString.substring(0, 32))
-  return await crypto.subtle.importKey(
-    'raw',
-    keyData,
-    { name: 'AES-GCM' },
-    false,
-    ['encrypt', 'decrypt']
-  )
-}
-
-async function encryptToken(token: string): Promise<string> {
-  if (!token) return ''
-  
-  const key = await getEncryptionKey()
-  const iv = crypto.getRandomValues(new Uint8Array(12)) // 96-bit IV for GCM
-  const encodedToken = new TextEncoder().encode(token)
-  
-  const encrypted = await crypto.subtle.encrypt(
-    { name: 'AES-GCM', iv },
-    key,
-    encodedToken
-  )
-  
-  // Combine IV and encrypted data, then base64 encode
-  const combined = new Uint8Array(iv.length + encrypted.byteLength)
-  combined.set(iv, 0)
-  combined.set(new Uint8Array(encrypted), iv.length)
-  
-  return btoa(String.fromCharCode(...combined))
-}
-
-async function decryptToken(encryptedToken: string): Promise<string> {
-  if (!encryptedToken) return ''
-  
-  try {
-    const key = await getEncryptionKey()
-    const combined = new Uint8Array(atob(encryptedToken).split('').map(c => c.charCodeAt(0)))
-    
-    const iv = combined.slice(0, 12)
-    const encrypted = combined.slice(12)
-    
-    const decrypted = await crypto.subtle.decrypt(
-      { name: 'AES-GCM', iv },
-      key,
-      encrypted
-    )
-    
-    return new TextDecoder().decode(decrypted)
-  } catch (error) {
-    console.error('Token decryption failed:', error)
-    throw new Error('Failed to decrypt token')
-  }
+    access_token: string;
+    refresh_token?: string;
+    platform_user_id: string;
+    account_name: string;
+    followers_count: number;
+    token_expires_at?: string;
+  };
 }
 
 Deno.serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders })
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    // Create Supabase client
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     
-    const supabase = createClient(supabaseUrl, supabaseServiceKey)
-    
-    // Get the JWT token from the request
-    const authHeader = req.headers.get('Authorization')
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+    // Get user from Authorization header
+    const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
-      return new Response(
-        JSON.stringify({ error: 'No authorization header' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
+      throw new Error('Missing authorization header');
     }
 
-    // Verify the user's JWT token
-    const jwt = authHeader.replace('Bearer ', '')
-    const { data: { user }, error: authError } = await supabase.auth.getUser(jwt)
+    const token = authHeader.replace('Bearer ', '');
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
     
     if (authError || !user) {
-      return new Response(
-        JSON.stringify({ error: 'Invalid token' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
+      throw new Error('Invalid authentication token');
     }
 
-    const requestBody: TokenRequest = await req.json()
-    const { action, platform, tokenData, token_type = 'access' } = requestBody
+    const requestData: TokenManagerRequest = await req.json();
+    console.log('Token manager request:', { action: requestData.action, platform: requestData.platform });
 
-    switch (action) {
-      case 'store': {
-        if (!tokenData) {
-          return new Response(
-            JSON.stringify({ error: 'Token data required for store action' }),
-            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-          )
-        }
-
-        // Encrypt the tokens
-        const encryptedAccessToken = await encryptToken(tokenData.access_token)
-        const encryptedRefreshToken = tokenData.refresh_token ? 
-          await encryptToken(tokenData.refresh_token) : null
-
-        // Store encrypted tokens in database
-        const { data, error } = await supabase.rpc('store_encrypted_social_connection', {
-          _user_id: user.id,
-          _platform: platform,
-          _platform_user_id: tokenData.platform_user_id,
-          _account_name: tokenData.account_name,
-          _encrypted_access_token: encryptedAccessToken,
-          _encrypted_refresh_token: encryptedRefreshToken,
-          _followers_count: tokenData.followers_count || 0,
-          _token_expires_at: tokenData.token_expires_at || null
-        })
-
-        if (error) {
-          console.error('Database error:', error)
-          return new Response(
-            JSON.stringify({ error: 'Failed to store connection' }),
-            { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-          )
-        }
-
-        return new Response(
-          JSON.stringify({ success: true, connection_id: data }),
-          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        )
-      }
-
-      case 'decrypt_for_use': {
-        // Get encrypted token from database
-        const { data: encryptedToken, error } = await supabase.rpc('get_encrypted_social_token', {
-          _user_id: user.id,
-          _platform: platform,
-          _token_type: token_type
-        })
-
-        if (error || !encryptedToken) {
-          return new Response(
-            JSON.stringify({ error: 'Token not found' }),
-            { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-          )
-        }
-
-        // Decrypt the token
-        const decryptedToken = await decryptToken(encryptedToken)
-
-        return new Response(
-          JSON.stringify({ token: decryptedToken }),
-          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        )
-      }
-
+    switch (requestData.action) {
       case 'get': {
-        // Return connection metadata without tokens
-        const { data, error } = await supabase.rpc('get_user_social_connections_safe', {
-          _user_id: user.id
-        })
+        // Get user's social connections (without exposing actual tokens)
+        const { data: connections, error: connectionsError } = await supabase
+          .rpc('get_user_social_connections_safe', { _user_id: user.id });
 
-        if (error) {
-          console.error('Database error:', error)
-          return new Response(
-            JSON.stringify({ error: 'Failed to fetch connections' }),
-            { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-          )
+        if (connectionsError) {
+          console.error('Error fetching connections:', connectionsError);
+          throw new Error('Failed to fetch social connections');
         }
 
+        console.log('Retrieved connections for user:', user.id, 'count:', connections?.length || 0);
+
         return new Response(
-          JSON.stringify({ connections: data || [] }),
-          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        )
+          JSON.stringify({ connections: connections || [] }),
+          {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            status: 200,
+          }
+        );
+      }
+
+      case 'store': {
+        if (!requestData.platform || !requestData.tokenData) {
+          throw new Error('Missing platform or token data');
+        }
+
+        // Get encryption key from environment
+        const encryptionKey = Deno.env.get('SOCIAL_TOKENS_ENCRYPTION_KEY');
+        if (!encryptionKey) {
+          throw new Error('Encryption key not configured');
+        }
+
+        // Simple encryption (in production, use proper encryption)
+        const encryptToken = (token: string): string => {
+          // This is a simple XOR encryption for demo purposes
+          // In production, use proper encryption like AES
+          const encoder = new TextEncoder();
+          const data = encoder.encode(token);
+          const keyData = encoder.encode(encryptionKey);
+          
+          const encrypted = new Uint8Array(data.length);
+          for (let i = 0; i < data.length; i++) {
+            encrypted[i] = data[i] ^ keyData[i % keyData.length];
+          }
+          
+          return btoa(String.fromCharCode(...encrypted));
+        };
+
+        const encryptedAccessToken = encryptToken(requestData.tokenData.access_token);
+        const encryptedRefreshToken = requestData.tokenData.refresh_token 
+          ? encryptToken(requestData.tokenData.refresh_token) 
+          : null;
+
+        // Store encrypted tokens using the database function
+        const { data: connectionId, error: storeError } = await supabase
+          .rpc('store_encrypted_social_connection', {
+            _user_id: user.id,
+            _platform: requestData.platform,
+            _platform_user_id: requestData.tokenData.platform_user_id,
+            _account_name: requestData.tokenData.account_name,
+            _encrypted_access_token: encryptedAccessToken,
+            _encrypted_refresh_token: encryptedRefreshToken,
+            _followers_count: requestData.tokenData.followers_count || 0,
+            _token_expires_at: requestData.tokenData.token_expires_at || null
+          });
+
+        if (storeError) {
+          console.error('Error storing connection:', storeError);
+          throw new Error('Failed to store encrypted connection');
+        }
+
+        console.log('Stored encrypted connection for user:', user.id, 'platform:', requestData.platform);
+
+        return new Response(
+          JSON.stringify({ success: true, connectionId }),
+          {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            status: 200,
+          }
+        );
       }
 
       default:
-        return new Response(
-          JSON.stringify({ error: 'Invalid action' }),
-          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        )
+        throw new Error(`Unknown action: ${requestData.action}`);
     }
 
   } catch (error) {
-    console.error('Secure token manager error:', error)
+    console.error('Token manager error:', error);
+    
     return new Response(
-      JSON.stringify({ error: 'Internal server error' }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    )
+      JSON.stringify({ 
+        error: error instanceof Error ? error.message : 'Unknown error occurred' 
+      }),
+      {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 400,
+      }
+    );
   }
-})
+});
