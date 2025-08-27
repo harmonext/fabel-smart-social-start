@@ -351,6 +351,14 @@ const Persona1 = ({ persona }: Persona1Props) => {
                   </div>
                 </div>
 
+                {/* Second Upgrade to Unlock */}
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                  <div className="flex items-center gap-2 mb-2">
+                    <i className="fa-solid fa-lock text-foreground"></i>
+                    <span className="font-bold text-sm">Upgrade to Unlock:</span>
+                  </div>
+                </div>
+
                 {/* Three columns section */}
                 <div className="bg-muted rounded-lg p-4">
                   <div className="grid grid-cols-3 gap-4 text-center">
