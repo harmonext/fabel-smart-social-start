@@ -242,9 +242,12 @@ const Persona1 = ({ persona }: Persona1Props) => {
               <div className="lg:col-span-1">
                 <div className="bg-muted rounded-lg p-6 space-y-4 h-full flex flex-col">
                   {/* Normal View Header */}
-                  <div className="text-center">
+                  <div className="flex items-center gap-3">
                     <div>
                       <h1 className="text-lg font-bold text-foreground">{persona?.name || "Urban Creative"}</h1>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {persona?.description || "Barry is a savvy shopper who prioritizes value without compromising quality. He enjoys finding deals and is often seen researching products online before making a purchase."}
+                      </p>
                     </div>
                   </div>
 
@@ -459,9 +462,12 @@ const Persona1 = ({ persona }: Persona1Props) => {
 
       {/* Regular View Header */}
       <div className="flex items-center justify-between">
-        <div className="flex-1 text-center">
+        <div className="flex items-center gap-3">
           <div>
             <h1 className="text-lg font-bold text-foreground">{persona?.name || "Urban Creative"}</h1>
+            <p className="text-sm text-muted-foreground mt-1">
+              {persona?.description || "Barry is a savvy shopper who prioritizes value without compromising quality. He enjoys finding deals and is often seen researching products online before making a purchase."}
+            </p>
           </div>
         </div>
         <Button
