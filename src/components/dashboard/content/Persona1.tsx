@@ -25,6 +25,7 @@ interface Persona1Props {
 }
 
 const Persona1 = ({ persona }: Persona1Props) => {
+  console.log('Persona1 received persona data:', persona);
   const { savePersonas } = usePersonas();
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
   const [generatedContent, setGeneratedContent] = useState<GeneratedContent[]>([]);
@@ -277,6 +278,7 @@ const Persona1 = ({ persona }: Persona1Props) => {
                           const isActive = index === 0 ? persona?.social_media_top_1_active : 
                                           index === 1 ? persona?.social_media_top_2_active : 
                                           persona?.social_media_top_3_active;
+                          console.log(`Platform ${index}: ${platform}, isActive:`, isActive, typeof isActive);
                           return (
                             <div key={index} className="flex flex-col items-center space-y-2">
                               <Tooltip>
@@ -504,6 +506,7 @@ const Persona1 = ({ persona }: Persona1Props) => {
               const isActive = index === 0 ? persona?.social_media_top_1_active : 
                               index === 1 ? persona?.social_media_top_2_active : 
                               persona?.social_media_top_3_active;
+              console.log(`Regular view Platform ${index}: ${platform}, isActive:`, isActive, typeof isActive);
               return (
                 <div key={index} className="flex flex-col items-center space-y-2">
                   <Tooltip>
