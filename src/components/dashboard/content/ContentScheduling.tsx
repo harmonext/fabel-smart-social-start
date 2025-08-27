@@ -441,23 +441,43 @@ const EditableListPost = ({ post, editMode, timeString }: {
   );
 };
 
-const ListView = ({ posts, allContent, currentDate, setCurrentDate, onReschedule, editMode }: {
+const ListView = ({ posts, allContent, currentDate, setCurrentDate, onReschedule, editMode, startFromFirstScheduled }: {
   posts: ScheduledContent[];
   allContent: ScheduledContent[];
   currentDate: Date;
   setCurrentDate: (date: Date) => void;
   onReschedule: (postId: string, newDate: Date) => void;
   editMode: boolean;
+  startFromFirstScheduled?: boolean;
 }) => {
   const getDaysInMonth = (date: Date) => {
     return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
   };
 
-  // Generate all days of the current month
+  // Generate days to show based on startFromFirstScheduled setting
   const daysInMonth = getDaysInMonth(currentDate);
   const daysToShow = [];
   
-  for (let day = 1; day <= daysInMonth; day++) {
+  let startDay = 1;
+  
+  // If startFromFirstScheduled is enabled, find the first scheduled date in the month
+  if (startFromFirstScheduled && posts.length > 0) {
+    const scheduledDatesInMonth = posts
+      .filter(post => {
+        if (!post.scheduled_at) return false;
+        const postDate = new Date(post.scheduled_at);
+        return postDate.getMonth() === currentDate.getMonth() && 
+               postDate.getFullYear() === currentDate.getFullYear();
+      })
+      .map(post => new Date(post.scheduled_at).getDate())
+      .sort((a, b) => a - b);
+    
+    if (scheduledDatesInMonth.length > 0) {
+      startDay = scheduledDatesInMonth[0];
+    }
+  }
+  
+  for (let day = startDay; day <= daysInMonth; day++) {
     const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
     daysToShow.push(date);
   }
@@ -869,6 +889,7 @@ const ContentScheduling = () => {
   const [editMode, setEditMode] = useState(false);
   const [platformFilter, setPlatformFilter] = useState<string>('all');
   const [personaFilter, setPersonaFilter] = useState<string>('all');
+  const [startFromFirstScheduled, setStartFromFirstScheduled] = useState(false);
   const { content, isLoading, getContentByStatus, deleteContent, updateContent } = useScheduledContent();
   const { connections } = useSocialConnections();
   const { personas } = usePersonas();
@@ -1107,6 +1128,26 @@ const ContentScheduling = () => {
                 </Button>
               </div>
             )}
+
+            {viewMode === 'list' && (
+              <div className="flex items-end">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground block">
+                    List View Options
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      checked={startFromFirstScheduled}
+                      onCheckedChange={setStartFromFirstScheduled}
+                      id="start-from-first"
+                    />
+                    <label htmlFor="start-from-first" className="text-sm text-muted-foreground whitespace-nowrap">
+                      Start from first scheduled date
+                    </label>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           {(platformFilter !== 'all' || personaFilter !== 'all') && (
@@ -1156,6 +1197,7 @@ const ContentScheduling = () => {
               setCurrentDate={setCurrentDate}
               onReschedule={handleReschedule}
               editMode={editMode}
+              startFromFirstScheduled={startFromFirstScheduled}
             />
           )}
           <DragOverlay>
@@ -1187,6 +1229,7 @@ const ContentScheduling = () => {
             setCurrentDate={setCurrentDate}
             onReschedule={handleReschedule}
             editMode={editMode}
+            startFromFirstScheduled={startFromFirstScheduled}
           />
         )
       )}
