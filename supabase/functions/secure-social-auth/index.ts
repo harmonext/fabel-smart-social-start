@@ -180,53 +180,29 @@ async function handleCallback(supabase: any, platform: string, code: string, sta
       throw new Error(`Unsupported platform: ${platform}`);
   }
 
-  // Check if connection already exists
-  const { data: existingConnection } = await supabase
-    .from('social_connections')
-    .select('*')
-    .eq('user_id', authenticatedUserId) // Use authenticated user ID
-    .eq('platform', platform)
-    .eq('platform_user_id', accountData.id)
-    .single();
+  // Use the secure token storage function to encrypt tokens
+  const { data: connectionId, error: storeError } = await supabase
+    .rpc('store_encrypted_social_connection', {
+      _user_id: authenticatedUserId,
+      _platform: platform,
+      _platform_user_id: accountData.id,
+      _account_name: accountData.name,
+      _encrypted_access_token: accessToken, // Function will handle encryption
+      _encrypted_refresh_token: refreshToken,
+      _followers_count: accountData.followersCount || 0,
+      _token_expires_at: expiresAt
+    });
 
-  const connectionData = {
-    user_id: authenticatedUserId, // Use authenticated user ID
-    platform: platform,
-    platform_user_id: accountData.id,
-    account_name: accountData.name,
-    followers_count: accountData.followersCount || 0,
-    access_token: accessToken,
-    refresh_token: refreshToken,
-    token_expires_at: expiresAt,
-    is_active: true,
-    last_sync_at: new Date().toISOString()
-  };
-
-  let result;
-  if (existingConnection) {
-    // Update existing connection
-    result = await supabase
-      .from('social_connections')
-      .update(connectionData)
-      .eq('id', existingConnection.id)
-      .select('id, platform, account_name, followers_count, is_active, connected_at') // Don't return tokens
-      .single();
-  } else {
-    // Create new connection
-    result = await supabase
-      .from('social_connections')
-      .insert([connectionData])
-      .select('id, platform, account_name, followers_count, is_active, connected_at') // Don't return tokens
-      .single();
+  if (storeError) {
+    console.error('Error storing encrypted connection:', storeError);
+    throw new Error('Failed to store secure connection');
   }
-
-  if (result.error) throw result.error;
 
   // Return success without exposing tokens
   return new Response(
     JSON.stringify({ 
       success: true, 
-      connection: result.data // Tokens are not included in response
+      connectionId: connectionId
     }),
     { 
       status: 200, 

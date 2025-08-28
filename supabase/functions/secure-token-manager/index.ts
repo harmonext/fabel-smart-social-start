@@ -80,25 +80,56 @@ Deno.serve(async (req) => {
           throw new Error('Encryption key not configured');
         }
 
-        // Simple encryption (in production, use proper encryption)
-        const encryptToken = (token: string): string => {
-          // This is a simple XOR encryption for demo purposes
-          // In production, use proper encryption like AES
+        // Secure AES-GCM encryption
+        const encryptToken = async (token: string): Promise<string> => {
           const encoder = new TextEncoder();
           const data = encoder.encode(token);
-          const keyData = encoder.encode(encryptionKey);
           
-          const encrypted = new Uint8Array(data.length);
-          for (let i = 0; i < data.length; i++) {
-            encrypted[i] = data[i] ^ keyData[i % keyData.length];
-          }
+          // Derive a proper encryption key from the environment variable
+          const keyMaterial = await crypto.subtle.importKey(
+            'raw',
+            encoder.encode(encryptionKey.padEnd(32, '0').slice(0, 32)),
+            { name: 'PBKDF2' },
+            false,
+            ['deriveBits', 'deriveKey']
+          );
           
-          return btoa(String.fromCharCode(...encrypted));
+          const salt = crypto.getRandomValues(new Uint8Array(16));
+          const key = await crypto.subtle.deriveKey(
+            {
+              name: 'PBKDF2',
+              salt: salt,
+              iterations: 100000,
+              hash: 'SHA-256'
+            },
+            keyMaterial,
+            { name: 'AES-GCM', length: 256 },
+            false,
+            ['encrypt']
+          );
+          
+          const iv = crypto.getRandomValues(new Uint8Array(12));
+          const encrypted = await crypto.subtle.encrypt(
+            {
+              name: 'AES-GCM',
+              iv: iv
+            },
+            key,
+            data
+          );
+          
+          // Combine salt, iv, and encrypted data
+          const combined = new Uint8Array(salt.length + iv.length + encrypted.byteLength);
+          combined.set(salt, 0);
+          combined.set(iv, salt.length);
+          combined.set(new Uint8Array(encrypted), salt.length + iv.length);
+          
+          return btoa(String.fromCharCode(...combined));
         };
 
-        const encryptedAccessToken = encryptToken(requestData.tokenData.access_token);
+        const encryptedAccessToken = await encryptToken(requestData.tokenData.access_token);
         const encryptedRefreshToken = requestData.tokenData.refresh_token 
-          ? encryptToken(requestData.tokenData.refresh_token) 
+          ? await encryptToken(requestData.tokenData.refresh_token) 
           : null;
 
         // Store encrypted tokens using the database function
