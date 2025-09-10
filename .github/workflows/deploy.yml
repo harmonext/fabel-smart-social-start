@@ -1,0 +1,51 @@
+name: Deploy Fabel Website
+
+on:
+  push:
+    branches:
+      - dev
+      - qa
+      - uat
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies & build
+        run: |
+          npm install
+          npm run build || npm run export || true
+
+      - name: Deploy over SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            if [ "${GITHUB_REF##*/}" = "dev" ]; then
+              TARGET=/var/www/dev
+            elif [ "${GITHUB_REF##*/}" = "qa" ]; then
+              TARGET=/var/www/qa
+            elif [ "${GITHUB_REF##*/}" = "uat" ]; then
+              TARGET=/var/www/uat
+            else
+              TARGET=/var/www/main
+            fi
+
+            mkdir -p $TARGET
+            rm -rf $TARGET/*
+            exit
+      - name: Copy build files
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          source: "dist/*"
+          target: ${{ steps.deploy.outputs.TARGET }}
