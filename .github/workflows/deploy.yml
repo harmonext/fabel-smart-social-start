@@ -21,26 +21,29 @@ jobs:
           npm install
           npm run build || npm run export || true
 
-      - name: Deploy over SSH
+      - name: Set target folder
+        id: vars
+        run: |
+          if [[ "${GITHUB_REF##*/}" == "dev" ]]; then
+            echo "target=/var/www/dev" >> $GITHUB_ENV
+          elif [[ "${GITHUB_REF##*/}" == "qa" ]]; then
+            echo "target=/var/www/qa" >> $GITHUB_ENV
+          elif [[ "${GITHUB_REF##*/}" == "uat" ]]; then
+            echo "target=/var/www/uat" >> $GITHUB_ENV
+          else
+            echo "target=/var/www/main" >> $GITHUB_ENV
+          fi
+
+      - name: Prepare remote folder
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            if [ "${GITHUB_REF##*/}" = "dev" ]; then
-              TARGET=/var/www/dev
-            elif [ "${GITHUB_REF##*/}" = "qa" ]; then
-              TARGET=/var/www/qa
-            elif [ "${GITHUB_REF##*/}" = "uat" ]; then
-              TARGET=/var/www/uat
-            else
-              TARGET=/var/www/main
-            fi
+            mkdir -p ${{ env.target }}
+            rm -rf ${{ env.target }}/*
 
-            mkdir -p $TARGET
-            rm -rf $TARGET/*
-            exit
       - name: Copy build files
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -48,4 +51,4 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           source: "dist/*"
-          target: ${{ steps.deploy.outputs.TARGET }}
+          target: ${{ env.target }}
