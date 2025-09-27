@@ -23,8 +23,23 @@ const EmailSignup = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
+  const validateEmail = (email: string): boolean => {
+    // Enhanced email regex that requires a proper domain with at least one dot and TLD
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return emailRegex.test(email);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!validateEmail(formData.email)) {
+      toast({
+        title: "Invalid email format",
+        description: "Please enter a valid email address with a proper domain (e.g., user@example.com).",
+        variant: "destructive"
+      });
+      return;
+    }
     
     if (formData.password !== formData.confirmPassword) {
       toast({
