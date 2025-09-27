@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Eye, EyeOff } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff, AlertTriangle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -20,6 +20,11 @@ const EmailSignup = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [validationErrors, setValidationErrors] = useState({
+    email: "",
+    password: "",
+    confirmPassword: ""
+  });
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -32,30 +37,37 @@ const EmailSignup = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Clear previous validation errors
+    setValidationErrors({
+      email: "",
+      password: "",
+      confirmPassword: ""
+    });
+
+    let hasErrors = false;
+    const newErrors = {
+      email: "",
+      password: "",
+      confirmPassword: ""
+    };
+
     if (!validateEmail(formData.email)) {
-      toast({
-        title: "Invalid email format",
-        description: "Please enter a valid email address with a proper domain (e.g., user@example.com).",
-        variant: "destructive"
-      });
-      return;
+      newErrors.email = "Please enter a valid email address with a proper domain (e.g., user@example.com).";
+      hasErrors = true;
     }
     
-    if (formData.password !== formData.confirmPassword) {
-      toast({
-        title: "Password mismatch",
-        description: "Passwords do not match. Please try again.",
-        variant: "destructive"
-      });
-      return;
+    if (formData.password.length < 8) {
+      newErrors.password = "Password must be at least 8 characters long.";
+      hasErrors = true;
     }
 
-    if (formData.password.length < 8) {
-      toast({
-        title: "Password too short",
-        description: "Password must be at least 8 characters long.",
-        variant: "destructive"
-      });
+    if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = "Passwords do not match. Please try again.";
+      hasErrors = true;
+    }
+
+    if (hasErrors) {
+      setValidationErrors(newErrors);
       return;
     }
 
@@ -189,7 +201,14 @@ const EmailSignup = () => {
                 value={formData.email}
                 onChange={handleInputChange}
                 required
+                className={validationErrors.email ? "border-destructive" : ""}
               />
+              {validationErrors.email && (
+                <div className="flex items-start gap-2 p-3 border border-orange-200 bg-orange-50 rounded-md">
+                  <AlertTriangle className="h-4 w-4 text-orange-500 mt-0.5 flex-shrink-0" />
+                  <p className="text-sm text-orange-700">{validationErrors.email}</p>
+                </div>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -204,6 +223,7 @@ const EmailSignup = () => {
                   onChange={handleInputChange}
                   required
                   minLength={8}
+                  className={validationErrors.password ? "border-destructive" : ""}
                 />
                 <Button
                   type="button"
@@ -219,6 +239,12 @@ const EmailSignup = () => {
                   )}
                 </Button>
               </div>
+              {validationErrors.password && (
+                <div className="flex items-start gap-2 p-3 border border-orange-200 bg-orange-50 rounded-md">
+                  <AlertTriangle className="h-4 w-4 text-orange-500 mt-0.5 flex-shrink-0" />
+                  <p className="text-sm text-orange-700">{validationErrors.password}</p>
+                </div>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -232,6 +258,7 @@ const EmailSignup = () => {
                   value={formData.confirmPassword}
                   onChange={handleInputChange}
                   required
+                  className={validationErrors.confirmPassword ? "border-destructive" : ""}
                 />
                 <Button
                   type="button"
@@ -247,6 +274,12 @@ const EmailSignup = () => {
                   )}
                 </Button>
               </div>
+              {validationErrors.confirmPassword && (
+                <div className="flex items-start gap-2 p-3 border border-orange-200 bg-orange-50 rounded-md">
+                  <AlertTriangle className="h-4 w-4 text-orange-500 mt-0.5 flex-shrink-0" />
+                  <p className="text-sm text-orange-700">{validationErrors.confirmPassword}</p>
+                </div>
+              )}
             </div>
 
             <Button
