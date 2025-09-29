@@ -232,7 +232,6 @@ const EmailSignup = () => {
                   value={formData.password}
                   onChange={handleInputChange}
                   required
-                  minLength={8}
                   className={validationErrors.password ? "border-destructive" : ""}
                 />
                 <Button
