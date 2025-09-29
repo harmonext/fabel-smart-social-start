@@ -23,7 +23,8 @@ const EmailSignup = () => {
   const [validationErrors, setValidationErrors] = useState({
     email: "",
     password: "",
-    confirmPassword: ""
+    confirmPassword: "",
+    general: ""
   });
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -41,14 +42,16 @@ const EmailSignup = () => {
     setValidationErrors({
       email: "",
       password: "",
-      confirmPassword: ""
+      confirmPassword: "",
+      general: ""
     });
 
     let hasErrors = false;
     const newErrors = {
       email: "",
       password: "",
-      confirmPassword: ""
+      confirmPassword: "",
+      general: ""
     };
 
     if (!validateEmail(formData.email)) {
@@ -92,17 +95,15 @@ const EmailSignup = () => {
 
       if (error) {
         if (error.message.includes('User already registered') || error.message.includes('already been registered')) {
-          toast({
-            title: "Account already exists",
-            description: "An account with this email already exists. Please sign in instead.",
-            variant: "destructive"
-          });
+          setValidationErrors(prev => ({
+            ...prev,
+            general: "An account with this email already exists. Please sign in instead."
+          }));
         } else {
-          toast({
-            title: "Registration failed",
-            description: error.message,
-            variant: "destructive"
-          });
+          setValidationErrors(prev => ({
+            ...prev,
+            general: error.message
+          }));
         }
       } else if (data.user && !data.session) {
         // User created successfully, OTP should be sent
@@ -124,11 +125,10 @@ const EmailSignup = () => {
       }
     } catch (error: any) {
       console.error('Signup error:', error);
-      toast({
-        title: "Registration failed",
-        description: "An unexpected error occurred. Please try again.",
-        variant: "destructive"
-      });
+      setValidationErrors(prev => ({
+        ...prev,
+        general: "An unexpected error occurred. Please try again."
+      }));
     } finally {
       setIsLoading(false);
     }
@@ -146,7 +146,8 @@ const EmailSignup = () => {
     if (validationErrors[name as keyof typeof validationErrors]) {
       setValidationErrors(prev => ({
         ...prev,
-        [name]: ""
+        [name]: "",
+        general: "" // Clear general error when user starts typing
       }));
     }
   };
@@ -290,6 +291,13 @@ const EmailSignup = () => {
                 </div>
               )}
             </div>
+
+            {validationErrors.general && (
+              <div className="flex items-start gap-2 p-3 border border-orange-200 bg-orange-50 rounded-md">
+                <AlertTriangle className="h-4 w-4 text-orange-500 mt-0.5 flex-shrink-0" />
+                <p className="text-sm text-orange-700">{validationErrors.general}</p>
+              </div>
+            )}
 
             <Button
               type="submit"
