@@ -22,10 +22,6 @@ const DashboardContent = ({ activeTab, activeSubTab }: DashboardContentProps) =>
   const { isCompleted: onboardingCompleted } = useOnboarding();
   
   const renderContent = () => {
-    if (activeTab === "user-profile") {
-      return <UserProfile />;
-    }
-    
     if (activeTab === "company-profile") {
       if (activeSubTab === "profile-survey") {
         return <ProfileSurvey />;
@@ -80,10 +76,16 @@ const DashboardContent = ({ activeTab, activeSubTab }: DashboardContentProps) =>
     }
     
     if (activeTab === "settings") {
-      return <DashboardSettings />;
+      if (activeSubTab === "user-profile") {
+        return <UserProfile />;
+      }
+      if (activeSubTab === "preferences") {
+        return <DashboardSettings />;
+      }
+      return <UserProfile />; // Default to user profile
     }
     
-    return <UserProfile />; // Default fallback
+    return <Personas />; // Default fallback
   };
 
   return (

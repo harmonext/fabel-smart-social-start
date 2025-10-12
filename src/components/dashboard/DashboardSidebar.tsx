@@ -42,7 +42,7 @@ const DashboardSidebar = ({
   setActiveTab, 
   setActiveSubTab 
 }: DashboardSidebarProps) => {
-  const [expandedSections, setExpandedSections] = useState<string[]>(["company-profile", "content-management", "personas", "system-management"]);
+  const [expandedSections, setExpandedSections] = useState<string[]>(["company-profile", "content-management", "personas", "system-management", "settings"]);
   const navigate = useNavigate();
   const { isCompleted: onboardingCompleted } = useOnboarding();
   const { isSuperAdmin } = useUserRole();
@@ -86,19 +86,6 @@ const DashboardSidebar = ({
 
       <SidebarContent className="px-4">
         <nav className="space-y-2">
-          {/* User Profile */}
-          <Button
-            variant="ghost"
-            className={cn(
-              "w-full justify-start text-left h-10",
-              activeTab === "user-profile" && "bg-fabel-primary/10 text-fabel-primary"
-            )}
-            onClick={() => handleTabClick("user-profile")}
-          >
-            <User className="h-4 w-4 mr-3" />
-            User Profile
-          </Button>
-
           {/* Company Profile */}
           <div>
             <Button
@@ -271,17 +258,53 @@ const DashboardSidebar = ({
           )}
 
           {/* Settings */}
-          <Button
-            variant="ghost"
-            className={cn(
-              "w-full justify-start text-left h-10",
-              activeTab === "settings" && "bg-fabel-primary/10 text-fabel-primary"
+          <div>
+            <Button
+              variant="ghost"
+              className={cn(
+                "w-full justify-between text-left h-10",
+                activeTab === "settings" && "bg-fabel-primary/10 text-fabel-primary"
+              )}
+              onClick={() => toggleSection("settings")}
+            >
+              <div className="flex items-center">
+                <Settings className="h-4 w-4 mr-3" />
+                Settings
+              </div>
+              {isExpanded("settings") ? (
+                <ChevronDown className="h-4 w-4" />
+              ) : (
+                <ChevronRight className="h-4 w-4" />
+              )}
+            </Button>
+            
+            {isExpanded("settings") && (
+              <div className="ml-7 mt-1 space-y-1">
+                <Button
+                  variant="ghost"
+                  className={cn(
+                    "w-full justify-start text-left h-9 text-sm",
+                    activeTab === "settings" && activeSubTab === "user-profile" && "bg-fabel-primary/10 text-fabel-primary"
+                  )}
+                  onClick={() => handleTabClick("settings", "user-profile")}
+                >
+                  <User className="h-3 w-3 mr-3" />
+                  User Profile
+                </Button>
+                <Button
+                  variant="ghost"
+                  className={cn(
+                    "w-full justify-start text-left h-9 text-sm",
+                    activeTab === "settings" && activeSubTab === "preferences" && "bg-fabel-primary/10 text-fabel-primary"
+                  )}
+                  onClick={() => handleTabClick("settings", "preferences")}
+                >
+                  <Settings className="h-3 w-3 mr-3" />
+                  Preferences
+                </Button>
+              </div>
             )}
-            onClick={() => handleTabClick("settings")}
-          >
-            <Settings className="h-4 w-4 mr-3" />
-            Settings
-          </Button>
+          </div>
         </nav>
       </SidebarContent>
 
