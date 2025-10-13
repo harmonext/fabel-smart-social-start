@@ -10,7 +10,7 @@ const Features = () => {
     },
     {
       icon: "✍️",
-      title: "AI-Generated Content",
+      title: "Content That Connects",
       description: "Let our AI create compelling social media posts, captions, and content that resonates with your audience automatically."
     },
     {
