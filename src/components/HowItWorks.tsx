@@ -3,7 +3,7 @@ const HowItWorks = () => {
     {
       step: "1",
       title: "Get Set Up in Minutes",
-      description: "Sign up for Fabel and securely connect your social media accounts in just a few clicks."
+      description: "Start strong with a quick setup that connects all your social channels in one place — so you can manage everything seamlessly without the tech headache"
     },
     {
       step: "2", 
