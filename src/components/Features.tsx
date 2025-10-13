@@ -11,7 +11,7 @@ const Features = () => {
     {
       icon: "✍️",
       title: "Content That Connects",
-      description: "Let our AI create compelling social media posts, captions, and content that resonates with your audience automatically."
+      description: "Generate fresh, engaging posts that match your tone and keep your audience coming back."
     },
     {
       icon: "📆",
