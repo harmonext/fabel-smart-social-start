@@ -2,7 +2,7 @@ const HowItWorks = () => {
   const steps = [
     {
       step: "1",
-      title: "Register and Connect",
+      title: "Get Set Up in Minutes",
       description: "Sign up for Fabel and securely connect your social media accounts in just a few clicks."
     },
     {
