@@ -21,7 +21,7 @@ const Hero = () => {
       <div className="container mx-auto">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-5xl md:text-7xl font-bold mb-6 gradient-text leading-tight">
-            AI-Powered Marketing That Actually Works
+            The Smarter Way to Grow Your Brand
           </h1>
           <p className="text-xl md:text-2xl text-muted-foreground mb-8 leading-relaxed max-w-3xl mx-auto">
             Create compelling content, reach your ideal customers, and grow your business with personalized AI marketing that adapts to your brand voice.
