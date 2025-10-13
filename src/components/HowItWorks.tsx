@@ -7,7 +7,7 @@ const HowItWorks = () => {
     },
     {
       step: "2", 
-      title: "Build Your Profile",
+      title: "Your Brand, Perfectly Understood",
       description: "Fill out a short survey about your business to help our AI understand your brand and goals."
     },
     {
