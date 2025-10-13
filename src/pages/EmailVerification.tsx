@@ -7,6 +7,8 @@ import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp
 import { ArrowLeft, Mail } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import Navigation from "@/components/Navigation";
+import Footer from "@/components/Footer";
 
 const EmailVerification = () => {
   const [otp, setOtp] = useState("");
@@ -133,8 +135,10 @@ const EmailVerification = () => {
   }, [otp]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-soft-gold/20 via-background to-muted-teal/20 p-4">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen">
+      <Navigation />
+      <div className="flex items-center justify-center bg-gradient-to-br from-soft-gold/20 via-background to-muted-teal/20 p-4 min-h-[calc(100vh-80px)]">
+        <Card className="w-full max-w-md">
         <CardHeader className="space-y-1 text-center">
           <div className="flex items-center justify-center mb-4">
             <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
@@ -212,6 +216,8 @@ const EmailVerification = () => {
           </div>
         </CardContent>
       </Card>
+      </div>
+      <Footer />
     </div>
   );
 };
