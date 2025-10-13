@@ -8,7 +8,7 @@ const HowItWorks = () => {
     {
       step: "2", 
       title: "Your Brand, Perfectly Understood",
-      description: "Fill out a short survey about your business to help our AI understand your brand and goals."
+      description: "Your Brand, Perfectly Understood"
     },
     {
       step: "3",
