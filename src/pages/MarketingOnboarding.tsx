@@ -31,16 +31,6 @@ const MarketingOnboarding = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-soft-gold/20 via-background to-muted-teal/20 p-4">
       <div className="container mx-auto py-8">
-        {/* Centered Logo */}
-        <div className="flex justify-center mb-8">
-          <div className="flex items-center space-x-2">
-            <div className="w-12 h-12 bg-fabel-primary rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-2xl">F</span>
-            </div>
-            <span className="text-3xl font-bold text-foreground">Fabel</span>
-          </div>
-        </div>
-        
         <MarketingOnboardingForm />
       </div>
     </div>

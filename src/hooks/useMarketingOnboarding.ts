@@ -10,7 +10,6 @@ export interface MarketingOnboardingData {
   
   // Tab 2: About Your Company
   industry: string;
-  company_description?: string;
   product_types: string[];
   store_type: string[];
   
@@ -21,9 +20,6 @@ export interface MarketingOnboardingData {
   customer_gender: string[];
   customer_age_ranges: string[];
   customer_income_ranges: string[];
-  
-  // Track current progress
-  current_tab?: string;
 }
 
 export const useMarketingOnboarding = () => {
@@ -110,14 +106,12 @@ export const useMarketingOnboarding = () => {
           name: data.name,
           title: data.title,
           industry: data.industry,
-          company_description: data.company_description || '',
           product_types: parseArrayField(data.product_types),
           store_type: parseArrayField(data.store_type),
           goals: parseArrayField(data.goals),
           customer_gender: parseArrayField(data.customer_gender),
           customer_age_ranges: parseArrayField(data.customer_age_ranges),
-          customer_income_ranges: parseArrayField(data.customer_income_ranges),
-          current_tab: data.current_tab || 'about-you'
+          customer_income_ranges: parseArrayField(data.customer_income_ranges)
         };
       }
 
@@ -135,7 +129,6 @@ export const useMarketingOnboarding = () => {
     prompt = prompt.replace(/\{\{marketing_onboarding\.name\}\}/g, data.name);
     prompt = prompt.replace(/\{\{marketing_onboarding\.title\}\}/g, data.title);
     prompt = prompt.replace(/\{\{marketing_onboarding\.industry\}\}/g, data.industry);
-    prompt = prompt.replace(/\{\{marketing_onboarding\.company_description\}\}/g, data.company_description || '');
     prompt = prompt.replace(/\{\{marketing_onboarding\.product_types\}\}/g, data.product_types.join(', '));
     prompt = prompt.replace(/\{\{marketing_onboarding\.store_type\}\}/g, data.store_type.join(', '));
     prompt = prompt.replace(/\{\{marketing_onboarding\.goals\}\}/g, data.goals.join(', '));
@@ -147,7 +140,6 @@ export const useMarketingOnboarding = () => {
     prompt = prompt.replace(/\{\{name\}\}/g, data.name);
     prompt = prompt.replace(/\{\{title\}\}/g, data.title);
     prompt = prompt.replace(/\{\{industry\}\}/g, data.industry);
-    prompt = prompt.replace(/\{\{company_description\}\}/g, data.company_description || '');
     prompt = prompt.replace(/\{\{product_types\}\}/g, data.product_types.join(', '));
     prompt = prompt.replace(/\{\{store_type\}\}/g, data.store_type.join(', '));
     prompt = prompt.replace(/\{\{goals\}\}/g, data.goals.join(', '));
@@ -158,15 +150,13 @@ export const useMarketingOnboarding = () => {
     return prompt;
   };
 
-  const saveOnboarding = async (data: MarketingOnboardingData, isAutoSave = false): Promise<{ success: boolean; shouldGeneratePersonas?: boolean }> => {
+  const saveOnboarding = async (data: MarketingOnboardingData): Promise<{ success: boolean; shouldGeneratePersonas?: boolean }> => {
     if (!user) {
-      if (!isAutoSave) {
-        toast({
-          title: "Error",
-          description: "You must be logged in to save onboarding data.",
-          variant: "destructive"
-        });
-      }
+      toast({
+        title: "Error",
+        description: "You must be logged in to save onboarding data.",
+        variant: "destructive"
+      });
       return { success: false };
     }
 
@@ -186,65 +176,55 @@ export const useMarketingOnboarding = () => {
 
       if (onboardingError) {
         console.error('Error saving marketing onboarding:', onboardingError);
-        if (!isAutoSave) {
-          toast({
-            title: "Error",
-            description: "Failed to save your responses. Please try again.",
-            variant: "destructive"
-          });
-        }
+        toast({
+          title: "Error",
+          description: "Failed to save your responses. Please try again.",
+          variant: "destructive"
+        });
         return { success: false };
       }
 
-      // Only do persona prompt generation on final save, not auto-save
-      if (!isAutoSave) {
-        // Fetch the persona prompt template
-        const { data: templateData, error: templateError } = await supabase
-          .from('system_prompt_template')
-          .select('value')
-          .eq('name', 'persona_prompt')
-          .maybeSingle();
+      // Fetch the persona prompt template
+      const { data: templateData, error: templateError } = await supabase
+        .from('system_prompt_template')
+        .select('value')
+        .eq('name', 'persona_prompt')
+        .maybeSingle();
 
-        if (templateError) {
-          console.error('Error fetching prompt template:', templateError);
-          // Continue without updating persona prompt
-        } else if (templateData) {
-          // Generate the persona prompt using the template
-          const generatedPrompt = generatePersonaPrompt(templateData.value, data);
-          
-          // Update the company details with the generated persona prompt
-          const { error: companyError } = await supabase
-            .from('company_details')
-            .update({
-              onboarding_persona_prompt: generatedPrompt
-            })
-            .eq('user_id', user.id);
+      if (templateError) {
+        console.error('Error fetching prompt template:', templateError);
+        // Continue without updating persona prompt
+      } else if (templateData) {
+        // Generate the persona prompt using the template
+        const generatedPrompt = generatePersonaPrompt(templateData.value, data);
+        
+        // Update the company details with the generated persona prompt
+        const { error: companyError } = await supabase
+          .from('company_details')
+          .update({
+            onboarding_persona_prompt: generatedPrompt
+          })
+          .eq('user_id', user.id);
 
-          if (companyError) {
-            console.error('Error updating company details:', companyError);
-            // Continue without showing error to user as main onboarding was successful
-          }
+        if (companyError) {
+          console.error('Error updating company details:', companyError);
+          // Continue without showing error to user as main onboarding was successful
         }
-
-        setIsCompleted(true);
-        toast({
-          title: "Success",
-          description: "Your marketing profile has been saved successfully!",
-        });
-        return { success: true, shouldGeneratePersonas: true };
       }
 
-      // For auto-save, just return success
-      return { success: true, shouldGeneratePersonas: false };
+      setIsCompleted(true);
+      toast({
+        title: "Success",
+        description: "Your marketing profile has been saved successfully!",
+      });
+      return { success: true, shouldGeneratePersonas: true };
     } catch (error) {
       console.error('Error saving marketing onboarding:', error);
-      if (!isAutoSave) {
-        toast({
-          title: "Error",
-          description: "An unexpected error occurred. Please try again.",
-          variant: "destructive"
-        });
-      }
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive"
+      });
       return { success: false };
     } finally {
       setIsSaving(false);

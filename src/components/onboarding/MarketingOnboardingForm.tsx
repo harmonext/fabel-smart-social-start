@@ -28,7 +28,6 @@ const MarketingOnboardingForm = () => {
     name: "",
     title: "",
     industry: "",
-    company_description: "",
     product_types: [],
     store_type: [],
     goals: [],
@@ -41,29 +40,12 @@ const MarketingOnboardingForm = () => {
 
   useEffect(() => {
     const loadExistingData = async () => {
-      console.log('Loading existing onboarding data...');
       const existingData = await fetchOnboardingData();
-      console.log('Fetched data:', existingData);
-      
       if (existingData) {
-        console.log('Setting form data with:', existingData);
         setFormData(existingData);
-        
-        // Set the active tab to the saved current_tab if it exists
-        const tabToRestore = existingData.current_tab || 'about-you';
-        console.log('Restoring tab position to:', tabToRestore);
-        setActiveTab(tabToRestore);
-        
-        // Determine which tabs have been completed based on data
-        const completed: string[] = [];
-        if (existingData.name && existingData.title) completed.push("about-you");
-        if (existingData.industry && existingData.product_types?.length > 0) completed.push("about-company");
-        if (existingData.customer_gender?.length > 0) completed.push("about-customer");
-        if (existingData.goals?.length > 0) completed.push("about-goals");
-        console.log('Completed tabs:', completed);
-        setCompletedTabs(completed);
+        // Mark all tabs as completed if data exists
+        setCompletedTabs(["about-you", "about-company", "about-goals", "about-customer"]);
       } else {
-        console.log('No existing data found, pre-populating from user data');
         // Pre-populate from user and company data
         const formatUserName = () => {
           // Try full_name first (if it exists and has spaces)
@@ -120,23 +102,6 @@ const MarketingOnboardingForm = () => {
       [field]: value
     }));
   };
-
-  // Auto-save progress when user changes tabs or data
-  useEffect(() => {
-    const autoSave = async () => {
-      // Only auto-save if there's some data entered
-      if (formData.name || formData.title || formData.industry) {
-        await saveOnboarding({
-          ...formData,
-          current_tab: activeTab
-        }, true); // true = isAutoSave
-      }
-    };
-
-    // Debounce auto-save
-    const timeoutId = setTimeout(autoSave, 1000);
-    return () => clearTimeout(timeoutId);
-  }, [formData, activeTab]);
 
   const tabs = [
     { id: "about-you", label: "About You", component: AboutYouTab, stepLabel: "You" },
