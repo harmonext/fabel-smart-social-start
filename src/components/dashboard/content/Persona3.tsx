@@ -80,7 +80,14 @@ const Persona3 = ({ persona }: Persona3Props) => {
       toast.error("Cannot update platforms: Persona not found");
       return;
     }
-    await updatePersonaPlatforms(persona.id, platforms);
+    const success = await updatePersonaPlatforms(persona.id, platforms);
+    if (success) {
+      setShowPlatformSelector(false);
+      // Update the persona object directly to trigger re-render
+      if (persona) {
+        persona.user_platforms = platforms;
+      }
+    }
   };
 
   const platformData: Record<string, PlatformData> = {
