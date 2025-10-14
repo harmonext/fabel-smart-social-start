@@ -69,7 +69,7 @@ const Persona3 = ({ persona }: Persona3Props) => {
         persona?.social_media_top_1,
         persona?.social_media_top_2,
         persona?.social_media_top_3
-      ].filter(Boolean);
+      ].filter(Boolean).map(p => p.toLowerCase());
 
   const displayPlatforms = persona?.user_platforms || aiPlatforms;
   
