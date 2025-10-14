@@ -342,14 +342,6 @@ const Persona1 = ({ persona }: Persona1Props) => {
                     </p>
                   </div>
 
-                  {/* Income */}
-                  <div className="text-center">
-                    <h2 className="font-bold text-sm mb-1">Psychographics:</h2>
-                    <p className="text-xs text-muted-foreground">
-                      {persona?.psychographics || "Values craftsmanship, design integrity, and authenticity"}
-                    </p>
-                  </div>
-
                   {/* Age, Gender */}
                   <div className="flex justify-center space-x-8">
                     <div className="text-center">
@@ -360,6 +352,14 @@ const Persona1 = ({ persona }: Persona1Props) => {
                       <h2 className="font-bold text-sm">Gender:</h2>
                       <p className="text-xs text-muted-foreground">{persona?.genders || "Female"}</p>
                     </div>
+                  </div>
+
+                  {/* Income */}
+                  <div className="text-center">
+                    <h2 className="font-bold text-sm mb-1">Psychographics:</h2>
+                    <p className="text-xs text-muted-foreground">
+                      {persona?.psychographics || "Values craftsmanship, design integrity, and authenticity"}
+                    </p>
                   </div>
 
                   <div className="flex-1"></div>
