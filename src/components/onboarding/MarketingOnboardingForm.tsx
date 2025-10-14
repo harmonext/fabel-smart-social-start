@@ -46,10 +46,16 @@ const MarketingOnboardingForm = () => {
         setFormData(existingData);
         // Set the active tab to the saved current_tab if it exists
         if (existingData.current_tab) {
+          console.log('Restoring tab position to:', existingData.current_tab);
           setActiveTab(existingData.current_tab);
         }
-        // Mark all tabs as completed if data exists
-        setCompletedTabs(["about-you", "about-company", "about-goals", "about-customer"]);
+        // Determine which tabs have been completed based on data
+        const completed: string[] = [];
+        if (existingData.name && existingData.title) completed.push("about-you");
+        if (existingData.industry && existingData.product_types?.length > 0) completed.push("about-company");
+        if (existingData.customer_gender?.length > 0) completed.push("about-customer");
+        if (existingData.goals?.length > 0) completed.push("about-goals");
+        setCompletedTabs(completed);
       } else {
         // Pre-populate from user and company data
         const formatUserName = () => {
