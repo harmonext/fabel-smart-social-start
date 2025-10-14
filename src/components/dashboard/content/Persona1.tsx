@@ -529,9 +529,9 @@ const Persona1 = ({ persona }: Persona1Props) => {
       </div>
 
       {/* Social Media Icons */}
-      <div className="space-y-3">
+      <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <p className="text-xs font-medium text-muted-foreground">Social Platforms</p>
+          <h2 className="font-bold text-sm">Social Media Platforms:</h2>
           <Button
             variant="ghost"
             size="sm"
@@ -543,7 +543,7 @@ const Persona1 = ({ persona }: Persona1Props) => {
           </Button>
         </div>
         <TooltipProvider>
-          <div className="flex items-center justify-center space-x-6">
+          <div className="flex items-center justify-center space-x-8">
             {socialMediaPlatforms.slice(0, 3).map((platform, index) => {
               const { icon: Icon, color, name } = getSocialMediaIcon(platform);
               return (
@@ -562,21 +562,70 @@ const Persona1 = ({ persona }: Persona1Props) => {
                      checked={platformStates[index]}
                      onCheckedChange={(checked) => handleMockPlatformToggle(index, checked as boolean)}
                    />
-                </div>
-              );
-            })}
-          </div>
-        </TooltipProvider>
-      </div>
+                 </div>
+               );
+             })}
+             {/* Fill remaining slots with empty spaces if less than 3 platforms */}
+             {Array.from({ length: Math.max(0, 3 - socialMediaPlatforms.length) }).map((_, index) => (
+               <div key={`empty-${index}`} className="flex flex-col items-center space-y-2">
+                 <Share2 className="w-6 h-6 text-muted-foreground opacity-30" />
+                 <Checkbox disabled />
+               </div>
+             ))}
+           </div>
+         </TooltipProvider>
+       </div>
 
-      {/* Location */}
-      <div className="text-center">
-        <p className="text-sm text-muted-foreground font-medium">
-          {persona?.location || "Portland, Oregon | San Francisco, California | Austin, Texas"}
-        </p>
-      </div>
+       {/* Location */}
+       <div className="text-center space-y-1">
+         <h2 className="font-bold text-sm">Location:</h2>
+         <p className="text-xs text-muted-foreground">
+           {persona?.location || "Portland, Oregon | San Francisco, California | Austin, Texas"}
+         </p>
+       </div>
 
-      <div className="flex-1"></div>
+       <div className="text-center space-y-1">
+         <h2 className="font-bold text-sm">Psychographics:</h2>
+         <p className="text-xs text-muted-foreground">
+           {persona?.psychographics || "Achievement-oriented, ambitious, growth-focused"}
+         </p>
+       </div>
+
+       <div className="flex justify-center space-x-8">
+         <div className="text-center">
+           <h2 className="font-bold text-sm">Age Range:</h2>
+           <p className="text-xs text-muted-foreground">{persona?.age_ranges || "28-42"}</p>
+         </div>
+         <div className="text-center">
+           <h2 className="font-bold text-sm">Gender:</h2>
+           <p className="text-xs text-muted-foreground">{persona?.genders || "All"}</p>
+         </div>
+       </div>
+
+       <div className="space-y-2 text-center">
+         <div className="flex items-center justify-center space-x-2">
+           <i className="fa-solid fa-lock text-lg text-muted-foreground"></i>
+           <h2 className="font-bold text-sm">Unlock for:</h2>
+         </div>
+         <p className="text-xs text-muted-foreground flex items-start justify-start">
+           <i className="fa-solid fa-users mr-1"></i>
+           Top Competitors: {persona?.top_competitors || "Competitors analysis"}
+         </p>
+         <p className="text-xs text-muted-foreground flex items-center justify-center gap-1">
+           <i className="fa-solid fa-dollar-sign"></i>
+           CAC: {persona?.cac_estimate || "$20-50"}
+         </p>
+         <p className="text-xs text-muted-foreground flex items-center justify-center gap-1">
+           <i className="fa-solid fa-infinity"></i>
+           LTV: {persona?.ltv_estimate || "$200-600"}
+         </p>
+         <p className="text-xs text-muted-foreground flex items-start justify-start">
+           <i className="fa-solid fa-heart mr-0.5"></i>
+           Appeal: {persona?.appeal_how_to || "Appeal strategies"}
+         </p>
+       </div>
+
+       <div className="mt-auto"></div>
 
       {/* Platform Selector Modal */}
       <PlatformSelector
@@ -587,15 +636,15 @@ const Persona1 = ({ persona }: Persona1Props) => {
         onSave={handleSavePlatforms}
       />
 
-      <div className="pt-4">
-        <Button
-          className="bg-fabel-primary hover:bg-fabel-primary/90 w-full"
-          onClick={handleGenerateContentClick}
-          disabled={isGenerating}
-        >
-          {isGenerating ? "Generating..." : "Generate Content"}
-        </Button>
-      </div>
+       <div className="pt-4">
+         <Button 
+           className="bg-fabel-primary hover:bg-fabel-primary/90 w-full"
+           onClick={handleGenerateContentClick}
+           disabled={isGenerating}
+         >
+           {isGenerating ? "Generating..." : "Generate Content"}
+         </Button>
+       </div>
     </div>
   );
 };

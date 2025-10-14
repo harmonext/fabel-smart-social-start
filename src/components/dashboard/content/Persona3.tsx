@@ -226,14 +226,12 @@ const Persona3 = ({ persona }: Persona3Props) => {
           </div>
         </div>
       )}
-      <div>
-        <div className="flex items-center gap-3 mb-1">
-          <h1 className="text-lg font-bold text-muted-foreground">{persona?.name || "The Digital Native"}</h1>
-        </div>
+      <div className="space-y-1">
+        <h1 className="text-lg font-bold text-muted-foreground">{persona?.name || "The Digital Native"}</h1>
         <p className="text-sm font-medium text-muted-foreground">{persona?.description || "Young entrepreneurs comfortable with digital marketing"}</p>
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-2">
         <div className="flex items-center justify-between">
           <h2 className="font-bold text-sm">Social Media Platforms:</h2>
           <Button
@@ -286,15 +284,15 @@ const Persona3 = ({ persona }: Persona3Props) => {
         onSave={handleSavePlatforms}
       />
 
-      <div className="text-center">
-        <h2 className="font-bold text-sm mb-1">Location:</h2>
+      <div className="text-center space-y-1">
+        <h2 className="font-bold text-sm">Location:</h2>
         <p className="text-xs text-muted-foreground">
           {persona?.location || "Digital-first environments"}
         </p>
       </div>
 
-      <div className="text-center">
-        <h2 className="font-bold text-sm mb-1">Psychographics:</h2>
+      <div className="text-center space-y-1">
+        <h2 className="font-bold text-sm">Psychographics:</h2>
         <p className="text-xs text-muted-foreground">
           {persona?.psychographics || "Innovation-focused, trend-conscious, early adopters"}
         </p>
@@ -311,7 +309,7 @@ const Persona3 = ({ persona }: Persona3Props) => {
         </div>
       </div>
         
-      <div className="pt-2 text-center">
+      <div className="space-y-2 text-center">
         <div className="flex items-center justify-center space-x-2 mb-2">
           <i className="fa-solid fa-lock text-lg text-muted-foreground"></i>
           <h2 className="font-bold text-sm">Unlock for:</h2>
