@@ -70,6 +70,7 @@ export type Database = {
       }
       marketing_onboarding: {
         Row: {
+          company_description: string | null
           created_at: string
           current_tab: string | null
           customer_age_ranges: string[]
@@ -86,6 +87,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          company_description?: string | null
           created_at?: string
           current_tab?: string | null
           customer_age_ranges?: string[]
@@ -102,6 +104,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          company_description?: string | null
           created_at?: string
           current_tab?: string | null
           customer_age_ranges?: string[]

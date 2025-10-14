@@ -10,6 +10,7 @@ export interface MarketingOnboardingData {
   
   // Tab 2: About Your Company
   industry: string;
+  company_description?: string;
   product_types: string[];
   store_type: string[];
   
@@ -109,6 +110,7 @@ export const useMarketingOnboarding = () => {
           name: data.name,
           title: data.title,
           industry: data.industry,
+          company_description: data.company_description || '',
           product_types: parseArrayField(data.product_types),
           store_type: parseArrayField(data.store_type),
           goals: parseArrayField(data.goals),
@@ -133,6 +135,7 @@ export const useMarketingOnboarding = () => {
     prompt = prompt.replace(/\{\{marketing_onboarding\.name\}\}/g, data.name);
     prompt = prompt.replace(/\{\{marketing_onboarding\.title\}\}/g, data.title);
     prompt = prompt.replace(/\{\{marketing_onboarding\.industry\}\}/g, data.industry);
+    prompt = prompt.replace(/\{\{marketing_onboarding\.company_description\}\}/g, data.company_description || '');
     prompt = prompt.replace(/\{\{marketing_onboarding\.product_types\}\}/g, data.product_types.join(', '));
     prompt = prompt.replace(/\{\{marketing_onboarding\.store_type\}\}/g, data.store_type.join(', '));
     prompt = prompt.replace(/\{\{marketing_onboarding\.goals\}\}/g, data.goals.join(', '));
@@ -144,6 +147,7 @@ export const useMarketingOnboarding = () => {
     prompt = prompt.replace(/\{\{name\}\}/g, data.name);
     prompt = prompt.replace(/\{\{title\}\}/g, data.title);
     prompt = prompt.replace(/\{\{industry\}\}/g, data.industry);
+    prompt = prompt.replace(/\{\{company_description\}\}/g, data.company_description || '');
     prompt = prompt.replace(/\{\{product_types\}\}/g, data.product_types.join(', '));
     prompt = prompt.replace(/\{\{store_type\}\}/g, data.store_type.join(', '));
     prompt = prompt.replace(/\{\{goals\}\}/g, data.goals.join(', '));

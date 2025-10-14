@@ -28,6 +28,7 @@ const MarketingOnboardingForm = () => {
     name: "",
     title: "",
     industry: "",
+    company_description: "",
     product_types: [],
     store_type: [],
     goals: [],

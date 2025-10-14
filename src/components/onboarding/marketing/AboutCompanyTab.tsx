@@ -1,6 +1,7 @@
 
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { X } from "lucide-react";
@@ -82,6 +83,20 @@ const AboutCompanyTab = ({
               ))}
             </SelectContent>
           </Select>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="company_description">Company Description</Label>
+          <Textarea 
+            id="company_description"
+            placeholder="Briefly describe your company and what products/services you offer..."
+            value={formData.company_description || ""}
+            onChange={(e) => onInputChange('company_description', e.target.value)}
+            className="min-h-[100px] resize-none"
+          />
+          <p className="text-xs text-muted-foreground">
+            This helps AI generate better personas and content for your business
+          </p>
         </div>
 
         <div className="space-y-2">
