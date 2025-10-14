@@ -43,6 +43,10 @@ const MarketingOnboardingForm = () => {
       const existingData = await fetchOnboardingData();
       if (existingData) {
         setFormData(existingData);
+        // Set the active tab to the saved current_tab if it exists
+        if (existingData.current_tab) {
+          setActiveTab(existingData.current_tab);
+        }
         // Mark all tabs as completed if data exists
         setCompletedTabs(["about-you", "about-company", "about-goals", "about-customer"]);
       } else {
@@ -102,6 +106,23 @@ const MarketingOnboardingForm = () => {
       [field]: value
     }));
   };
+
+  // Auto-save progress when user changes tabs or data
+  useEffect(() => {
+    const autoSave = async () => {
+      // Only auto-save if there's some data entered
+      if (formData.name || formData.title || formData.industry) {
+        await saveOnboarding({
+          ...formData,
+          current_tab: activeTab
+        }, true); // true = isAutoSave
+      }
+    };
+
+    // Debounce auto-save
+    const timeoutId = setTimeout(autoSave, 1000);
+    return () => clearTimeout(timeoutId);
+  }, [formData, activeTab]);
 
   const tabs = [
     { id: "about-you", label: "About You", component: AboutYouTab, stepLabel: "You" },

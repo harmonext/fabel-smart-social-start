@@ -71,6 +71,7 @@ export type Database = {
       marketing_onboarding: {
         Row: {
           created_at: string
+          current_tab: string | null
           customer_age_ranges: string[]
           customer_gender: string[]
           customer_income_ranges: string[]
@@ -86,6 +87,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          current_tab?: string | null
           customer_age_ranges?: string[]
           customer_gender?: string[]
           customer_income_ranges?: string[]
@@ -101,6 +103,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          current_tab?: string | null
           customer_age_ranges?: string[]
           customer_gender?: string[]
           customer_income_ranges?: string[]
