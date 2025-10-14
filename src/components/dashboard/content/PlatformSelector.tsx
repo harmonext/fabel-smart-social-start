@@ -120,20 +120,33 @@ export const PlatformSelector: React.FC<PlatformSelectorProps> = ({
                     key={platform.value}
                     onClick={() => handlePlatformClick(platform.value)}
                     className={`
-                      relative p-4 rounded-lg border-2 transition-all duration-200
+                      relative p-4 rounded-lg border-2 transition-all duration-200 cursor-pointer
                       ${
                         selected
-                          ? "border-fabel-primary bg-fabel-primary/20 shadow-lg shadow-fabel-primary/20"
-                          : "border-border bg-card hover:border-fabel-primary/50 hover:bg-card/80"
+                          ? "border-fabel-primary bg-fabel-primary/20 shadow-lg shadow-fabel-primary/20 scale-105"
+                          : "border-border bg-card hover:border-fabel-primary/50 hover:bg-card/80 hover:scale-102"
                       }
                     `}
                   >
+                    {/* Selection indicator */}
+                    <div className={`absolute top-2 left-2 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${
+                      selected 
+                        ? "border-fabel-primary bg-fabel-primary" 
+                        : "border-muted-foreground/30 bg-transparent"
+                    }`}>
+                      {selected && (
+                        <svg className="w-3 h-3 text-[hsl(222.2,84%,4.9%)]" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      )}
+                    </div>
+                    
                     {aiRecommended && (
                       <div className="absolute -top-2 -right-2 bg-fabel-primary text-[hsl(222.2,84%,4.9%)] text-xs px-2 py-0.5 rounded-full font-semibold">
                         AI
                       </div>
                     )}
-                    <div className="flex flex-col items-center gap-2">
+                    <div className="flex flex-col items-center gap-2 mt-2">
                       <i className={`${platform.icon} ${platform.color} text-2xl`} />
                       <span className="text-xs font-medium text-center">{platform.name}</span>
                     </div>
