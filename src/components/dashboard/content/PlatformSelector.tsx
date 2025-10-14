@@ -72,19 +72,19 @@ export const PlatformSelector: React.FC<PlatformSelectorProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px] bg-[hsl(222.2,84%,4.9%)] border-fabel-primary">
+      <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-foreground">
+          <DialogTitle className="text-2xl font-bold">
             Edit Social Platforms
           </DialogTitle>
-          <DialogDescription className="text-muted-foreground">
+          <DialogDescription>
             Select 3 platforms for this persona. Click on a platform to add or remove it.
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6">
           {/* Selected platforms display */}
-          <div className="bg-card/50 rounded-lg p-4 border border-fabel-primary/30">
+          <div className="bg-muted/50 rounded-lg p-4 border">
             <p className="text-sm font-medium mb-3 text-muted-foreground">
               Selected ({selectedPlatforms.length}/3):
             </p>
@@ -94,7 +94,7 @@ export const PlatformSelector: React.FC<PlatformSelectorProps> = ({
                 return (
                   <div
                     key={platform}
-                    className="flex items-center gap-2 bg-fabel-primary/20 border border-fabel-primary px-4 py-2 rounded-full"
+                    className="flex items-center gap-2 bg-primary/20 border border-primary px-4 py-2 rounded-full"
                   >
                     <span className="text-sm font-medium">{index + 1}.</span>
                     {platformData && <i className={`${platformData.icon} ${platformData.color} text-lg`} />}
@@ -123,26 +123,26 @@ export const PlatformSelector: React.FC<PlatformSelectorProps> = ({
                       relative p-4 rounded-lg border-2 transition-all duration-200 cursor-pointer
                       ${
                         selected
-                          ? "border-fabel-primary bg-fabel-primary/20 shadow-lg shadow-fabel-primary/20 scale-105"
-                          : "border-border bg-card hover:border-fabel-primary/50 hover:bg-card/80 hover:scale-102"
+                          ? "border-primary bg-primary/20 shadow-lg shadow-primary/20 scale-105"
+                          : "border-border bg-card hover:border-primary/50 hover:bg-muted/50 hover:scale-102"
                       }
                     `}
                   >
                     {/* Selection indicator */}
                     <div className={`absolute top-2 left-2 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${
                       selected 
-                        ? "border-fabel-primary bg-fabel-primary" 
+                        ? "border-primary bg-primary" 
                         : "border-muted-foreground/30 bg-transparent"
                     }`}>
                       {selected && (
-                        <svg className="w-3 h-3 text-[hsl(222.2,84%,4.9%)]" fill="currentColor" viewBox="0 0 20 20">
+                        <svg className="w-3 h-3 text-primary-foreground" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                         </svg>
                       )}
                     </div>
                     
                     {aiRecommended && (
-                      <div className="absolute -top-2 -right-2 bg-fabel-primary text-[hsl(222.2,84%,4.9%)] text-xs px-2 py-0.5 rounded-full font-semibold">
+                      <div className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-xs px-2 py-0.5 rounded-full font-semibold">
                         AI
                       </div>
                     )}
@@ -157,18 +157,16 @@ export const PlatformSelector: React.FC<PlatformSelectorProps> = ({
           </div>
 
           {/* Action buttons */}
-          <div className="flex gap-3 justify-end pt-4 border-t border-border">
+          <div className="flex gap-3 justify-end pt-4 border-t">
             <Button
               variant="outline"
               onClick={handleResetToAI}
-              className="border-fabel-primary/50 text-fabel-primary hover:bg-fabel-primary/10"
             >
               Reset to AI Recommendations
             </Button>
             <Button
               onClick={handleSave}
               disabled={selectedPlatforms.length !== 3}
-              className="bg-fabel-primary hover:bg-fabel-primary/90 text-[hsl(222.2,84%,4.9%)] font-semibold"
             >
               Save Changes
             </Button>
