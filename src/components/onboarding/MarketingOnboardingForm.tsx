@@ -159,24 +159,20 @@ const MarketingOnboardingForm = () => {
 
     console.log('Submitting formData:', formData);
     const result = await saveOnboarding(formData);
-    if (result.success && result.shouldGeneratePersonas) {
-      setIsGeneratingPersonas(true);
-      try {
-        // Use the usePersonas hook which includes auto-saving functionality
-        const success = await generatePersonas();
-        if (success) {
-          navigate('/dashboard?tab=company-profile&subtab=personas');
-        } else {
-          // Still navigate to personas page so user can manually generate
-          navigate('/dashboard?tab=company-profile&subtab=personas');
+    if (result.success) {
+      if (result.shouldGeneratePersonas) {
+        setIsGeneratingPersonas(true);
+        try {
+          // Use the usePersonas hook which includes auto-saving functionality
+          await generatePersonas();
+        } catch (error) {
+          console.error('Error generating personas:', error);
+        } finally {
+          setIsGeneratingPersonas(false);
         }
-      } catch (error) {
-        console.error('Error generating personas:', error);
-        // Still navigate to personas page so user can manually generate
-        navigate('/dashboard?tab=company-profile&subtab=personas');
-      } finally {
-        setIsGeneratingPersonas(false);
       }
+      // Always navigate to personas dashboard after completion
+      navigate('/dashboard?tab=company-profile&subtab=personas', { replace: true });
     }
   };
 
