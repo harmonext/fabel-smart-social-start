@@ -41,22 +41,29 @@ const MarketingOnboardingForm = () => {
 
   useEffect(() => {
     const loadExistingData = async () => {
+      console.log('Loading existing onboarding data...');
       const existingData = await fetchOnboardingData();
+      console.log('Fetched data:', existingData);
+      
       if (existingData) {
+        console.log('Setting form data with:', existingData);
         setFormData(existingData);
+        
         // Set the active tab to the saved current_tab if it exists
-        if (existingData.current_tab) {
-          console.log('Restoring tab position to:', existingData.current_tab);
-          setActiveTab(existingData.current_tab);
-        }
+        const tabToRestore = existingData.current_tab || 'about-you';
+        console.log('Restoring tab position to:', tabToRestore);
+        setActiveTab(tabToRestore);
+        
         // Determine which tabs have been completed based on data
         const completed: string[] = [];
         if (existingData.name && existingData.title) completed.push("about-you");
         if (existingData.industry && existingData.product_types?.length > 0) completed.push("about-company");
         if (existingData.customer_gender?.length > 0) completed.push("about-customer");
         if (existingData.goals?.length > 0) completed.push("about-goals");
+        console.log('Completed tabs:', completed);
         setCompletedTabs(completed);
       } else {
+        console.log('No existing data found, pre-populating from user data');
         // Pre-populate from user and company data
         const formatUserName = () => {
           // Try full_name first (if it exists and has spaces)
