@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { Share2, Sparkles, ChevronRight, X } from "lucide-react";
+import { Share2, Sparkles, ChevronRight, X, Edit2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Persona, usePersonas } from "@/hooks/usePersonas";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { PlatformSelector } from "./PlatformSelector";
 
 
 interface PlatformData {
@@ -26,7 +27,7 @@ interface Persona1Props {
 
 const Persona1 = ({ persona }: Persona1Props) => {
   console.log('Persona1 received persona data:', persona);
-  const { savePersonas } = usePersonas();
+  const { savePersonas, updatePersonaPlatforms } = usePersonas();
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
   const [generatedContent, setGeneratedContent] = useState<GeneratedContent[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -34,6 +35,7 @@ const Persona1 = ({ persona }: Persona1Props) => {
   const [currentEditingPlatform, setCurrentEditingPlatform] = useState<string | null>(null);
   const [modalText, setModalText] = useState("");
   const [isExpanded, setIsExpanded] = useState(false);
+  const [showPlatformSelector, setShowPlatformSelector] = useState(false);
   // Local state for checkbox states since this is mock data
   const [platformStates, setPlatformStates] = useState<boolean[]>([false, false, false]);
 
@@ -67,11 +69,26 @@ const Persona1 = ({ persona }: Persona1Props) => {
     }
   };
 
-  const socialMediaPlatforms = [
-    persona?.social_media_top_1,
-    persona?.social_media_top_2,
-    persona?.social_media_top_3
-  ].filter(Boolean);
+  // Get the platforms to display - user override or AI recommendations
+  const aiPlatforms = persona?.ai_platforms && persona.ai_platforms.length > 0 
+    ? persona.ai_platforms 
+    : [
+        persona?.social_media_top_1,
+        persona?.social_media_top_2,
+        persona?.social_media_top_3
+      ].filter(Boolean);
+
+  const displayPlatforms = persona?.user_platforms || aiPlatforms;
+  
+  const socialMediaPlatforms = displayPlatforms.filter(Boolean).slice(0, 3);
+
+  const handleSavePlatforms = async (platforms: string[]) => {
+    if (!persona?.id) {
+      toast.error("Cannot update platforms: Persona not found");
+      return;
+    }
+    await updatePersonaPlatforms(persona.id, platforms);
+  };
 
   const platformData: Record<string, PlatformData> = {
     linkedin: {
@@ -505,7 +522,19 @@ const Persona1 = ({ persona }: Persona1Props) => {
       </div>
 
       {/* Social Media Icons */}
-      <div className="text-center">
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <p className="text-xs font-medium text-muted-foreground">Social Platforms</p>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowPlatformSelector(true)}
+            className="h-7 px-2 text-xs text-fabel-primary hover:text-fabel-primary/90 hover:bg-fabel-primary/10"
+          >
+            <Edit2 className="h-3 w-3 mr-1" />
+            Edit
+          </Button>
+        </div>
         <TooltipProvider>
           <div className="flex items-center justify-center space-x-6">
             {socialMediaPlatforms.slice(0, 3).map((platform, index) => {
@@ -541,8 +570,18 @@ const Persona1 = ({ persona }: Persona1Props) => {
       </div>
 
       <div className="flex-1"></div>
+
+      {/* Platform Selector Modal */}
+      <PlatformSelector
+        isOpen={showPlatformSelector}
+        onClose={() => setShowPlatformSelector(false)}
+        currentPlatforms={displayPlatforms}
+        aiPlatforms={aiPlatforms}
+        onSave={handleSavePlatforms}
+      />
+
       <div className="pt-4">
-        <Button 
+        <Button
           className="bg-fabel-primary hover:bg-fabel-primary/90 w-full"
           onClick={handleGenerateContentClick}
           disabled={isGenerating}

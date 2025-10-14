@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { Share2, Sparkles } from "lucide-react";
+import { Share2, Sparkles, Edit2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Persona } from "@/hooks/usePersonas";
+import { Persona, usePersonas } from "@/hooks/usePersonas";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { PlatformSelector } from "./PlatformSelector";
 interface PlatformData {
   name: string;
   icon: React.ComponentType<any>;
@@ -21,6 +22,7 @@ interface Persona2Props {
 }
 
 const Persona2 = ({ persona }: Persona2Props) => {
+  const { updatePersonaPlatforms } = usePersonas();
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
   const [generatedContent, setGeneratedContent] = useState<GeneratedContent[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -29,6 +31,7 @@ const Persona2 = ({ persona }: Persona2Props) => {
   const [modalText, setModalText] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [showPlatformSelector, setShowPlatformSelector] = useState(false);
   const getSocialMediaIcon = (platform: string) => {
     const platformName = platform?.toLowerCase();
     
@@ -59,11 +62,26 @@ const Persona2 = ({ persona }: Persona2Props) => {
     }
   };
 
-  const socialMediaPlatforms = [
-    persona?.social_media_top_1,
-    persona?.social_media_top_2,
-    persona?.social_media_top_3
-  ].filter(Boolean);
+  // Get the platforms to display - user override or AI recommendations
+  const aiPlatforms = persona?.ai_platforms && persona.ai_platforms.length > 0 
+    ? persona.ai_platforms 
+    : [
+        persona?.social_media_top_1,
+        persona?.social_media_top_2,
+        persona?.social_media_top_3
+      ].filter(Boolean);
+
+  const displayPlatforms = persona?.user_platforms || aiPlatforms;
+  
+  const socialMediaPlatforms = displayPlatforms.filter(Boolean).slice(0, 3);
+
+  const handleSavePlatforms = async (platforms: string[]) => {
+    if (!persona?.id) {
+      toast.error("Cannot update platforms: Persona not found");
+      return;
+    }
+    await updatePersonaPlatforms(persona.id, platforms);
+  };
 
   const platformData: Record<string, PlatformData> = {
     linkedin: {
@@ -214,8 +232,19 @@ const Persona2 = ({ persona }: Persona2Props) => {
         <p className="text-sm font-medium text-muted-foreground">{persona?.description || "Local business owners focused on community engagement"}</p>
       </div>
 
-      <div className="text-center">
-        <h2 className="font-bold text-sm mb-2">Social Media Platforms:</h2>
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h2 className="font-bold text-sm">Social Media Platforms:</h2>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowPlatformSelector(true)}
+            className="h-7 px-2 text-xs text-fabel-primary hover:text-fabel-primary/90 hover:bg-fabel-primary/10"
+          >
+            <Edit2 className="h-3 w-3 mr-1" />
+            Edit
+          </Button>
+        </div>
         <TooltipProvider>
           <div className="flex items-center justify-center space-x-8">
             {socialMediaPlatforms.slice(0, 3).map((platform, index) => {
@@ -246,6 +275,15 @@ const Persona2 = ({ persona }: Persona2Props) => {
           </div>
         </TooltipProvider>
       </div>
+
+      {/* Platform Selector Modal */}
+      <PlatformSelector
+        isOpen={showPlatformSelector}
+        onClose={() => setShowPlatformSelector(false)}
+        currentPlatforms={displayPlatforms}
+        aiPlatforms={aiPlatforms}
+        onSave={handleSavePlatforms}
+      />
 
       <div className="text-center">
         <h2 className="font-bold text-sm mb-1">Location:</h2>

@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
 export interface Persona {
+  id?: string;
   name: string;
   description: string;
   location: string;
@@ -20,6 +21,8 @@ export interface Persona {
   cac_estimate?: string;
   ltv_estimate?: string;
   appeal_how_to: string;
+  ai_platforms?: string[];
+  user_platforms?: string[] | null;
 }
 
 export const usePersonas = () => {
@@ -47,7 +50,8 @@ export const usePersonas = () => {
       }
 
       if (data && data.length > 0) {
-        const loadedPersonas = data.map(persona => ({
+        const loadedPersonas: Persona[] = data.map(persona => ({
+          id: persona.id,
           name: persona.name,
           description: persona.description,
           location: persona.location || '',
@@ -64,6 +68,8 @@ export const usePersonas = () => {
           cac_estimate: persona.cac_estimate,
           ltv_estimate: persona.ltv_estimate,
           appeal_how_to: persona.appeal_how_to || '',
+          ai_platforms: Array.isArray(persona.ai_platforms) ? (persona.ai_platforms as string[]) : [],
+          user_platforms: Array.isArray(persona.user_platforms) ? (persona.user_platforms as string[]) : null,
         }));
         setPersonas(loadedPersonas);
       }
@@ -368,11 +374,62 @@ export const usePersonas = () => {
     }
   };
 
+  const updatePersonaPlatforms = async (personaId: string, platforms: string[]): Promise<boolean> => {
+    try {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) {
+        toast({
+          title: "Authentication error",
+          description: "Please log in to update platforms.",
+          variant: "destructive"
+        });
+        return false;
+      }
+
+      const { error } = await supabase
+        .from('saved_personas')
+        .update({ user_platforms: platforms })
+        .eq('id', personaId)
+        .eq('user_id', user.id);
+
+      if (error) {
+        console.error('Error updating platforms:', error);
+        toast({
+          title: "Update Failed",
+          description: "Failed to update platforms. Please try again.",
+          variant: "destructive"
+        });
+        return false;
+      }
+
+      // Update local state
+      setPersonas(prev => prev.map(p => 
+        p.id === personaId ? { ...p, user_platforms: platforms } : p
+      ));
+
+      toast({
+        title: "Platforms Updated",
+        description: "Social media platforms updated successfully!",
+      });
+
+      return true;
+    } catch (error) {
+      console.error('Error updating platforms:', error);
+      toast({
+        title: "Update Error",
+        description: "An unexpected error occurred.",
+        variant: "destructive"
+      });
+      return false;
+    }
+  };
+
   return {
     personas,
     isLoading,
     isSaving,
     generatePersonas,
-    savePersonas
+    savePersonas,
+    updatePersonaPlatforms,
   };
 };

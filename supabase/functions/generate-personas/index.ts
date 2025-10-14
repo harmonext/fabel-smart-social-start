@@ -91,6 +91,14 @@ const normalizePersona = (persona: any) => {
   normalized.social_media_top_2 = normalized.social_media_top_2 || null;
   normalized.social_media_top_3 = normalized.social_media_top_3 || null;
   
+  // Store AI's platform recommendations
+  const aiPlatforms = [
+    normalized.social_media_top_1,
+    normalized.social_media_top_2,
+    normalized.social_media_top_3
+  ].filter(Boolean);
+  normalized.ai_platforms = aiPlatforms;
+  
   return normalized;
 };
 

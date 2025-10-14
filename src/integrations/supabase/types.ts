@@ -152,6 +152,7 @@ export type Database = {
       saved_personas: {
         Row: {
           age_ranges: string
+          ai_platforms: Json | null
           appeal_how_to: string
           cac_estimate: string | null
           created_at: string
@@ -173,9 +174,11 @@ export type Database = {
           top_competitors: string
           updated_at: string
           user_id: string
+          user_platforms: Json | null
         }
         Insert: {
           age_ranges?: string
+          ai_platforms?: Json | null
           appeal_how_to?: string
           cac_estimate?: string | null
           created_at?: string
@@ -197,9 +200,11 @@ export type Database = {
           top_competitors?: string
           updated_at?: string
           user_id: string
+          user_platforms?: Json | null
         }
         Update: {
           age_ranges?: string
+          ai_platforms?: Json | null
           appeal_how_to?: string
           cac_estimate?: string | null
           created_at?: string
@@ -221,6 +226,7 @@ export type Database = {
           top_competitors?: string
           updated_at?: string
           user_id?: string
+          user_platforms?: Json | null
         }
         Relationships: []
       }
