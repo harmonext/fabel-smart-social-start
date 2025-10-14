@@ -9,17 +9,9 @@ const Navigation = () => {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-fabel-secondary/20">
       <div className="container mx-auto px-6">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-fabel-primary rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">F</span>
-            </div>
-            <span className="text-xl font-bold text-foreground">Fabel</span>
-          </Link>
-          
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
+        <div className="flex items-center justify-center h-16 relative">
+          {/* Desktop Navigation - Left */}
+          <div className="hidden md:flex items-center space-x-8 absolute left-0">
             <Link to="/features" className="text-muted-foreground hover:text-fabel-primary transition-colors">
               Features
             </Link>
@@ -34,8 +26,16 @@ const Navigation = () => {
             </Link>
           </div>
           
-          {/* CTA Buttons */}
-          <div className="hidden md:flex items-center space-x-4">
+          {/* Logo - Centered */}
+          <Link to="/" className="flex items-center space-x-2">
+            <div className="w-8 h-8 bg-fabel-primary rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-lg">F</span>
+            </div>
+            <span className="text-xl font-bold text-foreground">Fabel</span>
+          </Link>
+          
+          {/* CTA Buttons - Right */}
+          <div className="hidden md:flex items-center space-x-4 absolute right-0">
             <Link to="/login">
               <Button variant="ghost" className="text-fabel-primary hover:bg-fabel-primary/10">
                 Login
