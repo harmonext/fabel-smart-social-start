@@ -70,6 +70,8 @@ export const useMarketingOnboarding = () => {
         .from('marketing_onboarding')
         .select('*')
         .eq('user_id', user.id)
+        .order('updated_at', { ascending: false })
+        .limit(1)
         .maybeSingle();
 
       if (error) {
@@ -172,7 +174,9 @@ export const useMarketingOnboarding = () => {
       console.log('Data being sent to Supabase:', dataToSave);
       const { error: onboardingError } = await supabase
         .from('marketing_onboarding')
-        .upsert(dataToSave);
+        .upsert(dataToSave, {
+          onConflict: 'user_id'
+        });
 
       if (onboardingError) {
         console.error('Error saving marketing onboarding:', onboardingError);
