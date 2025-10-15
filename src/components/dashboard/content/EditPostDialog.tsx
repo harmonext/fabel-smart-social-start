@@ -130,7 +130,7 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
   const handleSave = () => {
     if (!post || !hasChanges) return;
 
-    // Trigger validation before saving
+    // Reset validation state and trigger new validation
     setIsValidating(true);
     setValidation(null);
 
@@ -246,8 +246,8 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
           <DialogTitle>Edit Post</DialogTitle>
         </DialogHeader>
         
-        {/* Validation Progress at Top - Only show when actively validating */}
-        {post && isValidating && (
+        {/* Validation Progress - Show when validating or when there's a validation result */}
+        {post && (isValidating || validation) && (
           <div className="animate-in fade-in slide-in-from-top-2 duration-300">
             <ContentValidationProgress
               validation={validation}
