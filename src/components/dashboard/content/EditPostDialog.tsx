@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Check, X, Clock, Upload, Image, Video, FileText, Trash2 } from 'lucide-react';
 import { ScheduledContent, useScheduledContent } from '@/hooks/useScheduledContent';
 import { usePlatformRules } from '@/hooks/usePlatformRules';
+import { useSignedUrls } from '@/hooks/useSignedUrls';
 import { validateContent } from '@/utils/contentValidation';
 import { validateMediaFile } from '@/utils/mediaValidation';
 import { ContentValidationProgress } from './ContentValidationProgress';
@@ -70,6 +71,7 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
 }) => {
   const { uploadMedia } = useScheduledContent();
   const { rules } = usePlatformRules();
+  const { getSignedUrl } = useSignedUrls();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   
@@ -84,6 +86,7 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
   const [isUploading, setIsUploading] = useState(false);
   const [validation, setValidation] = useState<RuleValidationResult | null>(null);
   const [isValidating, setIsValidating] = useState(false);
+  const [signedMediaUrl, setSignedMediaUrl] = useState<string>('');
 
   useEffect(() => {
     if (post && open) {
@@ -97,8 +100,30 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
       setHasChanges(false);
       setValidation(null);
       setIsValidating(false);
+      
+      // Get signed URL for media if it exists
+      if (post.media_url) {
+        const extractPath = (url: string) => {
+          const match = url.match(/scheduled-content-media\/(.+)/);
+          return match ? match[1] : null;
+        };
+        
+        const path = extractPath(post.media_url);
+        if (path) {
+          getSignedUrl(path).then(signedUrl => {
+            setSignedMediaUrl(signedUrl);
+          }).catch(err => {
+            console.error('Error getting signed URL:', err);
+            setSignedMediaUrl(post.media_url || '');
+          });
+        } else {
+          setSignedMediaUrl(post.media_url);
+        }
+      } else {
+        setSignedMediaUrl('');
+      }
     }
-  }, [post, open]);
+  }, [post, open, getSignedUrl]);
 
   const handleChange = (field: string, value: string) => {
     setEditData(prev => ({ ...prev, [field]: value }));
@@ -199,6 +224,20 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
       if (mediaUrl) {
         handleChange('media_url', mediaUrl);
         
+        // Get signed URL for the newly uploaded media
+        const extractPath = (url: string) => {
+          const match = url.match(/scheduled-content-media\/(.+)/);
+          return match ? match[1] : null;
+        };
+        
+        const path = extractPath(mediaUrl);
+        if (path) {
+          const signedUrl = await getSignedUrl(path);
+          setSignedMediaUrl(signedUrl);
+        } else {
+          setSignedMediaUrl(mediaUrl);
+        }
+        
         // Show recommendation toast if aspect ratio isn't ideal
         if (validationResult.recommendation) {
           toast({
@@ -228,6 +267,7 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
 
   const removeMedia = () => {
     handleChange('media_url', '');
+    setSignedMediaUrl('');
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -284,7 +324,7 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
                   {editData.media_url.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
                     <div className="relative">
                       <img 
-                        src={editData.media_url} 
+                        src={signedMediaUrl || editData.media_url} 
                         alt="Media preview" 
                         className="w-full h-64 object-cover"
                       />
@@ -301,7 +341,7 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
                   ) : editData.media_url.match(/\.(mp4|mov|avi|mkv)$/i) ? (
                     <div className="relative">
                       <video 
-                        src={editData.media_url} 
+                        src={signedMediaUrl || editData.media_url} 
                         controls
                         className="w-full h-64 object-cover bg-black"
                       />
