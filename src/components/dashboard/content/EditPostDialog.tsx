@@ -280,29 +280,58 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
             <label className="text-xs font-medium">Media Asset</label>
             <div className="space-y-2">
               {editData.media_url ? (
-                <div className="border rounded-lg p-3 bg-muted/30">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      {getMediaIcon(editData.media_url)}
-                      <span className="text-sm font-medium">Media attached</span>
-                    </div>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={removeMedia}
-                      className="h-8 w-8 p-0"
-                    >
-                      <Trash2 className="h-3 w-3" />
-                    </Button>
-                  </div>
-                  {editData.media_url.match(/\.(jpg|jpeg|png|gif|webp)$/i) && (
-                    <div className="mt-2">
+                <div className="border rounded-lg overflow-hidden bg-muted/30">
+                  {editData.media_url.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
+                    <div className="relative">
                       <img 
                         src={editData.media_url} 
                         alt="Media preview" 
-                        className="max-w-full h-20 object-cover rounded border"
+                        className="w-full h-64 object-cover"
                       />
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="sm"
+                        onClick={removeMedia}
+                        className="absolute top-2 right-2 h-8 w-8 p-0"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  ) : editData.media_url.match(/\.(mp4|mov|avi|mkv)$/i) ? (
+                    <div className="relative">
+                      <video 
+                        src={editData.media_url} 
+                        controls
+                        className="w-full h-64 object-cover bg-black"
+                      />
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="sm"
+                        onClick={removeMedia}
+                        className="absolute top-2 right-2 h-8 w-8 p-0"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="p-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          {getMediaIcon(editData.media_url)}
+                          <span className="text-sm font-medium">Media attached</span>
+                        </div>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={removeMedia}
+                          className="h-8 w-8 p-0"
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      </div>
                     </div>
                   )}
                 </div>
