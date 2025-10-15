@@ -8,8 +8,10 @@ import { Check, X, Clock, Upload, Image, Video, FileText, Trash2 } from 'lucide-
 import { ScheduledContent, useScheduledContent } from '@/hooks/useScheduledContent';
 import { usePlatformRules } from '@/hooks/usePlatformRules';
 import { validateContent } from '@/utils/contentValidation';
+import { validateMediaFile } from '@/utils/mediaValidation';
 import { ContentValidationProgress } from './ContentValidationProgress';
 import { RuleValidationResult } from '@/types/platformRules';
+import { useToast } from '@/hooks/use-toast';
 
 // Import utility functions (we'll need to move these to a shared file)
 const getSocialIcon = (platform: string, size: 'xs' | 'sm' | 'md' = 'sm') => {
@@ -68,6 +70,7 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
 }) => {
   const { uploadMedia } = useScheduledContent();
   const { rules } = usePlatformRules();
+  const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const [editData, setEditData] = useState({
@@ -92,20 +95,14 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
         media_url: post.media_url || ''
       });
       setHasChanges(false);
-      
-      // Trigger initial validation when dialog opens
-      triggerValidation(post.content || '', post.media_url || '');
+      setValidation(null);
+      setIsValidating(false);
     }
-  }, [post, open, rules]);
+  }, [post, open]);
 
   const handleChange = (field: string, value: string) => {
     setEditData(prev => ({ ...prev, [field]: value }));
     setHasChanges(true);
-    
-    // Trigger validation when content or media changes
-    if (field === 'content' || field === 'media_url') {
-      triggerValidation(field === 'content' ? value : editData.content, field === 'media_url' ? value : editData.media_url);
-    }
   };
 
   const triggerValidation = (content: string, mediaUrl: string) => {
@@ -131,10 +128,34 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
   };
 
   const handleSave = () => {
-    if (post && hasChanges) {
-      onSave(post.id, editData);
-      onOpenChange(false);
-    }
+    if (!post || !hasChanges) return;
+
+    // Trigger validation before saving
+    setIsValidating(true);
+    setValidation(null);
+
+    setTimeout(() => {
+      const result = validateContent(
+        {
+          content: editData.content,
+          platform: post.platform as any,
+          media_url: editData.media_url || undefined
+        },
+        rules
+      );
+
+      setValidation(result);
+      setIsValidating(false);
+
+      if (result.isValid) {
+        onSave(post.id, editData);
+        onOpenChange(false);
+        toast({
+          title: "Changes saved successfully",
+          description: "Your post has been updated."
+        });
+      }
+    }, 1500); // Show progress bar for validation
   };
 
   const handleCancel = () => {
@@ -156,14 +177,39 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
     if (!file || !post) return;
 
     setIsUploading(true);
+    
     try {
+      // Validate file before uploading
+      const validationResult = await validateMediaFile(file, post.platform);
+      
+      if (!validationResult.isValid) {
+        toast({
+          title: "Content not uploaded successfully",
+          description: validationResult.error,
+          variant: "destructive"
+        });
+        setIsUploading(false);
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+        return;
+      }
+
       const mediaUrl = await uploadMedia(file, post.id);
       if (mediaUrl) {
         handleChange('media_url', mediaUrl);
-        // Validation will be triggered by handleChange
+        toast({
+          title: "Successfully added content!",
+          description: `Your ${file.type.startsWith('image/') ? 'image' : 'video'} has been uploaded.`
+        });
       }
     } catch (error) {
       console.error('Upload failed:', error);
+      toast({
+        title: "Content not uploaded successfully",
+        description: "An error occurred during upload. Please try again.",
+        variant: "destructive"
+      });
     } finally {
       setIsUploading(false);
     }
@@ -340,11 +386,11 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
           <div className="flex gap-2 pt-4 border-t">
             <Button
               onClick={handleSave}
-              disabled={!hasChanges || (validation ? !validation.isValid : false)}
+              disabled={!hasChanges || isValidating || (validation ? !validation.isValid : false)}
               className="flex-1"
             >
               <Check className="h-4 w-4 mr-2" />
-              Save Changes
+              {isValidating ? 'Validating...' : 'Save Changes'}
             </Button>
             <Button
               variant="outline"
