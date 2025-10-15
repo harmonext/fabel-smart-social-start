@@ -329,10 +329,18 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
             </div>
           )}
           
+          {validation && !validation.isValid && validation.violations.length > 0 && (
+            <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+              <p className="text-sm text-destructive font-medium">
+                Please fix {validation.violations.length} validation error{validation.violations.length > 1 ? 's' : ''} before saving
+              </p>
+            </div>
+          )}
+          
           <div className="flex gap-2 pt-4 border-t">
             <Button
               onClick={handleSave}
-              disabled={!hasChanges}
+              disabled={!hasChanges || (validation ? !validation.isValid : false)}
               className="flex-1"
             >
               <Check className="h-4 w-4 mr-2" />
