@@ -127,14 +127,14 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
     }, 100);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!post || !hasChanges) return;
 
     // Reset validation state and trigger new validation
     setIsValidating(true);
     setValidation(null);
 
-    setTimeout(() => {
+    setTimeout(async () => {
       const result = validateContent(
         {
           content: editData.content,
@@ -148,12 +148,9 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
       setIsValidating(false);
 
       if (result.isValid) {
-        onSave(post.id, editData);
+        // Call onSave to update the content in the database
+        await onSave(post.id, editData);
         onOpenChange(false);
-        toast({
-          title: "Changes saved successfully",
-          description: "Your post has been updated."
-        });
       }
     }, 1500); // Show progress bar for validation
   };
