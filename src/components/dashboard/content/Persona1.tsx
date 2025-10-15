@@ -536,7 +536,7 @@ const Persona1 = ({ persona }: Persona1Props) => {
       {/* Social Media Icons */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <p className="text-xs font-bold text-muted-foreground">Social Media Platforms</p>
+          <h2 className="font-bold text-sm">Social Media Platforms:</h2>
           <Button
             variant="ghost"
             size="sm"
