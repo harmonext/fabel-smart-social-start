@@ -186,7 +186,8 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
         toast({
           title: "Content not uploaded successfully",
           description: validationResult.error,
-          variant: "destructive"
+          variant: "destructive",
+          duration: Infinity
         });
         setIsUploading(false);
         if (fileInputRef.current) {
@@ -198,6 +199,7 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
       const mediaUrl = await uploadMedia(file, post.id);
       if (mediaUrl) {
         handleChange('media_url', mediaUrl);
+        // Dismiss any existing error toasts
         toast({
           title: "Successfully added content!",
           description: `Your ${file.type.startsWith('image/') ? 'image' : 'video'} has been uploaded.`
@@ -208,7 +210,8 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
       toast({
         title: "Content not uploaded successfully",
         description: "An error occurred during upload. Please try again.",
-        variant: "destructive"
+        variant: "destructive",
+        duration: Infinity
       });
     } finally {
       setIsUploading(false);
@@ -243,8 +246,8 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
           <DialogTitle>Edit Post</DialogTitle>
         </DialogHeader>
         
-        {/* Validation Progress at Top - Only show during/after save validation */}
-        {post && (isValidating || validation) && (
+        {/* Validation Progress at Top - Only show when actively validating */}
+        {post && isValidating && (
           <div className="animate-in fade-in slide-in-from-top-2 duration-300">
             <ContentValidationProgress
               validation={validation}
