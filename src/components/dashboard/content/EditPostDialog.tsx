@@ -254,8 +254,7 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
           </div>
         )}
         
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="space-y-4">
+        <div className="space-y-4">
           <div className="space-y-2">
             <label className="text-xs font-medium">Title</label>
             <Input
@@ -413,7 +412,6 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
             </Button>
           </div>
         </div>
-      </div>
       </DialogContent>
     </Dialog>
   );

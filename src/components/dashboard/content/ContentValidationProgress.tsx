@@ -123,15 +123,20 @@ export const ContentValidationProgress = ({
         {/* Show error if validation failed */}
         {showValidation && hasError && failedStep !== null && (
           <div className="space-y-2 animate-in fade-in slide-in-from-left-2 duration-300">
-            <div className="flex items-start gap-3 text-sm">
+            <div className="flex items-start gap-3 p-3 bg-destructive/10 rounded-lg border border-destructive/30">
               <XCircle className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
               <div className="flex-1">
-                <p className="font-semibold text-destructive mb-1">
-                  {steps[failedStep].label}
+                <p className="font-semibold text-destructive mb-2">
+                  Validation Failed: {steps[failedStep].label}
                 </p>
                 {steps[failedStep].error && (
-                  <p className="text-sm text-muted-foreground bg-destructive/10 p-2 rounded border border-destructive/20">
-                    {steps[failedStep].error}
+                  <p className="text-sm text-foreground leading-relaxed">
+                    <span className="font-medium">Rule violation:</span> {steps[failedStep].error}
+                  </p>
+                )}
+                {!steps[failedStep].error && validation && validation.violations.length > 0 && (
+                  <p className="text-sm text-foreground leading-relaxed">
+                    <span className="font-medium">Rule violation:</span> {validation.violations[0].message}
                   </p>
                 )}
               </div>
