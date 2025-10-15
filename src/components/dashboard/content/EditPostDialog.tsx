@@ -243,6 +243,17 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
           <DialogTitle>Edit Post</DialogTitle>
         </DialogHeader>
         
+        {/* Validation Progress at Top - Only show during/after save validation */}
+        {post && (isValidating || validation) && (
+          <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+            <ContentValidationProgress
+              validation={validation}
+              platform={post.platform}
+              isValidating={isValidating}
+            />
+          </div>
+        )}
+        
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="space-y-4">
           <div className="space-y-2">
@@ -402,17 +413,6 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
             </Button>
           </div>
         </div>
-        
-        {/* Validation Progress Sidebar - Only show during/after save validation */}
-        {post && (isValidating || validation) && (
-          <div className="space-y-4 animate-in fade-in slide-in-from-right-5 duration-300">
-            <ContentValidationProgress
-              validation={validation}
-              platform={post.platform}
-              isValidating={isValidating}
-            />
-          </div>
-        )}
       </div>
       </DialogContent>
     </Dialog>

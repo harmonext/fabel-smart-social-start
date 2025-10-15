@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Progress } from '@/components/ui/progress';
-import { CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
+import { CheckCircle2, XCircle, Loader2 } from 'lucide-react';
 import { RuleValidationResult } from '@/types/platformRules';
 
 interface ValidationStep {
   label: string;
   status: 'pending' | 'checking' | 'complete' | 'error';
+  error?: string;
 }
 
 interface ContentValidationProgressProps {
@@ -27,14 +28,16 @@ export const ContentValidationProgress = ({
     { label: 'Validating media requirements', status: 'pending' },
     { label: 'Checking posting limits', status: 'pending' }
   ]);
-  const [currentStep, setCurrentStep] = useState(0);
+  const [currentStep, setCurrentStep] = useState(-1);
   const [progress, setProgress] = useState(0);
+  const [failedStep, setFailedStep] = useState<number | null>(null);
 
   useEffect(() => {
     if (!isValidating) {
       setProgress(0);
-      setCurrentStep(0);
-      setSteps(steps.map(s => ({ ...s, status: 'pending' })));
+      setCurrentStep(-1);
+      setFailedStep(null);
+      setSteps(steps.map(s => ({ ...s, status: 'pending', error: undefined })));
       return;
     }
 
@@ -42,119 +45,110 @@ export const ContentValidationProgress = ({
     let step = 0;
 
     const interval = setInterval(() => {
-      if (step < totalSteps) {
+      if (step < totalSteps && failedStep === null) {
+        setCurrentStep(step);
         setSteps(prev => prev.map((s, idx) => {
           if (idx < step) return { ...s, status: 'complete' };
           if (idx === step) return { ...s, status: 'checking' };
           return s;
         }));
-        setCurrentStep(step);
+        
         setProgress(((step + 1) / totalSteps) * 100);
+        
+        // Check if this step failed
+        if (validation && step < totalSteps) {
+          const stepHasError = validation.violations.some(v => {
+            const lowerMsg = v.message.toLowerCase();
+            if (step === 0) return lowerMsg.includes('length') || lowerMsg.includes('character');
+            if (step === 1) return lowerMsg.includes('hashtag');
+            if (step === 2) return lowerMsg.includes('media') || lowerMsg.includes('image') || lowerMsg.includes('video');
+            if (step === 3) return lowerMsg.includes('limit') || lowerMsg.includes('post');
+            return false;
+          });
+          
+          if (stepHasError) {
+            const errorMsg = validation.violations.find(v => {
+              const lowerMsg = v.message.toLowerCase();
+              if (step === 0) return lowerMsg.includes('length') || lowerMsg.includes('character');
+              if (step === 1) return lowerMsg.includes('hashtag');
+              if (step === 2) return lowerMsg.includes('media') || lowerMsg.includes('image') || lowerMsg.includes('video');
+              if (step === 3) return lowerMsg.includes('limit') || lowerMsg.includes('post');
+              return false;
+            })?.message;
+            
+            setSteps(prev => prev.map((s, idx) => 
+              idx === step ? { ...s, status: 'error', error: errorMsg } : s
+            ));
+            setFailedStep(step);
+            clearInterval(interval);
+            onComplete?.();
+            return;
+          }
+        }
+        
         step++;
-      } else {
+      } else if (failedStep === null) {
         clearInterval(interval);
         setSteps(prev => prev.map(s => ({ ...s, status: 'complete' })));
         setProgress(100);
         onComplete?.();
       }
-    }, 600);
+    }, 500);
 
     return () => clearInterval(interval);
-  }, [isValidating]);
+  }, [isValidating, validation]);
 
-  const getFinalStatus = () => {
-    if (!validation) return null;
-    if (validation.violations.length > 0) {
-      return {
-        icon: <AlertCircle className="h-5 w-5 text-destructive" />,
-        text: 'Needs Edits',
-        color: 'text-destructive'
-      };
-    }
-    return {
-      icon: <CheckCircle2 className="h-5 w-5 text-green-600" />,
-      text: 'Ready for Posting',
-      color: 'text-green-600'
-    };
-  };
-
-  const finalStatus = getFinalStatus();
-  const showFinalStatus = !isValidating && validation && progress === 100;
+  const showValidation = !isValidating && validation;
+  const hasError = failedStep !== null;
+  const currentStepData = currentStep >= 0 ? steps[currentStep] : null;
 
   return (
-    <div className="space-y-4 p-6 rounded-lg border bg-card">
-      <div className="flex items-center justify-between">
-        <div>
-          <h3 className="font-semibold text-lg">
-            Validating for {platform.charAt(0).toUpperCase() + platform.slice(1)}
-          </h3>
-          {isValidating && (
-            <p className="text-sm text-muted-foreground mt-1">
-              {steps[currentStep]?.label}
-            </p>
-          )}
-        </div>
-        {showFinalStatus && finalStatus && (
-          <div className={`flex items-center gap-2 font-semibold ${finalStatus.color}`}>
-            {finalStatus.icon}
-            <span>{finalStatus.text}</span>
-          </div>
-        )}
-      </div>
-
-      <div className="space-y-3">
+    <div className="space-y-3 p-4 rounded-lg border-2 border-fabel-primary bg-gradient-to-r from-fabel-primary/5 to-fabel-secondary/5">
+      <div className="space-y-2">
         <Progress 
           value={progress} 
           className="h-2 transition-all duration-500"
         />
         
-        <div className="space-y-2">
-          {steps.map((step, idx) => (
-            <div 
-              key={idx}
-              className={`flex items-center gap-3 text-sm transition-all duration-300 ${
-                step.status === 'pending' ? 'opacity-40' : 'opacity-100'
-              }`}
-            >
-              {step.status === 'checking' && (
-                <Loader2 className="h-4 w-4 animate-spin" style={{ color: 'rgb(227, 195, 138)' }} />
-              )}
-              {step.status === 'complete' && (
-                <CheckCircle2 className="h-4 w-4 text-green-600" />
-              )}
-              {step.status === 'pending' && (
-                <div className="h-4 w-4 rounded-full border-2 border-muted" />
-              )}
-              <span className={step.status === 'checking' ? 'font-medium' : ''}>
-                {step.label}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {showFinalStatus && validation && (
-        <div className="pt-4 border-t">
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-muted-foreground">Validation Summary</span>
-            <div className="flex gap-4">
-              {validation.violations.length > 0 && (
-                <span className="text-destructive font-medium">
-                  {validation.violations.length} violation{validation.violations.length !== 1 ? 's' : ''}
-                </span>
-              )}
-              {validation.warnings.length > 0 && (
-                <span className="text-yellow-600 font-medium">
-                  {validation.warnings.length} warning{validation.warnings.length !== 1 ? 's' : ''}
-                </span>
-              )}
-              {validation.isValid && validation.warnings.length === 0 && (
-                <span className="text-green-600 font-medium">All checks passed</span>
-              )}
+        {/* Only show current step being validated */}
+        {isValidating && currentStepData && (
+          <div className="flex items-center gap-3 text-sm animate-in fade-in slide-in-from-left-2 duration-300">
+            <Loader2 className="h-4 w-4 animate-spin text-fabel-primary flex-shrink-0" />
+            <span className="font-medium text-foreground">
+              {currentStepData.label}
+            </span>
+          </div>
+        )}
+        
+        {/* Show error if validation failed */}
+        {showValidation && hasError && failedStep !== null && (
+          <div className="space-y-2 animate-in fade-in slide-in-from-left-2 duration-300">
+            <div className="flex items-start gap-3 text-sm">
+              <XCircle className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <p className="font-semibold text-destructive mb-1">
+                  {steps[failedStep].label}
+                </p>
+                {steps[failedStep].error && (
+                  <p className="text-sm text-muted-foreground bg-destructive/10 p-2 rounded border border-destructive/20">
+                    {steps[failedStep].error}
+                  </p>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+        
+        {/* Show success if all checks passed */}
+        {showValidation && !hasError && validation?.isValid && (
+          <div className="flex items-center gap-3 text-sm animate-in fade-in slide-in-from-left-2 duration-300">
+            <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0" />
+            <span className="font-medium text-green-600">
+              All validation checks passed - Ready to post!
+            </span>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
