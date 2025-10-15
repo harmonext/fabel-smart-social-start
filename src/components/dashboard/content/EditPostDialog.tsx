@@ -199,11 +199,20 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
       const mediaUrl = await uploadMedia(file, post.id);
       if (mediaUrl) {
         handleChange('media_url', mediaUrl);
-        // Dismiss any existing error toasts
-        toast({
-          title: "Successfully added content!",
-          description: `Your ${file.type.startsWith('image/') ? 'image' : 'video'} has been uploaded.`
-        });
+        
+        // Show recommendation toast if aspect ratio isn't ideal
+        if (validationResult.recommendation) {
+          toast({
+            title: "Successfully added content!",
+            description: validationResult.recommendation,
+            variant: "default"
+          });
+        } else {
+          toast({
+            title: "Successfully added content!",
+            description: `Your ${file.type.startsWith('image/') ? 'image' : 'video'} has been uploaded.`
+          });
+        }
       }
     } catch (error) {
       console.error('Upload failed:', error);

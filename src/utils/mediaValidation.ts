@@ -1,6 +1,7 @@
 interface MediaValidationResult {
   isValid: boolean;
   error?: string;
+  recommendation?: string;
 }
 
 interface PlatformMediaRules {
@@ -69,7 +70,8 @@ const platformMediaRules: Record<string, PlatformMediaRules> = {
 
 export const validateMediaFile = async (
   file: File,
-  platform: string
+  platform: string,
+  showRecommendation: boolean = true
 ): Promise<MediaValidationResult> => {
   const platformLower = platform.toLowerCase();
   const rules = platformMediaRules[platformLower];
@@ -100,18 +102,25 @@ export const validateMediaFile = async (
     };
   }
 
-  // Check dimensions for images
-  if (isImage) {
+  // Check dimensions for images and provide recommendation (not blocking)
+  if (isImage && rules.aspectRatios.preferred && showRecommendation) {
     try {
       const dimensions = await getImageDimensions(file);
       const aspectRatio = dimensions.width / dimensions.height;
+      const preferred = rules.aspectRatios.preferred;
 
-      if (aspectRatio < rules.aspectRatios.min || aspectRatio > rules.aspectRatios.max) {
-        const minRatio = `${Math.round(rules.aspectRatios.min * 100)}:100`;
-        const maxRatio = `${Math.round(rules.aspectRatios.max * 100)}:100`;
+      // If there's a preferred ratio and image doesn't match, show recommendation
+      if (Math.abs(aspectRatio - preferred) > 0.1) {
+        const preferredRatioDisplay = preferred === 0.67 ? '2:3' : 
+                                       preferred === 1 ? '1:1' : 
+                                       preferred === 1.91 ? '1.91:1' : 
+                                       preferred === 0.5625 ? '9:16' :
+                                       preferred === 1.78 ? '16:9' :
+                                       `${Math.round(preferred * 100)}:100`;
+        
         return {
-          isValid: false,
-          error: `${platform} requires aspect ratio between ${minRatio} and ${maxRatio}. Your image is ${Math.round(aspectRatio * 100)}:100`
+          isValid: true,
+          recommendation: `For best results on ${platform}, we recommend using a ${preferredRatioDisplay} aspect ratio`
         };
       }
     } catch (error) {
