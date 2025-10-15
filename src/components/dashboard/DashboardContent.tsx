@@ -11,6 +11,7 @@ import OnboardingFlow from "@/components/onboarding/OnboardingFlow";
 import OnboardedData from "./content/OnboardedData";
 import RoleProtectedComponent from "@/components/RoleProtectedComponent";
 import AdminContentModeration from "./content/AdminContentModeration";
+import { PlatformRulesWrapper } from "./content/PlatformRulesWrapper";
 import { useOnboarding } from "@/hooks/useOnboarding";
 
 interface DashboardContentProps {
@@ -65,6 +66,13 @@ const DashboardContent = ({ activeTab, activeSubTab }: DashboardContentProps) =>
         return (
           <RoleProtectedComponent requiredRole="super_admin">
             <SystemPromptTemplates />
+          </RoleProtectedComponent>
+        );
+      }
+      if (activeSubTab === "platform-rules") {
+        return (
+          <RoleProtectedComponent requiredRole="super_admin">
+            <PlatformRulesWrapper />
           </RoleProtectedComponent>
         );
       }

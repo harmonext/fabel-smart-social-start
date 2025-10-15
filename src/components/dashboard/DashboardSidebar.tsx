@@ -25,7 +25,8 @@ import {
   ClipboardList,
   Database,
   Tag,
-  Shield
+  Shield,
+  FileCheck
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -251,6 +252,17 @@ const DashboardSidebar = ({
                   >
                     <FileText className="h-3 w-3 mr-3" />
                     System Templates
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    className={cn(
+                      "w-full justify-start text-left h-9 text-sm",
+                      activeTab === "system-management" && activeSubTab === "platform-rules" && "bg-fabel-primary/10 text-fabel-primary"
+                    )}
+                    onClick={() => handleTabClick("system-management", "platform-rules")}
+                  >
+                    <FileCheck className="h-3 w-3 mr-3" />
+                    Platform Rules
                   </Button>
                 </div>
               )}
