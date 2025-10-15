@@ -403,9 +403,9 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
           </div>
         </div>
         
-        {/* Validation Progress Sidebar */}
-        {post && (
-          <div className="space-y-4">
+        {/* Validation Progress Sidebar - Only show during/after save validation */}
+        {post && (isValidating || validation) && (
+          <div className="space-y-4 animate-in fade-in slide-in-from-right-5 duration-300">
             <ContentValidationProgress
               validation={validation}
               platform={post.platform}
