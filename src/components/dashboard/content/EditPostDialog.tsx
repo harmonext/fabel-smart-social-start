@@ -134,25 +134,27 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
     setIsValidating(true);
     setValidation(null);
 
-    setTimeout(async () => {
-      const result = validateContent(
-        {
-          content: editData.content,
-          platform: post.platform as any,
-          media_url: editData.media_url || undefined
-        },
-        rules
-      );
+    // Validate content first
+    const result = validateContent(
+      {
+        content: editData.content,
+        platform: post.platform as any,
+        media_url: editData.media_url || undefined
+      },
+      rules
+    );
 
+    // Show validation animation
+    setTimeout(async () => {
       setValidation(result);
       setIsValidating(false);
 
       if (result.isValid) {
-        // Call onSave to update the content in the database
+        // Save the updated content to database
         await onSave(post.id, editData);
         onOpenChange(false);
       }
-    }, 1500); // Show progress bar for validation
+    }, 1500);
   };
 
   const handleCancel = () => {
