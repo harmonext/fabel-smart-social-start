@@ -533,23 +533,6 @@ const Persona1 = ({ persona }: Persona1Props) => {
         </p>
       </div>
 
-      {/* Age, Gender, Income */}
-      <div className="flex flex-wrap gap-2 justify-center">
-        <div className="bg-card px-3 py-1 rounded-full text-xs font-medium">
-          {persona?.age_ranges || "28-37 YEARS OLD"}
-        </div>
-        <div className="bg-card px-3 py-1 rounded-full text-xs font-medium">
-          {persona?.genders || "FEMALE"}
-        </div>
-      </div>
-
-      {/* Income */}
-      <div className="text-center">
-        <div className="bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm font-medium inline-block">
-          {persona?.income_level || "$75K - $125K"}
-        </div>
-      </div>
-
       {/* Social Media Icons */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
@@ -589,6 +572,23 @@ const Persona1 = ({ persona }: Persona1Props) => {
             })}
           </div>
         </TooltipProvider>
+      </div>
+
+      {/* Age, Gender, Income */}
+      <div className="flex flex-wrap gap-2 justify-center">
+        <div className="bg-card px-3 py-1 rounded-full text-xs font-medium">
+          {persona?.age_ranges || "28-37 YEARS OLD"}
+        </div>
+        <div className="bg-card px-3 py-1 rounded-full text-xs font-medium">
+          {persona?.genders || "FEMALE"}
+        </div>
+      </div>
+
+      {/* Income */}
+      <div className="text-center">
+        <div className="bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm font-medium inline-block">
+          {persona?.income_level || "$75K - $125K"}
+        </div>
       </div>
 
       {/* Location */}
