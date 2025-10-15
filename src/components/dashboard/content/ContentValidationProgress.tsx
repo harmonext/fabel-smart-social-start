@@ -120,25 +120,39 @@ export const ContentValidationProgress = ({
           </div>
         )}
         
-        {/* Show error if validation failed */}
+        {/* Show error if validation failed - Persisted */}
         {showValidation && hasError && failedStep !== null && (
-          <div className="space-y-2 animate-in fade-in slide-in-from-left-2 duration-300">
-            <div className="flex items-start gap-3 p-3 bg-destructive/10 rounded-lg border border-destructive/30">
+          <div className="space-y-3 animate-in fade-in slide-in-from-left-2 duration-300">
+            <div className="flex items-start gap-3 p-4 bg-destructive/10 rounded-lg border-2 border-destructive/30">
               <XCircle className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
-              <div className="flex-1">
-                <p className="font-semibold text-destructive mb-2">
-                  Validation Failed: {steps[failedStep].label}
+              <div className="flex-1 space-y-2">
+                <p className="font-bold text-destructive text-base">
+                  ❌ Validation Failed
                 </p>
-                {steps[failedStep].error && (
-                  <p className="text-sm text-foreground leading-relaxed">
-                    <span className="font-medium">Rule violation:</span> {steps[failedStep].error}
+                <div className="space-y-1">
+                  <p className="font-semibold text-foreground">
+                    Failed Rule: {steps[failedStep].label}
                   </p>
-                )}
-                {!steps[failedStep].error && validation && validation.violations.length > 0 && (
-                  <p className="text-sm text-foreground leading-relaxed">
-                    <span className="font-medium">Rule violation:</span> {validation.violations[0].message}
+                  {steps[failedStep].error && (
+                    <div className="mt-2 p-3 bg-background/50 rounded border border-destructive/20">
+                      <p className="text-sm font-medium text-destructive mb-1">What went wrong:</p>
+                      <p className="text-sm text-foreground leading-relaxed">
+                        {steps[failedStep].error}
+                      </p>
+                    </div>
+                  )}
+                  {!steps[failedStep].error && validation && validation.violations.length > 0 && (
+                    <div className="mt-2 p-3 bg-background/50 rounded border border-destructive/20">
+                      <p className="text-sm font-medium text-destructive mb-1">What went wrong:</p>
+                      <p className="text-sm text-foreground leading-relaxed">
+                        {validation.violations[0].message}
+                      </p>
+                    </div>
+                  )}
+                  <p className="text-xs text-muted-foreground mt-2 italic">
+                    Please update your content to meet the {platform} platform requirements before saving.
                   </p>
-                )}
+                </div>
               </div>
             </div>
           </div>
