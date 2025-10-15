@@ -6,6 +6,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Check, X, Clock, Upload, Image, Video, FileText, Trash2 } from 'lucide-react';
 import { ScheduledContent, useScheduledContent } from '@/hooks/useScheduledContent';
+import { usePlatformRules } from '@/hooks/usePlatformRules';
+import { validateContent } from '@/utils/contentValidation';
+import { ContentValidationProgress } from './ContentValidationProgress';
+import { RuleValidationResult } from '@/types/platformRules';
 
 // Import utility functions (we'll need to move these to a shared file)
 const getSocialIcon = (platform: string, size: 'xs' | 'sm' | 'md' = 'sm') => {
@@ -63,6 +67,7 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
   onSave
 }) => {
   const { uploadMedia } = useScheduledContent();
+  const { rules } = usePlatformRules();
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const [editData, setEditData] = useState({
@@ -74,9 +79,11 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
   });
   const [hasChanges, setHasChanges] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [validation, setValidation] = useState<RuleValidationResult | null>(null);
+  const [isValidating, setIsValidating] = useState(false);
 
   useEffect(() => {
-    if (post) {
+    if (post && open) {
       setEditData({
         title: post.title,
         content: post.content || '',
@@ -85,12 +92,42 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
         media_url: post.media_url || ''
       });
       setHasChanges(false);
+      
+      // Trigger initial validation when dialog opens
+      triggerValidation(post.content || '', post.media_url || '');
     }
-  }, [post]);
+  }, [post, open, rules]);
 
   const handleChange = (field: string, value: string) => {
     setEditData(prev => ({ ...prev, [field]: value }));
     setHasChanges(true);
+    
+    // Trigger validation when content or media changes
+    if (field === 'content' || field === 'media_url') {
+      triggerValidation(field === 'content' ? value : editData.content, field === 'media_url' ? value : editData.media_url);
+    }
+  };
+
+  const triggerValidation = (content: string, mediaUrl: string) => {
+    if (!post) return;
+    
+    setIsValidating(true);
+    setValidation(null);
+    
+    // Simulate async validation with slight delay for better UX
+    setTimeout(() => {
+      const result = validateContent(
+        {
+          content: content,
+          platform: post.platform as any,
+          media_url: mediaUrl || undefined
+        },
+        rules
+      );
+      
+      setValidation(result);
+      setIsValidating(false);
+    }, 100);
   };
 
   const handleSave = () => {
@@ -123,6 +160,7 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
       const mediaUrl = await uploadMedia(file, post.id);
       if (mediaUrl) {
         handleChange('media_url', mediaUrl);
+        // Validation will be triggered by handleChange
       }
     } catch (error) {
       console.error('Upload failed:', error);
@@ -154,12 +192,13 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Edit Post</DialogTitle>
         </DialogHeader>
         
-        <div className="space-y-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="space-y-4">
           <div className="space-y-2">
             <label className="text-xs font-medium">Title</label>
             <Input
@@ -309,6 +348,18 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
             </Button>
           </div>
         </div>
+        
+        {/* Validation Progress Sidebar */}
+        {post && (
+          <div className="space-y-4">
+            <ContentValidationProgress
+              validation={validation}
+              platform={post.platform}
+              isValidating={isValidating}
+            />
+          </div>
+        )}
+      </div>
       </DialogContent>
     </Dialog>
   );
