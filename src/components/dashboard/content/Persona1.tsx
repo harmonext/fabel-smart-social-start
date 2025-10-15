@@ -574,6 +574,14 @@ const Persona1 = ({ persona }: Persona1Props) => {
         </TooltipProvider>
       </div>
 
+      {/* Location */}
+      <div className="text-center">
+        <h2 className="font-bold text-sm mb-1">Location:</h2>
+        <p className="text-xs text-muted-foreground">
+          {persona?.location || "Portland, Oregon | San Francisco, California | Austin, Texas"}
+        </p>
+      </div>
+
       {/* Age, Gender, Income */}
       <div className="flex flex-wrap gap-2 justify-center">
         <div className="bg-card px-3 py-1 rounded-full text-xs font-medium">
@@ -589,13 +597,6 @@ const Persona1 = ({ persona }: Persona1Props) => {
         <div className="bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm font-medium inline-block">
           {persona?.income_level || "$75K - $125K"}
         </div>
-      </div>
-
-      {/* Location */}
-      <div className="text-center">
-        <p className="text-sm text-muted-foreground font-medium">
-          {persona?.location || "Portland, Oregon | San Francisco, California | Austin, Texas"}
-        </p>
       </div>
 
       <div className="flex-1"></div>
