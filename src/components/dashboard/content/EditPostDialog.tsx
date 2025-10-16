@@ -204,11 +204,12 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
     
     try {
       // Validate file before uploading
-      const validationResult = await validateMediaFile(file, post.platform);
+      const validationResult = await validateMediaFile(file, post.platform, true);
       
+      // If file doesn't meet requirements, show persistent error and stop
       if (!validationResult.isValid) {
         toast({
-          title: "Content not uploaded successfully",
+          title: "File Upload Failed",
           description: validationResult.error,
           variant: "destructive",
           duration: Infinity
@@ -220,6 +221,7 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
         return;
       }
 
+      // File meets requirements - proceed with upload
       const mediaUrl = await uploadMedia(file, post.id);
       if (mediaUrl) {
         handleChange('media_url', mediaUrl);
@@ -238,24 +240,27 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
           setSignedMediaUrl(mediaUrl);
         }
         
-        // Show recommendation toast if aspect ratio isn't ideal
+        // Show recommendation toast if there's one, otherwise show success
         if (validationResult.recommendation) {
           toast({
-            title: "Successfully added content!",
+            title: "File Uploaded Successfully",
             description: validationResult.recommendation,
-            variant: "default"
+            variant: "default",
+            duration: 5000
           });
         } else {
           toast({
-            title: "Successfully added content!",
-            description: `Your ${file.type.startsWith('image/') ? 'image' : 'video'} has been uploaded.`
+            title: "File Uploaded Successfully",
+            description: `Your ${file.type.startsWith('image/') ? 'image' : 'video'} has been uploaded.`,
+            variant: "default",
+            duration: 3000
           });
         }
       }
     } catch (error) {
       console.error('Upload failed:', error);
       toast({
-        title: "Content not uploaded successfully",
+        title: "Upload Error",
         description: "An error occurred during upload. Please try again.",
         variant: "destructive",
         duration: Infinity
