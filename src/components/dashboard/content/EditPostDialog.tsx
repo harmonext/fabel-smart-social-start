@@ -315,8 +315,8 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
               onClick={() => handleChange('status', 'draft')}
               className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
                 editData.status === 'draft'
-                  ? 'bg-fabel-neutral text-foreground ring-2 ring-fabel-neutral ring-offset-2'
-                  : 'bg-muted text-muted-foreground hover:bg-fabel-neutral/50'
+                  ? 'bg-fabel-primary text-foreground ring-2 ring-fabel-primary ring-offset-2'
+                  : 'bg-muted text-muted-foreground hover:bg-fabel-primary/50'
               }`}
             >
               Draft
@@ -325,8 +325,8 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
               onClick={() => handleChange('status', 'scheduled')}
               className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
                 editData.status === 'scheduled'
-                  ? 'bg-fabel-primary text-foreground ring-2 ring-fabel-primary ring-offset-2'
-                  : 'bg-muted text-muted-foreground hover:bg-fabel-primary/50'
+                  ? 'bg-fabel-neutral text-foreground ring-2 ring-fabel-neutral ring-offset-2'
+                  : 'bg-muted text-muted-foreground hover:bg-fabel-neutral/50'
               }`}
             >
               Scheduled
@@ -463,7 +463,7 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
             <label className="text-xs font-medium">Scheduled Date & Time</label>
             <Input
               type="datetime-local"
-              value={editData.scheduled_at ? new Date(editData.scheduled_at).toISOString().slice(0, 16) : ''}
+              value={editData.scheduled_at ? editData.scheduled_at.slice(0, 16) : ''}
               onChange={(e) => handleChange('scheduled_at', e.target.value ? new Date(e.target.value).toISOString() : '')}
               className="text-xs h-8"
             />
