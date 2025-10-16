@@ -224,34 +224,37 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
       // File meets requirements - proceed with upload
       const mediaUrl = await uploadMedia(file, post.id);
       if (mediaUrl) {
-        handleChange('media_url', mediaUrl);
-        
-        // Get signed URL for the newly uploaded media
+        // Get signed URL for preview
         const extractPath = (url: string) => {
           const match = url.match(/scheduled-content-media\/(.+)/);
           return match ? match[1] : null;
         };
         
         const path = extractPath(mediaUrl);
+        let signedUrl = mediaUrl;
         if (path) {
-          const signedUrl = await getSignedUrl(path);
-          setSignedMediaUrl(signedUrl);
-        } else {
-          setSignedMediaUrl(mediaUrl);
+          signedUrl = await getSignedUrl(path);
         }
+        
+        // Update state with both media URL and signed URL for preview
+        setSignedMediaUrl(signedUrl);
+        handleChange('media_url', mediaUrl);
+        
+        // Auto-save the changes to database
+        await onSave(post.id, { ...editData, media_url: mediaUrl });
         
         // Show recommendation toast if there's one, otherwise show success
         if (validationResult.recommendation) {
           toast({
-            title: "File Uploaded Successfully",
+            title: "File Uploaded and Saved",
             description: validationResult.recommendation,
             variant: "default",
             duration: 5000
           });
         } else {
           toast({
-            title: "File Uploaded Successfully",
-            description: `Your ${file.type.startsWith('image/') ? 'image' : 'video'} has been uploaded.`,
+            title: "File Uploaded and Saved",
+            description: `Your ${file.type.startsWith('image/') ? 'image' : 'video'} has been uploaded successfully.`,
             variant: "default",
             duration: 3000
           });
