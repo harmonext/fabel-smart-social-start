@@ -125,9 +125,14 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
     }
   }, [post, open, getSignedUrl]);
 
-  const handleChange = (field: string, value: string) => {
+  const handleChange = async (field: string, value: string) => {
     setEditData(prev => ({ ...prev, [field]: value }));
     setHasChanges(true);
+    
+    // Auto-save title and scheduled_at changes
+    if ((field === 'title' || field === 'scheduled_at') && post) {
+      await onSave(post.id, { [field]: value });
+    }
   };
 
   const triggerValidation = (content: string, mediaUrl: string) => {
@@ -302,6 +307,43 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
           <DialogTitle>Edit Post</DialogTitle>
         </DialogHeader>
         
+        {/* Status Badge - Moved to top with brand colors */}
+        <div className="flex items-center gap-3 pb-4 border-b">
+          <span className="text-sm font-medium text-muted-foreground">Status:</span>
+          <div className="flex gap-2">
+            <button
+              onClick={() => handleChange('status', 'draft')}
+              className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                editData.status === 'draft'
+                  ? 'bg-fabel-neutral text-foreground ring-2 ring-fabel-neutral ring-offset-2'
+                  : 'bg-muted text-muted-foreground hover:bg-fabel-neutral/50'
+              }`}
+            >
+              Draft
+            </button>
+            <button
+              onClick={() => handleChange('status', 'scheduled')}
+              className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                editData.status === 'scheduled'
+                  ? 'bg-fabel-primary text-foreground ring-2 ring-fabel-primary ring-offset-2'
+                  : 'bg-muted text-muted-foreground hover:bg-fabel-primary/50'
+              }`}
+            >
+              Scheduled
+            </button>
+            <button
+              onClick={() => handleChange('status', 'published')}
+              className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                editData.status === 'published'
+                  ? 'bg-fabel-secondary text-foreground ring-2 ring-fabel-secondary ring-offset-2'
+                  : 'bg-muted text-muted-foreground hover:bg-fabel-secondary/50'
+              }`}
+            >
+              Published
+            </button>
+          </div>
+        </div>
+        
         {/* Validation Progress - Show when validating or when there's a validation result */}
         {post && (isValidating || validation) && (
           <div className="animate-in fade-in slide-in-from-top-2 duration-300">
@@ -425,20 +467,6 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
               onChange={(e) => handleChange('scheduled_at', e.target.value ? new Date(e.target.value).toISOString() : '')}
               className="text-xs h-8"
             />
-          </div>
-          
-          <div className="space-y-2">
-            <label className="text-xs font-medium">Status</label>
-            <Select value={editData.status} onValueChange={(value) => handleChange('status', value)}>
-              <SelectTrigger className="text-xs h-8">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="draft">Draft</SelectItem>
-                <SelectItem value="scheduled">Scheduled</SelectItem>
-                <SelectItem value="published">Published</SelectItem>
-              </SelectContent>
-            </Select>
           </div>
           
           
