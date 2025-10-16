@@ -56,6 +56,18 @@ const getPersonaAvatar = (personaName: string) => {
   return personaName.charAt(0).toUpperCase();
 };
 
+// Helper function to convert ISO string to datetime-local format (user's local timezone)
+const formatForDatetimeLocal = (isoString: string) => {
+  if (!isoString) return '';
+  const date = new Date(isoString);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+};
+
 interface EditPostDialogProps {
   post: ScheduledContent | null;
   open: boolean;
@@ -463,7 +475,7 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
             <label className="text-xs font-medium">Scheduled Date & Time</label>
             <Input
               type="datetime-local"
-              value={editData.scheduled_at ? editData.scheduled_at.slice(0, 16) : ''}
+              value={formatForDatetimeLocal(editData.scheduled_at)}
               onChange={(e) => handleChange('scheduled_at', e.target.value ? new Date(e.target.value).toISOString() : '')}
               className="text-xs h-8"
             />
