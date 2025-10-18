@@ -70,7 +70,7 @@ export const useScheduledContent = () => {
     }
   };
 
-  const updateContent = async (id: string, updates: ScheduledContentUpdate) => {
+  const updateContent = async (id: string, updates: ScheduledContentUpdate, showToast: boolean = true) => {
     try {
       setIsSaving(true);
       const { data, error } = await supabase
@@ -85,10 +85,12 @@ export const useScheduledContent = () => {
       }
 
       setContent(prev => prev.map(item => item.id === id ? data : item));
-      toast({
-        title: "Success",
-        description: "Content updated successfully!",
-      });
+      if (showToast) {
+        toast({
+          title: "Success",
+          description: "Content updated successfully!",
+        });
+      }
       return true;
     } catch (error) {
       console.error('Error updating scheduled content:', error);

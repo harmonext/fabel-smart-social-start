@@ -68,6 +68,17 @@ const formatForDatetimeLocal = (isoString: string) => {
   return `${year}-${month}-${day}T${hours}:${minutes}`;
 };
 
+// Helper function to get minimum datetime (current time)
+const getMinDatetime = () => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+};
+
 interface EditPostDialogProps {
   post: ScheduledContent | null;
   open: boolean;
@@ -81,7 +92,7 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
   onOpenChange,
   onSave
 }) => {
-  const { uploadMedia } = useScheduledContent();
+  const { uploadMedia, updateContent } = useScheduledContent();
   const { rules } = usePlatformRules();
   const { getSignedUrl } = useSignedUrls();
   const { toast } = useToast();
@@ -141,9 +152,9 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
     setEditData(prev => ({ ...prev, [field]: value }));
     setHasChanges(true);
     
-    // Auto-save title and scheduled_at changes
+    // Auto-save title and scheduled_at changes without showing toast
     if ((field === 'title' || field === 'scheduled_at') && post) {
-      await onSave(post.id, { [field]: value });
+      await updateContent(post.id, { [field]: value }, false);
     }
   };
 
@@ -341,7 +352,7 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
                   : 'bg-muted text-muted-foreground hover:bg-fabel-neutral/50'
               }`}
             >
-              Scheduled
+              {editData.status === 'draft' ? 'Schedule it' : 'Scheduled'}
             </button>
             <button
               onClick={() => handleChange('status', 'published')}
@@ -477,6 +488,7 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
               type="datetime-local"
               value={formatForDatetimeLocal(editData.scheduled_at)}
               onChange={(e) => handleChange('scheduled_at', e.target.value ? new Date(e.target.value).toISOString() : '')}
+              min={getMinDatetime()}
               className="text-xs h-8"
             />
           </div>
