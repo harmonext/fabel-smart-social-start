@@ -152,8 +152,8 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
     setEditData(prev => ({ ...prev, [field]: value }));
     setHasChanges(true);
     
-    // Auto-save title and scheduled_at changes without showing toast
-    if ((field === 'title' || field === 'scheduled_at') && post) {
+    // Auto-save scheduled_at changes in real-time
+    if (field === 'scheduled_at' && post) {
       await updateContent(post.id, { [field]: value }, false);
     }
   };
