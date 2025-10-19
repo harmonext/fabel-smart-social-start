@@ -443,7 +443,7 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           {getMediaIcon(editData.media_url)}
-                          <span className="text-sm font-medium">Media attached</span>
+                          <span className="text-sm font-medium">File Uploaded!</span>
                         </div>
                         <Button
                           type="button"
