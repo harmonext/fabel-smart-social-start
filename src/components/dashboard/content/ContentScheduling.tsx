@@ -352,7 +352,8 @@ const EditablePost = ({ post, editMode, shortTitle, timeString }: {
             <TooltipContent 
               side="right" 
               align="start" 
-              className="max-w-sm p-4"
+              className="max-w-sm p-4 z-50"
+              sideOffset={10}
             >
               <ViewTooltipContent />
             </TooltipContent>
@@ -460,20 +461,22 @@ const ListView = ({ posts, allContent, currentDate, setCurrentDate, onReschedule
   
   let startDay = 1;
   
-  // If startFromFirstScheduled is enabled, find the first scheduled date in the month
+  // If startFromFirstScheduled is enabled, find the first scheduled date across all posts
   if (startFromFirstScheduled && posts.length > 0) {
-    const scheduledDatesInMonth = posts
-      .filter(post => {
-        if (!post.scheduled_at) return false;
-        const postDate = new Date(post.scheduled_at);
-        return postDate.getMonth() === currentDate.getMonth() && 
-               postDate.getFullYear() === currentDate.getFullYear();
-      })
-      .map(post => new Date(post.scheduled_at).getDate())
-      .sort((a, b) => a - b);
+    // Get all scheduled dates and sort them
+    const allScheduledDates = posts
+      .filter(post => post.scheduled_at)
+      .map(post => new Date(post.scheduled_at))
+      .sort((a, b) => a.getTime() - b.getTime());
     
-    if (scheduledDatesInMonth.length > 0) {
-      startDay = scheduledDatesInMonth[0];
+    if (allScheduledDates.length > 0) {
+      const firstDate = allScheduledDates[0];
+      // Set current date to the month of the first scheduled post
+      if (currentDate.getMonth() !== firstDate.getMonth() || currentDate.getFullYear() !== firstDate.getFullYear()) {
+        setCurrentDate(new Date(firstDate.getFullYear(), firstDate.getMonth(), 1));
+      }
+      // Only show days starting from the first scheduled date
+      startDay = firstDate.getDate();
     }
   }
   
@@ -818,8 +821,8 @@ const Legend = ({ posts }: { posts: ScheduledContent[] }) => {
   // Define all available social platforms
   const allPlatforms = ['facebook', 'instagram', 'linkedin', 'twitter', 'pinterest', 'tiktok'];
   
-  // Get unique personas that are actually used in posts
-  const usedPersonas = [...new Set(posts.map(post => post.persona_name).filter(Boolean))];
+  // Only show the first 3 active personas (from the personas hook)
+  const activePersonas = personas.slice(0, 3);
   
   // Create platform status map
   const platformStatus = allPlatforms.map(platform => {
@@ -862,17 +865,17 @@ const Legend = ({ posts }: { posts: ScheduledContent[] }) => {
         <div>
           <div className="text-xs font-medium text-muted-foreground mb-3">Active Personas</div>
           <div className="flex flex-wrap gap-4">
-            {usedPersonas.map(persona => (
-              <div key={persona} className="flex items-center gap-3 text-xs">
+            {activePersonas.map(persona => (
+              <div key={persona.name} className="flex items-center gap-3 text-xs">
                 <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold bg-white/80 border">
-                  {getPersonaAvatar(persona)}
+                  {getPersonaAvatar(persona.name)}
                 </div>
-                <span>{persona}</span>
+                <span>{persona.name}</span>
               </div>
             ))}
-            {usedPersonas.length === 0 && (
+            {activePersonas.length === 0 && (
               <div className="text-xs text-muted-foreground italic">
-                No personas assigned to posts
+                No active personas
               </div>
             )}
           </div>
@@ -1083,7 +1086,7 @@ const ContentScheduling = () => {
                 </SelectTrigger>
                 <SelectContent className="bg-background border border-border z-50">
                   <SelectItem value="all">All Personas</SelectItem>
-                  {personas.map(persona => (
+                  {personas.slice(0, 3).map(persona => (
                     <SelectItem key={persona.name} value={persona.name}>
                       <div className="flex items-center gap-2">
                         <div className="w-4 h-4 rounded-full flex items-center justify-center text-xs font-bold bg-primary/20 border">
@@ -1093,23 +1096,6 @@ const ContentScheduling = () => {
                       </div>
                     </SelectItem>
                   ))}
-                  {content.some(post => post.persona_name && !personas.some(p => p.name === post.persona_name)) && (
-                    <>
-                      {Array.from(new Set(content
-                        .map(post => post.persona_name)
-                        .filter(name => name && !personas.some(p => p.name === name))
-                      )).map(personaName => (
-                        <SelectItem key={personaName} value={personaName || ''}>
-                          <div className="flex items-center gap-2">
-                            <div className="w-4 h-4 rounded-full flex items-center justify-center text-xs font-bold bg-gray-200 border">
-                              {getPersonaAvatar(personaName || '')}
-                            </div>
-                            <span>{personaName}</span>
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </>
-                  )}
                 </SelectContent>
               </Select>
             </div>
