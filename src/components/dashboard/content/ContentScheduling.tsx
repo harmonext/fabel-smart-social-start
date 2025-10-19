@@ -504,10 +504,10 @@ const EditableListPost = ({ post, editMode, timeString }: {
             </div>
           </TooltipTrigger>
           <TooltipContent 
-            side="right" 
-            align="start" 
+            side="left" 
+            align="center" 
             className="max-w-sm p-4 z-50"
-            sideOffset={10}
+            sideOffset={15}
           >
             <div className="space-y-3">
               <div>
