@@ -107,6 +107,7 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
   });
   const [hasChanges, setHasChanges] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadSuccess, setUploadSuccess] = useState(false);
   const [validation, setValidation] = useState<RuleValidationResult | null>(null);
   const [isValidating, setIsValidating] = useState(false);
   const [signedMediaUrl, setSignedMediaUrl] = useState<string>('');
@@ -123,6 +124,7 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
       setHasChanges(false);
       setValidation(null);
       setIsValidating(false);
+      setUploadSuccess(false);
       
       // Get signed URL for media if it exists
       if (post.media_url) {
@@ -256,6 +258,9 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
       // File meets requirements - proceed with upload
       const mediaUrl = await uploadMedia(file, post.id);
       if (mediaUrl) {
+        // Show success state immediately
+        setUploadSuccess(true);
+        
         // Get signed URL for preview
         const extractPath = (url: string) => {
           const match = url.match(/scheduled-content-media\/(.+)/);
@@ -308,6 +313,7 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
   const removeMedia = () => {
     handleChange('media_url', '');
     setSignedMediaUrl('');
+    setUploadSuccess(false);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -465,11 +471,11 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
                     type="button"
                     variant="outline"
                     onClick={() => fileInputRef.current?.click()}
-                    disabled={isUploading}
+                    disabled={isUploading || uploadSuccess}
                     className="w-full h-12 border-dashed"
                   >
                     <Upload className="h-4 w-4 mr-2" />
-                    {isUploading ? 'Uploading...' : 'Upload Media'}
+                    {isUploading ? 'Uploading...' : uploadSuccess ? 'File Uploaded!' : 'Upload Media'}
                   </Button>
                 </div>
               )}
