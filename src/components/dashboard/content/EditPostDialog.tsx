@@ -92,7 +92,7 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
   onOpenChange,
   onSave
 }) => {
-  const { uploadMedia, updateContent } = useScheduledContent();
+  const { uploadMedia, updateContent, refetch } = useScheduledContent();
   const { rules } = usePlatformRules();
   const { getSignedUrl } = useSignedUrls();
   const { toast } = useToast();
@@ -154,7 +154,11 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
     
     // Auto-save scheduled_at changes in real-time
     if (field === 'scheduled_at' && post) {
-      await updateContent(post.id, { [field]: value }, false);
+      const success = await updateContent(post.id, { [field]: value }, false);
+      if (success) {
+        // Trigger a refetch to ensure calendar updates immediately
+        await refetch();
+      }
     }
   };
 
