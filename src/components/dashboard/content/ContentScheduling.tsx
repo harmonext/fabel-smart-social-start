@@ -316,6 +316,74 @@ const EditablePost = ({ post, editMode, shortTitle, timeString }: {
     </div>
   );
 
+  const ListViewTooltipContent = () => (
+    <div className="space-y-3">
+      <div>
+        <div className="font-bold text-base text-foreground mb-1">{post.title}</div>
+        <div className="text-sm text-muted-foreground">{post.content ? `${post.content.substring(0, 100)}${post.content.length > 100 ? '...' : ''}` : 'No content preview'}</div>
+      </div>
+
+      {post.media_url && (
+        <div className="border-t pt-3">
+          <div className="flex items-center gap-2 text-sm mb-2">
+            <span className="font-medium text-foreground">Media Asset:</span>
+          </div>
+          <div className="bg-muted/50 p-2 rounded-lg">
+            <img 
+              src={post.media_url} 
+              alt="Media preview" 
+              className="w-full max-w-[200px] h-auto rounded border object-cover"
+              onError={(e) => {
+                const target = e.currentTarget as HTMLImageElement;
+                const fallback = target.nextElementSibling as HTMLElement;
+                target.style.display = 'none';
+                if (fallback) fallback.style.display = 'block';
+              }}
+            />
+            <div className="hidden text-xs text-muted-foreground p-2 bg-muted rounded border">
+              Media file attached
+            </div>
+          </div>
+        </div>
+      )}
+      
+      <div className="grid grid-cols-1 gap-3 text-sm">
+        <div className="flex items-center justify-between p-2 bg-muted/50 rounded-lg">
+          <div className="flex items-center gap-2">
+            <span className="font-medium text-foreground">Platform:</span>
+            <div className="flex items-center gap-1.5">
+              {getSocialIcon(post.platform, 'md')}
+              <span className="capitalize font-medium">{post.platform}</span>
+            </div>
+          </div>
+        </div>
+        
+        <div className="flex items-center justify-between p-2 bg-muted/50 rounded-lg">
+          <span className="font-medium text-foreground">Persona:</span>
+          <div className={`px-2 py-1 rounded-full text-sm font-medium border-2 ${getPersonaColor(post.persona_name || '', 'dark')}`}>
+            <span className="mr-1">{getPersonaAvatar(post.persona_name || '')}</span>
+            {post.persona_name || 'No persona'}
+          </div>
+        </div>
+      </div>
+      
+      {post.goal && (
+        <div className="border-t pt-3">
+          <div className="flex items-center gap-2 text-sm mb-1">
+            <span className="font-medium text-foreground">Campaign Goal:</span>
+          </div>
+          <div className="text-sm bg-primary/10 text-primary p-2 rounded border border-primary/20">
+            {post.goal}
+          </div>
+        </div>
+      )}
+      
+      <div className="text-xs text-muted-foreground border-t pt-2">
+        Status: <span className="capitalize font-medium">{post.status}</span>
+      </div>
+    </div>
+  );
+
   return (
     <>
       <TooltipProvider delayDuration={editMode ? 0 : 200}>
@@ -400,37 +468,115 @@ const EditableListPost = ({ post, editMode, timeString }: {
 
   return (
     <>
-      <div className={`flex items-center gap-3 p-3 rounded-lg ${getPersonaColor(post.persona_name || '')} hover:shadow-sm transition-all duration-200 border cursor-pointer hover:border-primary`}>
-        <div className="flex items-center gap-2 flex-shrink-0">
-          {getSocialIcon(post.platform, 'md')}
-          <div className="w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold bg-white/80 border">
-            {getPersonaAvatar(post.persona_name || '')}
-          </div>
-        </div>
-        
-        <div className="flex-1 min-w-0">
-          <div className="font-medium text-sm truncate">
-            {post.title}
-          </div>
-          <div className="text-xs text-muted-foreground truncate">
-            {post.content ? `${post.content.substring(0, 60)}${post.content.length > 60 ? '...' : ''}` : 'No content'}
-          </div>
-        </div>
-        
-        <div className="flex items-center gap-2 flex-shrink-0">
-          {timeString && (
-            <div className="text-xs font-mono bg-black/10 px-2 py-1 rounded">
-              {timeString}
+      <TooltipProvider delayDuration={200}>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className={`flex items-center gap-3 p-3 rounded-lg ${getPersonaColor(post.persona_name || '')} hover:shadow-sm transition-all duration-200 border cursor-pointer hover:border-primary`}>
+              <div className="flex items-center gap-2 flex-shrink-0">
+                {getSocialIcon(post.platform, 'md')}
+                <div className="w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold bg-white/80 border">
+                  {getPersonaAvatar(post.persona_name || '')}
+                </div>
+              </div>
+              
+              <div className="flex-1 min-w-0">
+                <div className="font-medium text-sm truncate">
+                  {post.title}
+                </div>
+                <div className="text-xs text-muted-foreground truncate">
+                  {post.content ? `${post.content.substring(0, 60)}${post.content.length > 60 ? '...' : ''}` : 'No content'}
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-2 flex-shrink-0">
+                {timeString && (
+                  <div className="text-xs font-mono bg-black/10 px-2 py-1 rounded">
+                    {timeString}
+                  </div>
+                )}
+                <Edit 
+                  className="h-5 w-5 opacity-70 hover:opacity-100 cursor-pointer z-10" 
+                  onClick={handleEditClick}
+                  onPointerDown={(e) => e.stopPropagation()}
+                  onMouseDown={(e) => e.stopPropagation()}
+                />
+              </div>
             </div>
-          )}
-          <Edit 
-            className="h-5 w-5 opacity-70 hover:opacity-100 cursor-pointer z-10" 
-            onClick={handleEditClick}
-            onPointerDown={(e) => e.stopPropagation()}
-            onMouseDown={(e) => e.stopPropagation()}
-          />
-        </div>
-      </div>
+          </TooltipTrigger>
+          <TooltipContent 
+            side="right" 
+            align="start" 
+            className="max-w-sm p-4 z-50"
+            sideOffset={10}
+          >
+            <div className="space-y-3">
+              <div>
+                <div className="font-bold text-base text-foreground mb-1">{post.title}</div>
+                <div className="text-sm text-muted-foreground">{post.content ? `${post.content.substring(0, 100)}${post.content.length > 100 ? '...' : ''}` : 'No content preview'}</div>
+              </div>
+
+              {post.media_url && (
+                <div className="border-t pt-3">
+                  <div className="flex items-center gap-2 text-sm mb-2">
+                    <span className="font-medium text-foreground">Media Asset:</span>
+                  </div>
+                  <div className="bg-muted/50 p-2 rounded-lg">
+                    <img 
+                      src={post.media_url} 
+                      alt="Media preview" 
+                      className="w-full max-w-[200px] h-auto rounded border object-cover"
+                      onError={(e) => {
+                        const target = e.currentTarget as HTMLImageElement;
+                        const fallback = target.nextElementSibling as HTMLElement;
+                        target.style.display = 'none';
+                        if (fallback) fallback.style.display = 'block';
+                      }}
+                    />
+                    <div className="hidden text-xs text-muted-foreground p-2 bg-muted rounded border">
+                      Media file attached
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              <div className="grid grid-cols-1 gap-3 text-sm">
+                <div className="flex items-center justify-between p-2 bg-muted/50 rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-foreground">Platform:</span>
+                    <div className="flex items-center gap-1.5">
+                      {getSocialIcon(post.platform, 'md')}
+                      <span className="capitalize font-medium">{post.platform}</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="flex items-center justify-between p-2 bg-muted/50 rounded-lg">
+                  <span className="font-medium text-foreground">Persona:</span>
+                  <div className={`px-2 py-1 rounded-full text-sm font-medium border-2 ${getPersonaColor(post.persona_name || '', 'dark')}`}>
+                    <span className="mr-1">{getPersonaAvatar(post.persona_name || '')}</span>
+                    {post.persona_name || 'No persona'}
+                  </div>
+                </div>
+              </div>
+              
+              {post.goal && (
+                <div className="border-t pt-3">
+                  <div className="flex items-center gap-2 text-sm mb-1">
+                    <span className="font-medium text-foreground">Campaign Goal:</span>
+                  </div>
+                  <div className="text-sm bg-primary/10 text-primary p-2 rounded border border-primary/20">
+                    {post.goal}
+                  </div>
+                </div>
+              )}
+              
+              <div className="text-xs text-muted-foreground border-t pt-2">
+                Status: <span className="capitalize font-medium">{post.status}</span>
+              </div>
+            </div>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
       
       <EditPostDialog
         post={post}
@@ -462,21 +608,27 @@ const ListView = ({ posts, allContent, currentDate, setCurrentDate, onReschedule
   let startDay = 1;
   
   // If startFromFirstScheduled is enabled, find the first scheduled date across all posts
-  if (startFromFirstScheduled && posts.length > 0) {
-    // Get all scheduled dates and sort them
-    const allScheduledDates = posts
+  if (startFromFirstScheduled && allContent.length > 0) {
+    // Get all scheduled dates from ALL content (not just filtered posts) and sort them
+    const allScheduledDates = allContent
       .filter(post => post.scheduled_at)
       .map(post => new Date(post.scheduled_at))
       .sort((a, b) => a.getTime() - b.getTime());
     
     if (allScheduledDates.length > 0) {
       const firstDate = allScheduledDates[0];
-      // Set current date to the month of the first scheduled post
-      if (currentDate.getMonth() !== firstDate.getMonth() || currentDate.getFullYear() !== firstDate.getFullYear()) {
-        setCurrentDate(new Date(firstDate.getFullYear(), firstDate.getMonth(), 1));
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      // Use the later of today or the first scheduled date
+      const startDate = firstDate > today ? firstDate : today;
+      
+      // Set current date to the month of the start date
+      if (currentDate.getMonth() !== startDate.getMonth() || currentDate.getFullYear() !== startDate.getFullYear()) {
+        setCurrentDate(new Date(startDate.getFullYear(), startDate.getMonth(), 1));
       }
-      // Only show days starting from the first scheduled date
-      startDay = firstDate.getDate();
+      // Only show days starting from the start date
+      startDay = startDate.getDate();
     }
   }
   
