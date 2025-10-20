@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Check, X } from "lucide-react";
+import { Check } from "lucide-react";
+import CheckoutModal from "./CheckoutModal";
 
 interface PricingModalProps {
   open: boolean;
@@ -10,6 +12,20 @@ interface PricingModalProps {
 }
 
 const PricingModal = ({ open, onOpenChange, currentPlan = "free" }: PricingModalProps) => {
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<typeof plans[0] | null>(null);
+
+  const handleUpgrade = (plan: typeof plans[0]) => {
+    setSelectedPlan(plan);
+    setCheckoutOpen(true);
+    onOpenChange(false);
+  };
+
+  const handleBackToPricing = () => {
+    setCheckoutOpen(false);
+    onOpenChange(true);
+  };
+
   const plans = [
     {
       id: "free",
@@ -121,6 +137,7 @@ const PricingModal = ({ open, onOpenChange, currentPlan = "free" }: PricingModal
                     : "bg-primary hover:bg-primary/90 text-primary-foreground"
                 }`}
                 disabled={currentPlan === plan.id}
+                onClick={() => !currentPlan || currentPlan === plan.id ? null : handleUpgrade(plan)}
               >
                 {currentPlan === plan.id ? "Current Plan" : "Upgrade"}
               </Button>
@@ -128,6 +145,15 @@ const PricingModal = ({ open, onOpenChange, currentPlan = "free" }: PricingModal
           ))}
         </div>
       </DialogContent>
+
+      {selectedPlan && (
+        <CheckoutModal
+          open={checkoutOpen}
+          onOpenChange={setCheckoutOpen}
+          selectedPlan={selectedPlan}
+          onChangePlan={handleBackToPricing}
+        />
+      )}
     </Dialog>
   );
 };
