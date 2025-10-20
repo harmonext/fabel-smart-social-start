@@ -15,7 +15,7 @@ const Benefits = () => {
     },
     {
       title: "Boost Social Media Engagement",
-      description: "Increase likes, comments, and shares with AI-optimized content designed to drive meaningful interactions.",
+      description: "Increase likes, comments, and shares with content designed to drive meaningful interactions.",
       icon: "📈"
     },
     {

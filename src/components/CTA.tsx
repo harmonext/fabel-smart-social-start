@@ -30,7 +30,7 @@ const CTA = () => {
               asChild
               variant="outline" 
               size="lg"
-              className="border-white text-white hover:bg-white hover:text-fabel-primary px-8 py-4 text-lg rounded-xl transition-all duration-300 hover:scale-105"
+              className="border-white text-fabel-primary hover:bg-white hover:text-fabel-primary px-8 py-4 text-lg rounded-xl transition-all duration-300 hover:scale-105"
             >
               <Link to="/login">
                 Login

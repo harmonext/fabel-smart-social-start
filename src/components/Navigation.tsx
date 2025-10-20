@@ -41,11 +41,6 @@ const Navigation = () => {
                 Login
               </Button>
             </Link>
-            <Link to="/signup">
-              <Button className="bg-fabel-primary hover:bg-fabel-primary/90 text-white rounded-lg">
-                Sign Up Free
-              </Button>
-            </Link>
           </div>
           
           {/* Mobile Menu Button */}
