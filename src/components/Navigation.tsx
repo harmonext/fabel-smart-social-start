@@ -2,9 +2,11 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import PricingModal from "./PricingModal";
 
 const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [pricingModalOpen, setPricingModalOpen] = useState(false);
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-fabel-secondary/20">
@@ -23,9 +25,12 @@ const Navigation = () => {
             <Link to="/features" className="text-muted-foreground hover:text-fabel-primary transition-colors">
               Features
             </Link>
-            <Link to="/pricing" className="text-muted-foreground hover:text-fabel-primary transition-colors">
+            <button 
+              onClick={() => setPricingModalOpen(true)}
+              className="text-muted-foreground hover:text-fabel-primary transition-colors"
+            >
               Pricing
-            </Link>
+            </button>
             <Link to="/about" className="text-muted-foreground hover:text-fabel-primary transition-colors">
               About
             </Link>
@@ -64,9 +69,12 @@ const Navigation = () => {
               <Link to="/features" className="text-muted-foreground hover:text-fabel-primary transition-colors">
                 Features
               </Link>
-              <Link to="/pricing" className="text-muted-foreground hover:text-fabel-primary transition-colors">
+              <button 
+                onClick={() => setPricingModalOpen(true)}
+                className="text-muted-foreground hover:text-fabel-primary transition-colors text-left"
+              >
                 Pricing
-              </Link>
+              </button>
               <Link to="/about" className="text-muted-foreground hover:text-fabel-primary transition-colors">
                 About
               </Link>
@@ -89,6 +97,7 @@ const Navigation = () => {
           </div>
         )}
       </div>
+      <PricingModal open={pricingModalOpen} onOpenChange={setPricingModalOpen} />
     </nav>
   );
 };
