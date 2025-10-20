@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
+import About from "./pages/About";
 import Dashboard from "./pages/Dashboard";
 import Signup from "./pages/Signup";
 import EmailSignup from "./pages/EmailSignup";
@@ -30,6 +31,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/about" element={<About />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/signup/email" element={<EmailSignup />} />
             <Route path="/signup/verify-email" element={<EmailVerification />} />
