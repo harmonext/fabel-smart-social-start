@@ -37,7 +37,7 @@ const Navigation = () => {
           {/* CTA Buttons */}
           <div className="hidden md:flex items-center space-x-4">
             <Link to="/login">
-              <Button variant="ghost" className="text-fabel-primary hover:bg-fabel-primary/10">
+              <Button size="lg" className="bg-fabel-primary hover:bg-fabel-primary/90 text-white rounded-lg">
                 Login
               </Button>
             </Link>
