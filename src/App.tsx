@@ -8,6 +8,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import About from "./pages/About";
+import Features from "./pages/Features";
 import Dashboard from "./pages/Dashboard";
 import Signup from "./pages/Signup";
 import EmailSignup from "./pages/EmailSignup";
@@ -32,6 +33,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/about" element={<About />} />
+            <Route path="/features" element={<Features />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/signup/email" element={<EmailSignup />} />
             <Route path="/signup/verify-email" element={<EmailVerification />} />
