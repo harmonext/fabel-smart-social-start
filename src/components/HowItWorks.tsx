@@ -3,27 +3,27 @@ const HowItWorks = () => {
     {
       step: "1",
       title: "Get Set Up in Minutes",
-      description: "Start strong with a quick setup that connects all your social channels in one place — so you can manage everything seamlessly without the tech headache"
+      description: "Start strong with a quick setup that connects all your social channels in one place — so you can manage everything seamlessly without the tech headache."
     },
     {
       step: "2", 
       title: "Your Brand, Perfectly Understood",
-      description: "Your Brand, Perfectly Understood"
+      description: "Tell us a little about your business, and we'll tailor your marketing experience to your goals and voice — no more one-size-fits-all strategies."
     },
     {
       step: "3",
-      title: "Get Your Personas",
-      description: "Receive 3 unique marketing personas tailored to your target audience and business objectives."
+      title: "Know Exactly Who You're Talking To",
+      description: "Gain clear insight into your ideal audience with personalized marketing personas that make targeting effortless and messaging more effective"
     },
     {
       step: "4",
-      title: "Generate Content",
-      description: "Watch as our AI automatically creates engaging, persona-specific content for your social channels."
+      title: "Create Content That Actually Clicks",
+      description: "Get fresh, ready-to-post content and captions customized for your audience — so you can stay consistent and engaging without spending hours brainstorming"
     },
     {
       step: "5",
-      title: "Schedule & Manage",
-      description: "Use our intuitive calendar to schedule posts and manage your entire social media strategy."
+      title: "Stay Organized. Stay Consistent.",
+      description: "Plan and schedule your posts with ease using our simple calendar — keeping your brand active and your workflow stress-free."
     }
   ];
 
@@ -32,10 +32,10 @@ const HowItWorks = () => {
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            How <span className="text-fabel-primary">Fabel</span> Works
+            Your Marketing, Made Effortless
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Get started with AI-powered marketing in just 5 simple steps.
+            Fabel makes marketing simple and effective.
           </p>
         </div>
         
