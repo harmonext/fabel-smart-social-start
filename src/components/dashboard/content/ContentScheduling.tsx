@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { EditPostDialog } from './EditPostDialog';
+import { Badge } from "@/components/ui/badge";
 
 // Utility functions for drag and drop validation
 const getValidDateRange = () => {
@@ -197,6 +198,19 @@ const getPersonaAvatar = (persona: string) => {
   // Generate avatar based on first letter of persona name
   const firstLetter = persona.charAt(0).toUpperCase();
   return firstLetter;
+};
+
+const getStatusBadge = (status: string) => {
+  switch (status.toLowerCase()) {
+    case 'draft':
+      return { variant: 'secondary' as const, label: 'Draft' };
+    case 'scheduled':
+      return { variant: 'default' as const, label: 'Scheduled' };
+    case 'published':
+      return { variant: 'outline' as const, label: 'Published' };
+    default:
+      return { variant: 'secondary' as const, label: status };
+  }
 };
 
 // Editable Post Component
@@ -384,6 +398,8 @@ const EditablePost = ({ post, editMode, shortTitle, timeString }: {
     </div>
   );
 
+  const statusBadge = getStatusBadge(post.status);
+  
   return (
     <>
       <TooltipProvider delayDuration={editMode ? 0 : 200}>
@@ -401,6 +417,9 @@ const EditablePost = ({ post, editMode, shortTitle, timeString }: {
               <div className="text-[10px] font-medium leading-tight truncate flex-1">
                 {shortTitle}
               </div>
+              <Badge variant={statusBadge.variant} className="text-[8px] px-1 py-0 h-4 shrink-0">
+                {statusBadge.label}
+              </Badge>
               {timeString && (
                 <div className="text-[8px] font-mono bg-black/10 px-1 py-0.5 rounded shrink-0">
                   {timeString}
@@ -466,6 +485,8 @@ const EditableListPost = ({ post, editMode, timeString }: {
     }
   };
 
+  const statusBadge = getStatusBadge(post.status);
+  
   return (
     <>
       <TooltipProvider delayDuration={200}>
@@ -480,8 +501,13 @@ const EditableListPost = ({ post, editMode, timeString }: {
               </div>
               
               <div className="flex-1 min-w-0">
-                <div className="font-medium text-sm truncate">
-                  {post.title}
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="font-medium text-sm truncate">
+                    {post.title}
+                  </div>
+                  <Badge variant={statusBadge.variant} className="text-[10px] px-1.5 py-0 h-4 shrink-0">
+                    {statusBadge.label}
+                  </Badge>
                 </div>
                 <div className="text-xs text-muted-foreground truncate">
                   {post.content ? `${post.content.substring(0, 60)}${post.content.length > 60 ? '...' : ''}` : 'No content'}
