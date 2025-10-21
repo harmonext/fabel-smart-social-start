@@ -28,12 +28,6 @@ const DashboardContent = ({ activeTab, activeSubTab }: DashboardContentProps) =>
       if (activeSubTab === "dashboard") {
         return <CompanyDashboard />;
       }
-      if (activeSubTab === "profile-survey") {
-        return <ProfileSurvey />;
-      }
-      if (activeSubTab === "onboarding") {
-        return onboardingCompleted ? <OnboardedData /> : <OnboardingFlow />;
-      }
       if (activeSubTab === "personas") {
         return <Personas />;
       }
@@ -90,6 +84,12 @@ const DashboardContent = ({ activeTab, activeSubTab }: DashboardContentProps) =>
     if (activeTab === "settings") {
       if (activeSubTab === "user-profile") {
         return <UserProfile />;
+      }
+      if (activeSubTab === "profile-survey") {
+        return <ProfileSurvey />;
+      }
+      if (activeSubTab === "onboarding") {
+        return onboardingCompleted ? <OnboardedData /> : <OnboardingFlow />;
       }
       if (activeSubTab === "preferences") {
         return <DashboardSettings />;
