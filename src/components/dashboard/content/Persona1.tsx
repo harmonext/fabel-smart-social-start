@@ -7,6 +7,7 @@ import { Persona, usePersonas } from "@/hooks/usePersonas";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { PlatformSelector } from "./PlatformSelector";
+import PricingModal from "@/components/PricingModal";
 
 
 interface PlatformData {
@@ -36,6 +37,7 @@ const Persona1 = ({ persona }: Persona1Props) => {
   const [modalText, setModalText] = useState("");
   const [isExpanded, setIsExpanded] = useState(false);
   const [showPlatformSelector, setShowPlatformSelector] = useState(false);
+  const [showPricingModal, setShowPricingModal] = useState(false);
   // Local state for checkbox states since this is mock data
   const [platformStates, setPlatformStates] = useState<boolean[]>([false, false, false]);
 
@@ -391,7 +393,10 @@ const Persona1 = ({ persona }: Persona1Props) => {
                   </div>
 
                   {/* Upgrade to Unlock */}
-                  <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                  <div 
+                    className="bg-green-50 border border-green-200 rounded-lg p-4 cursor-pointer hover:bg-green-100 transition-colors"
+                    onClick={() => setShowPricingModal(true)}
+                  >
                     <div className="flex items-center gap-2 mb-2">
                       <i className="fa-solid fa-lock text-foreground"></i>
                       <span className="font-bold text-sm">Upgrade to Unlock:</span>
@@ -410,7 +415,10 @@ const Persona1 = ({ persona }: Persona1Props) => {
                 </div>
 
                 {/* Second Upgrade to Unlock */}
-                <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                <div 
+                  className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6 cursor-pointer hover:bg-green-100 transition-colors"
+                  onClick={() => setShowPricingModal(true)}
+                >
                   <div className="flex items-center gap-2 mb-2">
                     <i className="fa-solid fa-lock text-foreground"></i>
                     <span className="font-bold text-sm">Upgrade to Unlock:</span>
@@ -482,7 +490,14 @@ const Persona1 = ({ persona }: Persona1Props) => {
   }
 
   return (
-    <div className="relative bg-muted rounded-lg p-6 space-y-4 flex flex-col">
+    <>
+      <PricingModal 
+        open={showPricingModal} 
+        onOpenChange={setShowPricingModal}
+        currentPlan="free"
+      />
+      
+      <div className="relative bg-muted rounded-lg p-6 space-y-4 flex flex-col">
       {/* Progress Overlay */}
       {isGenerating && (
         <div className="absolute inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center rounded-lg">
@@ -620,6 +635,7 @@ const Persona1 = ({ persona }: Persona1Props) => {
         </Button>
       </div>
     </div>
+    </>
   );
 };
 
