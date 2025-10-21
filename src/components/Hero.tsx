@@ -32,11 +32,11 @@ const Hero = () => {
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
             <span className="gradient-text">The Smarter Way to Grow Your </span>
-            <span className="relative inline-block min-w-[280px] md:min-w-[400px]">
+            <span className="relative inline-block min-w-[280px] md:min-w-[400px] align-baseline">
               {words.map((word, index) => (
                 <span
                   key={word}
-                  className={`absolute left-0 right-0 gradient-text transition-all duration-500 ${
+                  className={`absolute left-0 right-0 gradient-text bg-fabel-gold/20 px-4 py-2 rounded-lg transition-all duration-500 ${
                     index === currentWordIndex
                       ? 'opacity-100 translate-y-0'
                       : 'opacity-0 translate-y-4'
