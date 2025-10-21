@@ -125,28 +125,6 @@ const DashboardSidebar = ({
                   variant="ghost"
                   className={cn(
                     "w-full justify-start text-left h-9 text-sm",
-                    activeTab === "company-profile" && activeSubTab === "profile-survey" && "bg-fabel-primary/10 text-fabel-primary"
-                  )}
-                  onClick={() => handleTabClick("company-profile", "profile-survey")}
-                >
-                  <FileText className="h-3 w-3 mr-3" />
-                  Company
-                </Button>
-                <Button
-                  variant="ghost"
-                  className={cn(
-                    "w-full justify-start text-left h-9 text-sm",
-                    activeTab === "company-profile" && activeSubTab === "onboarding" && "bg-fabel-primary/10 text-fabel-primary"
-                  )}
-                  onClick={() => handleTabClick("company-profile", "onboarding")}
-                >
-                  <ClipboardList className="h-3 w-3 mr-3" />
-                  {onboardingCompleted ? "Onboarded Data" : "Onboarding"}
-                </Button>
-                <Button
-                  variant="ghost"
-                  className={cn(
-                    "w-full justify-start text-left h-9 text-sm",
                     activeTab === "company-profile" && activeSubTab === "personas" && "bg-fabel-primary/10 text-fabel-primary"
                   )}
                   onClick={() => handleTabClick("company-profile", "personas")}
@@ -313,6 +291,28 @@ const DashboardSidebar = ({
                 >
                   <User className="h-3 w-3 mr-3" />
                   User Profile
+                </Button>
+                <Button
+                  variant="ghost"
+                  className={cn(
+                    "w-full justify-start text-left h-9 text-sm",
+                    activeTab === "settings" && activeSubTab === "profile-survey" && "bg-fabel-primary/10 text-fabel-primary"
+                  )}
+                  onClick={() => handleTabClick("settings", "profile-survey")}
+                >
+                  <FileText className="h-3 w-3 mr-3" />
+                  Company
+                </Button>
+                <Button
+                  variant="ghost"
+                  className={cn(
+                    "w-full justify-start text-left h-9 text-sm",
+                    activeTab === "settings" && activeSubTab === "onboarding" && "bg-fabel-primary/10 text-fabel-primary"
+                  )}
+                  onClick={() => handleTabClick("settings", "onboarding")}
+                >
+                  <ClipboardList className="h-3 w-3 mr-3" />
+                  {onboardingCompleted ? "Onboarded Data" : "Onboarding"}
                 </Button>
                 <Button
                   variant="ghost"
