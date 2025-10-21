@@ -1416,8 +1416,8 @@ const ContentScheduling = () => {
               <div className="text-sm text-green-700">Published Posts{(platformFilter !== 'all' || personaFilter !== 'all') ? ' (filtered)' : ''}</div>
             </div>
             <div className="p-4 bg-purple-50 border border-purple-200 rounded-lg">
-              <div className="text-2xl font-bold text-purple-600">{new Set(filteredContent.map(post => post.platform)).size}</div>
-              <div className="text-sm text-purple-700">Active Platforms{(platformFilter !== 'all' || personaFilter !== 'all') ? ' (filtered)' : ''}</div>
+              <div className="text-2xl font-bold text-purple-600">{connections.filter(conn => conn.is_active).length}</div>
+              <div className="text-sm text-purple-700">Connected Platforms</div>
             </div>
             <div className="p-4 bg-orange-50 border border-orange-200 rounded-lg">
               <div className="text-2xl font-bold text-orange-600">{filteredContent.filter(post => post.status === 'draft').length}</div>
