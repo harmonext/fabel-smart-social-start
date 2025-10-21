@@ -10,9 +10,9 @@ const MarketingOnboarding = () => {
   const { isCompleted, isLoading } = useOnboarding();
 
   useEffect(() => {
-    // If user has already completed full onboarding, redirect to dashboard personas tab
+    // If user has already completed full onboarding, redirect to company dashboard
     if (!isLoading && isCompleted) {
-      navigate('/dashboard?tab=company-profile&subtab=personas');
+      navigate('/dashboard?tab=company-profile&subtab=dashboard');
     }
   }, [isCompleted, isLoading, navigate]);
 

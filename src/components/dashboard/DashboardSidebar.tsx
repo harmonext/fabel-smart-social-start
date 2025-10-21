@@ -114,6 +114,17 @@ const DashboardSidebar = ({
                   variant="ghost"
                   className={cn(
                     "w-full justify-start text-left h-9 text-sm",
+                    activeTab === "company-profile" && activeSubTab === "dashboard" && "bg-fabel-primary/10 text-fabel-primary"
+                  )}
+                  onClick={() => handleTabClick("company-profile", "dashboard")}
+                >
+                  <Building2 className="h-3 w-3 mr-3" />
+                  Dashboard
+                </Button>
+                <Button
+                  variant="ghost"
+                  className={cn(
+                    "w-full justify-start text-left h-9 text-sm",
                     activeTab === "company-profile" && activeSubTab === "profile-survey" && "bg-fabel-primary/10 text-fabel-primary"
                   )}
                   onClick={() => handleTabClick("company-profile", "profile-survey")}

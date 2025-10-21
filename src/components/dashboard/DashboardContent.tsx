@@ -13,6 +13,7 @@ import RoleProtectedComponent from "@/components/RoleProtectedComponent";
 import AdminContentModeration from "./content/AdminContentModeration";
 import { PlatformRulesWrapper } from "./content/PlatformRulesWrapper";
 import { useOnboarding } from "@/hooks/useOnboarding";
+import CompanyDashboard from "./content/CompanyDashboard";
 
 interface DashboardContentProps {
   activeTab: string;
@@ -24,6 +25,9 @@ const DashboardContent = ({ activeTab, activeSubTab }: DashboardContentProps) =>
   
   const renderContent = () => {
     if (activeTab === "company-profile") {
+      if (activeSubTab === "dashboard") {
+        return <CompanyDashboard />;
+      }
       if (activeSubTab === "profile-survey") {
         return <ProfileSurvey />;
       }
@@ -33,7 +37,7 @@ const DashboardContent = ({ activeTab, activeSubTab }: DashboardContentProps) =>
       if (activeSubTab === "personas") {
         return <Personas />;
       }
-      return <ProfileSurvey />; // Default to profile survey
+      return <CompanyDashboard />; // Default to dashboard
     }
     
     if (activeTab === "content-management") {

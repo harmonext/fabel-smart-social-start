@@ -24,13 +24,13 @@ const Dashboard = () => {
       return;
     }
     
-    // If user has onboarded=true, force redirect to personas regardless of URL params
+    // If user has onboarded=true, force redirect to company dashboard regardless of URL params
     if (!companyLoading && isOnboarded === true) {
-      console.log('FORCING personas tab - user has onboarded=true');
+      console.log('FORCING dashboard tab - user has onboarded=true');
       setActiveTab("company-profile");
-      setActiveSubTab("personas");
+      setActiveSubTab("dashboard");
       // Also update URL to reflect the change
-      navigate('/dashboard?tab=company-profile&subtab=personas', { replace: true });
+      navigate('/dashboard?tab=company-profile&subtab=dashboard', { replace: true });
       return;
     }
     
@@ -50,9 +50,9 @@ const Dashboard = () => {
     
     // Fallback: if user completed onboarding via the old logic and no specific params
     if (!isLoading && isCompleted === true && !tabParam && !subtabParam) {
-      console.log('Setting personas tab - user completed onboarding (fallback)');
+      console.log('Setting dashboard tab - user completed onboarding (fallback)');
       setActiveTab("company-profile");
-      setActiveSubTab("personas");
+      setActiveSubTab("dashboard");
     }
   }, [isLoading, companyLoading, isCompleted, isOnboarded, navigate, searchParams]);
 
