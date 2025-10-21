@@ -2,6 +2,8 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import MarketingOnboardingForm from "@/components/onboarding/MarketingOnboardingForm";
 import { useOnboarding } from "@/hooks/useOnboarding";
+import Navigation from "@/components/Navigation";
+import Footer from "@/components/Footer";
 
 const MarketingOnboarding = () => {
   const navigate = useNavigate();
@@ -29,11 +31,15 @@ const MarketingOnboarding = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-soft-gold/20 via-background to-muted-teal/20 p-4">
-      <div className="container mx-auto py-8">
-        <MarketingOnboardingForm />
+    <>
+      <Navigation />
+      <div className="min-h-screen bg-gradient-to-br from-soft-gold/20 via-background to-muted-teal/20 p-4 pt-24">
+        <div className="container mx-auto py-8">
+          <MarketingOnboardingForm />
+        </div>
       </div>
-    </div>
+      <Footer />
+    </>
   );
 };
 

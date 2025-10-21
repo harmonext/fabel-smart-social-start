@@ -3,6 +3,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { usePasswordReset } from "@/hooks/usePasswordReset";
 import { ResetPasswordForm } from "@/components/auth/ResetPasswordForm";
 import { LoadingCard } from "@/components/auth/LoadingCard";
+import Navigation from "@/components/Navigation";
+import Footer from "@/components/Footer";
 
 const ResetPassword = () => {
   const { isValidToken, isLoading, updatePassword } = usePasswordReset();
@@ -12,19 +14,23 @@ const ResetPassword = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-soft-gold/20 via-background to-muted-teal/20 p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1 text-center">
-          <CardTitle className="text-2xl font-semibold">Set new password</CardTitle>
-          <CardDescription>
-            Enter your new password below
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <ResetPasswordForm onSubmit={updatePassword} isLoading={isLoading} />
-        </CardContent>
-      </Card>
-    </div>
+    <>
+      <Navigation />
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-soft-gold/20 via-background to-muted-teal/20 p-4 pt-24">
+        <Card className="w-full max-w-md">
+          <CardHeader className="space-y-1 text-center">
+            <CardTitle className="text-2xl font-semibold">Set new password</CardTitle>
+            <CardDescription>
+              Enter your new password below
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <ResetPasswordForm onSubmit={updatePassword} isLoading={isLoading} />
+          </CardContent>
+        </Card>
+      </div>
+      <Footer />
+    </>
   );
 };
 

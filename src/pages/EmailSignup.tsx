@@ -8,6 +8,8 @@ import { Label } from "@/components/ui/label";
 import { ArrowLeft, Eye, EyeOff, AlertTriangle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import Navigation from "@/components/Navigation";
+import Footer from "@/components/Footer";
 
 const EmailSignup = () => {
   const [formData, setFormData] = useState({
@@ -153,8 +155,10 @@ const EmailSignup = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-soft-gold/20 via-background to-muted-teal/20 p-4">
-      <Card className="w-full max-w-md">
+    <>
+      <Navigation />
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-soft-gold/20 via-background to-muted-teal/20 p-4 pt-24">
+        <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <div className="flex items-center space-x-2">
             <Button
@@ -317,6 +321,8 @@ const EmailSignup = () => {
         </CardContent>
       </Card>
     </div>
+    <Footer />
+    </>
   );
 };
 

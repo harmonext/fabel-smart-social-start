@@ -8,6 +8,8 @@ import { Label } from "@/components/ui/label";
 import { ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import Navigation from "@/components/Navigation";
+import Footer from "@/components/Footer";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -50,8 +52,10 @@ const ForgotPassword = () => {
 
   if (emailSent) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-soft-gold/20 via-background to-muted-teal/20 p-4">
-        <Card className="w-full max-w-md">
+      <>
+        <Navigation />
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-soft-gold/20 via-background to-muted-teal/20 p-4 pt-24">
+          <Card className="w-full max-w-md">
           <CardHeader className="space-y-1 text-center">
             <CardTitle className="text-2xl font-semibold">Check your email</CardTitle>
             <CardDescription>
@@ -77,12 +81,16 @@ const ForgotPassword = () => {
           </CardContent>
         </Card>
       </div>
+      <Footer />
+      </>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-soft-gold/20 via-background to-muted-teal/20 p-4">
-      <Card className="w-full max-w-md">
+    <>
+      <Navigation />
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-soft-gold/20 via-background to-muted-teal/20 p-4 pt-24">
+        <Card className="w-full max-w-md">
         <CardHeader className="space-y-1 text-center">
           <CardTitle className="text-2xl font-semibold">Reset your password</CardTitle>
           <CardDescription>
@@ -122,6 +130,8 @@ const ForgotPassword = () => {
         </CardContent>
       </Card>
     </div>
+    <Footer />
+    </>
   );
 };
 
