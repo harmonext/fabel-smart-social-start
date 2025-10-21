@@ -56,7 +56,7 @@ const AboutCompanyTab = ({
     onInputChange('store_type', newTypes);
   };
 
-  console.log('AboutCompanyTab formData:', formData);
+  // Removed excessive logging that was causing performance issues
   
   return (
     <div className="space-y-6">

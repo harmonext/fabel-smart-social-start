@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
@@ -63,7 +63,7 @@ export const useMarketingOnboarding = () => {
     checkOnboardingStatus();
   }, [user]);
 
-  const fetchOnboardingData = async (): Promise<MarketingOnboardingData | null> => {
+  const fetchOnboardingData = useCallback(async (): Promise<MarketingOnboardingData | null> => {
     if (!user) {
       return null;
     }
@@ -126,7 +126,7 @@ export const useMarketingOnboarding = () => {
       console.error('Error fetching marketing onboarding data:', error);
       return null;
     }
-  };
+  }, [user]);
 
   const generatePersonaPrompt = (template: string, data: MarketingOnboardingData): string => {
     let prompt = template;
