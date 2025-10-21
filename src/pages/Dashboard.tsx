@@ -10,7 +10,7 @@ import { useCompanyDetails } from "@/hooks/useCompanyDetails";
 const Dashboard = () => {
   const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState("company-profile");
-  const [activeSubTab, setActiveSubTab] = useState("profile-survey");
+  const [activeSubTab, setActiveSubTab] = useState("dashboard");
   const { isCompleted, isLoading } = useOnboarding();
   const { isOnboarded, isLoading: companyLoading } = useCompanyDetails();
   const navigate = useNavigate();
