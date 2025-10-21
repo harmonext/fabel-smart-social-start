@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Share2, Sparkles, Edit2 } from "lucide-react";
+import { Share2, Sparkles, Edit2, Lock, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -7,6 +7,7 @@ import { Persona, usePersonas } from "@/hooks/usePersonas";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { PlatformSelector } from "./PlatformSelector";
+import PricingModal from "@/components/PricingModal";
 interface PlatformData {
   name: string;
   icon: React.ComponentType<any>;
@@ -32,6 +33,7 @@ const Persona3 = ({ persona }: Persona3Props) => {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [showPlatformSelector, setShowPlatformSelector] = useState(false);
+  const [showPricingModal, setShowPricingModal] = useState(false);
   const getSocialMediaIcon = (platform: string) => {
     const platformName = platform?.toLowerCase();
     
@@ -194,7 +196,14 @@ const Persona3 = ({ persona }: Persona3Props) => {
     }
   };
   return (
-    <div className="relative bg-muted rounded-lg p-6 space-y-4 h-full flex flex-col">
+    <>
+      <PricingModal 
+        open={showPricingModal} 
+        onOpenChange={setShowPricingModal}
+        currentPlan="free"
+      />
+      
+      <div className="relative bg-muted rounded-lg p-6 space-y-4 h-full flex flex-col">
       {/* Progress Overlay */}
       {isGenerating && (
         <div className="absolute inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center rounded-lg">
@@ -226,12 +235,40 @@ const Persona3 = ({ persona }: Persona3Props) => {
           </div>
         </div>
       )}
-      <div>
-        <div className="flex items-center gap-3 mb-1">
-          <h1 className="text-lg font-bold text-muted-foreground">{persona?.name || "The Digital Native"}</h1>
+      
+      {/* Blur overlay with Upgrade button */}
+      <div className="absolute inset-0 bg-background/40 backdrop-blur-md z-40 rounded-lg flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <Lock className="h-12 w-12 mx-auto text-fabel-primary" />
+          <h3 className="text-xl font-bold">Upgrade to Unlock</h3>
+          <p className="text-sm text-muted-foreground max-w-xs">
+            Get access to additional personas and unlock powerful insights
+          </p>
+          <Button 
+            className="bg-fabel-primary hover:bg-fabel-primary/90"
+            onClick={() => setShowPricingModal(true)}
+          >
+            <Lock className="h-4 w-4 mr-2" />
+            Upgrade Now
+          </Button>
         </div>
-        <p className="text-sm font-medium text-muted-foreground">{persona?.description || "Young entrepreneurs comfortable with digital marketing"}</p>
       </div>
+      
+      <div className="blur-sm pointer-events-none">
+        <div>
+          <div className="flex items-center justify-between mb-1">
+            <h1 className="text-lg font-bold text-muted-foreground">{persona?.name || "The Digital Native"}</h1>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 px-2 text-xs"
+            >
+              More
+              <ChevronRight className="h-3 w-3 ml-1" />
+            </Button>
+          </div>
+          <p className="text-sm font-medium text-muted-foreground">{persona?.description || "Young entrepreneurs comfortable with digital marketing"}</p>
+        </div>
 
       <div className="space-y-3">
         <div className="flex items-center justify-between">
@@ -334,16 +371,18 @@ const Persona3 = ({ persona }: Persona3Props) => {
         </p>
       </div>
 
-      <div className="mt-auto pt-4">
-        <Button 
-          className="bg-fabel-primary hover:bg-fabel-primary/90 w-full"
-          onClick={handleGenerateContentClick}
-          disabled={isGenerating}
-        >
-          {isGenerating ? "Generating..." : "Generate Content"}
-        </Button>
+        <div className="mt-auto pt-4">
+          <Button 
+            className="bg-fabel-primary hover:bg-fabel-primary/90 w-full"
+            onClick={handleGenerateContentClick}
+            disabled={isGenerating}
+          >
+            {isGenerating ? "Generating..." : "Generate Content"}
+          </Button>
+        </div>
       </div>
     </div>
+    </>
   );
 };
 export default Persona3;
