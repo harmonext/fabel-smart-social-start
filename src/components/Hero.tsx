@@ -3,9 +3,19 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Play } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { useState, useEffect } from "react";
 
 const Hero = () => {
   const { user, loading } = useAuth();
+  const [currentWordIndex, setCurrentWordIndex] = useState(0);
+  const words = ["Brand", "Business", "Audience", "Impact", "Legacy"];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentWordIndex((prev) => (prev + 1) % words.length);
+    }, 2500);
+    return () => clearInterval(interval);
+  }, []);
 
   console.log('Hero component - User state:', user?.email || 'no user', 'Loading:', loading);
 
@@ -20,8 +30,22 @@ const Hero = () => {
     <section className="pt-32 pb-20 px-6">
       <div className="container mx-auto">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 gradient-text leading-tight">
-            The Smarter Way to Grow Your Brand
+          <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+            <span className="gradient-text">The Smarter Way to Grow Your </span>
+            <span className="relative inline-block min-w-[280px] md:min-w-[400px]">
+              {words.map((word, index) => (
+                <span
+                  key={word}
+                  className={`absolute left-0 right-0 gradient-text transition-all duration-500 ${
+                    index === currentWordIndex
+                      ? 'opacity-100 translate-y-0'
+                      : 'opacity-0 translate-y-4'
+                  }`}
+                >
+                  {word}
+                </span>
+              ))}
+            </span>
           </h1>
           <p className="text-xl md:text-2xl text-muted-foreground mb-8 leading-relaxed max-w-3xl mx-auto">
             Create compelling content, reach your ideal customers, and grow your business with personalized marketing that adapts to your brand voice.
