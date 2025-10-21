@@ -21,7 +21,7 @@ const MarketingOnboardingForm = () => {
   const { generatePersonas } = usePersonas();
   const { isCompleted: onboardingCompleted } = useOnboarding();
   const { companyDetails } = useCompanyDetails();
-  const [activeTab, setActiveTab] = useState<string>("about-you");
+  const [activeTab, setActiveTab] = useState("about-you");
   const [completedTabs, setCompletedTabs] = useState<string[]>([]);
   
   const [formData, setFormData] = useState<MarketingOnboardingData>({
@@ -43,10 +43,6 @@ const MarketingOnboardingForm = () => {
       const existingData = await fetchOnboardingData();
       if (existingData) {
         setFormData(existingData);
-        // Restore the active tab from saved progress
-        if (existingData.current_tab) {
-          setActiveTab(existingData.current_tab);
-        }
         // Mark all tabs as completed if data exists
         setCompletedTabs(["about-you", "about-company", "about-goals", "about-customer"]);
       } else {
@@ -136,7 +132,7 @@ const MarketingOnboardingForm = () => {
     }
   };
 
-  const handleNext = async () => {
+  const handleNext = () => {
     if (validateCurrentTab()) {
       if (!completedTabs.includes(activeTab)) {
         setCompletedTabs(prev => [...prev, activeTab]);
@@ -144,23 +140,15 @@ const MarketingOnboardingForm = () => {
       
       const currentIndex = getCurrentTabIndex();
       if (currentIndex < tabs.length - 1) {
-        const nextTab = tabs[currentIndex + 1].id;
-        setActiveTab(nextTab);
-        
-        // Auto-save progress with the new tab (silent save)
-        await saveOnboarding({ ...formData, current_tab: nextTab }, true);
+        setActiveTab(tabs[currentIndex + 1].id);
       }
     }
   };
 
-  const handlePrevious = async () => {
+  const handlePrevious = () => {
     const currentIndex = getCurrentTabIndex();
     if (currentIndex > 0) {
-      const previousTab = tabs[currentIndex - 1].id;
-      setActiveTab(previousTab);
-      
-      // Auto-save progress with the new tab (silent save)
-      await saveOnboarding({ ...formData, current_tab: previousTab }, true);
+      setActiveTab(tabs[currentIndex - 1].id);
     }
   };
 
@@ -170,8 +158,7 @@ const MarketingOnboardingForm = () => {
     }
 
     console.log('Submitting formData:', formData);
-    // Final save with current tab and persona generation (not silent)
-    const result = await saveOnboarding({ ...formData, current_tab: activeTab }, false);
+    const result = await saveOnboarding(formData);
     if (result.success) {
       if (result.shouldGeneratePersonas) {
         setIsGeneratingPersonas(true);

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
@@ -20,9 +20,6 @@ export interface MarketingOnboardingData {
   customer_gender: string[];
   customer_age_ranges: string[];
   customer_income_ranges: string[];
-  
-  // Progress tracking
-  current_tab?: string;
 }
 
 export const useMarketingOnboarding = () => {
@@ -63,7 +60,7 @@ export const useMarketingOnboarding = () => {
     checkOnboardingStatus();
   }, [user]);
 
-  const fetchOnboardingData = useCallback(async (): Promise<MarketingOnboardingData | null> => {
+  const fetchOnboardingData = async (): Promise<MarketingOnboardingData | null> => {
     if (!user) {
       return null;
     }
@@ -116,8 +113,7 @@ export const useMarketingOnboarding = () => {
           goals: parseArrayField(data.goals),
           customer_gender: parseArrayField(data.customer_gender),
           customer_age_ranges: parseArrayField(data.customer_age_ranges),
-          customer_income_ranges: parseArrayField(data.customer_income_ranges),
-          current_tab: data.current_tab || 'about-you'
+          customer_income_ranges: parseArrayField(data.customer_income_ranges)
         };
       }
 
@@ -126,7 +122,7 @@ export const useMarketingOnboarding = () => {
       console.error('Error fetching marketing onboarding data:', error);
       return null;
     }
-  }, [user]);
+  };
 
   const generatePersonaPrompt = (template: string, data: MarketingOnboardingData): string => {
     let prompt = template;
@@ -156,15 +152,13 @@ export const useMarketingOnboarding = () => {
     return prompt;
   };
 
-  const saveOnboarding = async (data: MarketingOnboardingData, silent: boolean = false): Promise<{ success: boolean; shouldGeneratePersonas?: boolean }> => {
+  const saveOnboarding = async (data: MarketingOnboardingData): Promise<{ success: boolean; shouldGeneratePersonas?: boolean }> => {
     if (!user) {
-      if (!silent) {
-        toast({
-          title: "Error",
-          description: "You must be logged in to save onboarding data.",
-          variant: "destructive"
-        });
-      }
+      toast({
+        title: "Error",
+        description: "You must be logged in to save onboarding data.",
+        variant: "destructive"
+      });
       return { success: false };
     }
 
@@ -186,65 +180,55 @@ export const useMarketingOnboarding = () => {
 
       if (onboardingError) {
         console.error('Error saving marketing onboarding:', onboardingError);
-        if (!silent) {
-          toast({
-            title: "Error",
-            description: "Failed to save your responses. Please try again.",
-            variant: "destructive"
-          });
-        }
+        toast({
+          title: "Error",
+          description: "Failed to save your responses. Please try again.",
+          variant: "destructive"
+        });
         return { success: false };
       }
 
-      // Only generate persona prompt and show success if not silent (final submission)
-      if (!silent) {
-        // Fetch the persona prompt template
-        const { data: templateData, error: templateError } = await supabase
-          .from('system_prompt_template')
-          .select('value')
-          .eq('name', 'persona_prompt')
-          .maybeSingle();
+      // Fetch the persona prompt template
+      const { data: templateData, error: templateError } = await supabase
+        .from('system_prompt_template')
+        .select('value')
+        .eq('name', 'persona_prompt')
+        .maybeSingle();
 
-        if (templateError) {
-          console.error('Error fetching prompt template:', templateError);
-          // Continue without updating persona prompt
-        } else if (templateData) {
-          // Generate the persona prompt using the template
-          const generatedPrompt = generatePersonaPrompt(templateData.value, data);
-          
-          // Update the company details with the generated persona prompt
-          const { error: companyError } = await supabase
-            .from('company_details')
-            .update({
-              onboarding_persona_prompt: generatedPrompt
-            })
-            .eq('user_id', user.id);
+      if (templateError) {
+        console.error('Error fetching prompt template:', templateError);
+        // Continue without updating persona prompt
+      } else if (templateData) {
+        // Generate the persona prompt using the template
+        const generatedPrompt = generatePersonaPrompt(templateData.value, data);
+        
+        // Update the company details with the generated persona prompt
+        const { error: companyError } = await supabase
+          .from('company_details')
+          .update({
+            onboarding_persona_prompt: generatedPrompt
+          })
+          .eq('user_id', user.id);
 
-          if (companyError) {
-            console.error('Error updating company details:', companyError);
-            // Continue without showing error to user as main onboarding was successful
-          }
+        if (companyError) {
+          console.error('Error updating company details:', companyError);
+          // Continue without showing error to user as main onboarding was successful
         }
-
-        setIsCompleted(true);
-        toast({
-          title: "Success",
-          description: "Your marketing profile has been saved successfully!",
-        });
-        return { success: true, shouldGeneratePersonas: true };
       }
 
-      // Silent save successful
-      return { success: true };
+      setIsCompleted(true);
+      toast({
+        title: "Success",
+        description: "Your marketing profile has been saved successfully!",
+      });
+      return { success: true, shouldGeneratePersonas: true };
     } catch (error) {
       console.error('Error saving marketing onboarding:', error);
-      if (!silent) {
-        toast({
-          title: "Error",
-          description: "An unexpected error occurred. Please try again.",
-          variant: "destructive"
-        });
-      }
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive"
+      });
       return { success: false };
     } finally {
       setIsSaving(false);
