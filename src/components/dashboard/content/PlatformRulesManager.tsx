@@ -10,7 +10,7 @@ import {
   Linkedin, 
   Twitter, 
   Facebook,
-  Pin,
+  MapPin,
   Settings,
   Info,
   AlertCircle
@@ -32,7 +32,7 @@ const PLATFORM_ICONS: Record<SupportedPlatform, any> = {
   linkedin: Linkedin,
   twitter: Twitter,
   facebook: Facebook,
-  pinterest: Pin
+  pinterest: MapPin
 };
 
 interface PlatformRulesManagerProps {
