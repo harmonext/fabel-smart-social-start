@@ -106,11 +106,32 @@ serve(async (req) => {
       genders: "All"
     };
 
+    // Map persona platforms to valid database platforms
+    const platformMapping: Record<string, string> = {
+      'facebook': 'facebook',
+      'instagram': 'instagram',
+      'twitter': 'twitter',
+      'x': 'twitter',
+      'linkedin': 'linkedin',
+      'tiktok': 'tiktok',
+      'pinterest': 'pinterest',
+      'youtube': 'instagram', // Map youtube to instagram as fallback since youtube isn't supported
+    };
+    
+    const validPlatforms = ['instagram', 'tiktok', 'linkedin', 'twitter', 'facebook', 'pinterest'];
+    
     const socialPlatforms = [
       actualPersona.social_media_top_1,
       actualPersona.social_media_top_2, 
       actualPersona.social_media_top_3
-    ].filter(Boolean);
+    ]
+    .filter(Boolean)
+    .map(platform => {
+      const normalized = platform.toLowerCase().trim();
+      return platformMapping[normalized] || null;
+    })
+    .filter((platform): platform is string => platform !== null && validPlatforms.includes(platform))
+    .filter((platform, index, self) => self.indexOf(platform) === index); // Remove duplicates
 
     const goals = companyDetails?.goals || ['Brand Awareness', 'Customer Engagement'];
 
@@ -152,15 +173,18 @@ Return the response as a JSON array with this exact structure:
   }
 ]
 
+CRITICAL: The "platform" field MUST be one of these exact values: ${validPlatforms.join(', ')}
+
 Make sure to:
-- Create content for each platform (${socialPlatforms.length} platforms)
+- Create content for each platform (${socialPlatforms.length} platforms): ${socialPlatforms.join(', ')}
 - Address each company goal (${goals.length} goals)
 - Use appropriate tone and formatting for each platform
 - Include relevant hashtags and calls-to-action
 - Schedule posts at optimal times (LinkedIn: weekdays 8-10am, Twitter: weekdays 9am-3pm, etc.)
 - Spread content over 7 days to avoid overwhelming followers
 - ENSURE ALL scheduled_at dates are FUTURE dates only, starting from tomorrow
-- DO NOT include any emojis in the generated content`;
+- DO NOT include any emojis in the generated content
+- ONLY use platforms from this list: ${socialPlatforms.join(', ')}`;
 
     console.log('Sending request to OpenAI with prompt length:', prompt.length);
     
@@ -221,16 +245,18 @@ Make sure to:
     console.log('Parsed content array:', contentArray.length, 'items');
 
     // Save each content item to scheduled_content table
-    const contentToInsert = contentArray.map(item => ({
-      user_id: user.id,
-      title: item.title,
-      content: item.content,
-      platform: item.platform.toLowerCase(),
-      persona_name: item.persona_name,
-      goal: item.goal,
-      scheduled_at: item.scheduled_at,
-      status: 'draft'
-    }));
+    const contentToInsert = contentArray
+      .filter(item => validPlatforms.includes(item.platform.toLowerCase()))
+      .map(item => ({
+        user_id: user.id,
+        title: item.title,
+        content: item.content,
+        platform: item.platform.toLowerCase(),
+        persona_name: item.persona_name,
+        goal: item.goal,
+        scheduled_at: item.scheduled_at,
+        status: 'draft'
+      }));
 
     const { data: insertedContent, error: insertError } = await supabase
       .from('scheduled_content')
