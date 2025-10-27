@@ -22,8 +22,8 @@ serve(async (req) => {
   try {
     console.log('=== GENERATE CONTENT FUNCTION START ===');
     
-    const { personaName } = await req.json();
-    console.log('Request body parsed:', { personaName });
+    const { personaName, selectedPlatforms } = await req.json();
+    console.log('Request body parsed:', { personaName, selectedPlatforms });
     
     // Get authorization header
     const authHeader = req.headers.get('authorization');
@@ -120,18 +120,35 @@ serve(async (req) => {
     
     const validPlatforms = ['instagram', 'tiktok', 'linkedin', 'twitter', 'facebook', 'pinterest'];
     
-    const socialPlatforms = [
-      actualPersona.social_media_top_1,
-      actualPersona.social_media_top_2, 
-      actualPersona.social_media_top_3
-    ]
-    .filter(Boolean)
-    .map(platform => {
-      const normalized = platform.toLowerCase().trim();
-      return platformMapping[normalized] || null;
-    })
-    .filter((platform): platform is string => platform !== null && validPlatforms.includes(platform))
-    .filter((platform, index, self) => self.indexOf(platform) === index); // Remove duplicates
+    // Use selectedPlatforms if provided, otherwise fall back to persona platforms
+    let socialPlatforms: string[];
+    
+    if (selectedPlatforms && Array.isArray(selectedPlatforms) && selectedPlatforms.length > 0) {
+      // User explicitly selected platforms - use those
+      socialPlatforms = selectedPlatforms
+        .map(platform => {
+          const normalized = platform.toLowerCase().trim();
+          return platformMapping[normalized] || null;
+        })
+        .filter((platform): platform is string => platform !== null && validPlatforms.includes(platform))
+        .filter((platform, index, self) => self.indexOf(platform) === index); // Remove duplicates
+      console.log('Using user-selected platforms:', socialPlatforms);
+    } else {
+      // No platforms selected - use all persona platforms
+      socialPlatforms = [
+        actualPersona.social_media_top_1,
+        actualPersona.social_media_top_2, 
+        actualPersona.social_media_top_3
+      ]
+      .filter(Boolean)
+      .map(platform => {
+        const normalized = platform.toLowerCase().trim();
+        return platformMapping[normalized] || null;
+      })
+      .filter((platform): platform is string => platform !== null && validPlatforms.includes(platform))
+      .filter((platform, index, self) => self.indexOf(platform) === index); // Remove duplicates
+      console.log('Using persona platforms:', socialPlatforms);
+    }
 
     const goals = companyDetails?.goals || ['Brand Awareness', 'Customer Engagement'];
 

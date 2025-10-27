@@ -120,8 +120,21 @@ const Persona1 = ({ persona }: Persona1Props) => {
     }
   };
 
-  const handlePlatformToggle = (platform: string) => {
-    setSelectedPlatforms(prev => prev.includes(platform) ? prev.filter(p => p !== platform) : [...prev, platform]);
+  const handlePlatformToggle = (platform: string, index: number) => {
+    setSelectedPlatforms(prev => {
+      const isSelected = prev.includes(platform);
+      if (isSelected) {
+        return prev.filter(p => p !== platform);
+      } else {
+        return [...prev, platform];
+      }
+    });
+    // Also update platformStates for visual consistency
+    setPlatformStates(prev => {
+      const newStates = [...prev];
+      newStates[index] = !prev[index];
+      return newStates;
+    });
   };
 
   const handleGenerateContent = () => {
@@ -229,16 +242,24 @@ const Persona1 = ({ persona }: Persona1Props) => {
 
 
   const handleGenerateContentClick = async () => {
+    if (selectedPlatforms.length === 0) {
+      return;
+    }
+
     const personaName = persona?.name || "The Ambitious Entrepreneur";
     
     console.log('Persona object:', persona);
     console.log('Persona name:', personaName);
+    console.log('Selected platforms:', selectedPlatforms);
     
     setIsGenerating(true);
     
     try {
       const { data, error } = await supabase.functions.invoke('generate-content', {
-        body: { personaName }
+        body: { 
+          personaName,
+          selectedPlatforms // Pass selected platforms to only generate for these
+        }
       });
 
       if (error) {
@@ -319,8 +340,8 @@ const Persona1 = ({ persona }: Persona1Props) => {
                                   </TooltipContent>
                                 </Tooltip>
                                 <Checkbox
-                                  checked={platformStates[index]}
-                                  onCheckedChange={(checked) => handleMockPlatformToggle(index, checked as boolean)}
+                                  checked={selectedPlatforms.includes(platform.toLowerCase())}
+                                  onCheckedChange={() => handlePlatformToggle(platform.toLowerCase(), index)}
                                 />
                              </div>
                            );
@@ -366,13 +387,28 @@ const Persona1 = ({ persona }: Persona1Props) => {
 
                   <div className="flex-1"></div>
                   <div className="pt-4">
-                    <Button 
-                      className="bg-fabel-primary hover:bg-fabel-primary/90 w-full"
-                      onClick={handleGenerateContentClick}
-                      disabled={isGenerating}
-                    >
-                      {isGenerating ? "Generating..." : "Generate Content"}
-                    </Button>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div>
+                            <Button 
+                              className={selectedPlatforms.length === 0 
+                                ? "bg-muted text-muted-foreground hover:bg-muted w-full cursor-not-allowed" 
+                                : "bg-fabel-primary hover:bg-fabel-primary/90 w-full"}
+                              onClick={handleGenerateContentClick}
+                              disabled={isGenerating || selectedPlatforms.length === 0}
+                            >
+                              {isGenerating ? "Generating..." : "Generate Content"}
+                            </Button>
+                          </div>
+                        </TooltipTrigger>
+                        {selectedPlatforms.length === 0 && (
+                          <TooltipContent>
+                            <p>Please select at least one social media platform</p>
+                          </TooltipContent>
+                        )}
+                      </Tooltip>
+                    </TooltipProvider>
                   </div>
                 </div>
               </div>
@@ -576,8 +612,8 @@ const Persona1 = ({ persona }: Persona1Props) => {
                      </TooltipContent>
                    </Tooltip>
                    <Checkbox
-                     checked={platformStates[index]}
-                     onCheckedChange={(checked) => handleMockPlatformToggle(index, checked as boolean)}
+                     checked={selectedPlatforms.includes(platform.toLowerCase())}
+                     onCheckedChange={() => handlePlatformToggle(platform.toLowerCase(), index)}
                    />
                 </div>
               );
@@ -623,13 +659,28 @@ const Persona1 = ({ persona }: Persona1Props) => {
       />
 
       <div className="pt-4">
-        <Button
-          className="bg-fabel-primary hover:bg-fabel-primary/90 w-full"
-          onClick={handleGenerateContentClick}
-          disabled={isGenerating}
-        >
-          {isGenerating ? "Generating..." : "Generate Content"}
-        </Button>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div>
+                <Button
+                  className={selectedPlatforms.length === 0 
+                    ? "bg-muted text-muted-foreground hover:bg-muted w-full cursor-not-allowed" 
+                    : "bg-fabel-primary hover:bg-fabel-primary/90 w-full"}
+                  onClick={handleGenerateContentClick}
+                  disabled={isGenerating || selectedPlatforms.length === 0}
+                >
+                  {isGenerating ? "Generating..." : "Generate Content"}
+                </Button>
+              </div>
+            </TooltipTrigger>
+            {selectedPlatforms.length === 0 && (
+              <TooltipContent>
+                <p>Please select at least one social media platform</p>
+              </TooltipContent>
+            )}
+          </Tooltip>
+        </TooltipProvider>
       </div>
 
       {/* Pricing Modal - renders on top of everything with z-index higher than expanded view */}
