@@ -49,7 +49,7 @@ const Hero = () => {
             </span>
           </h1>
           <p className="text-xl md:text-2xl text-muted-foreground mb-8 leading-relaxed max-w-3xl mx-auto">
-            Create compelling content, reach your ideal customers, and grow your business with personalized marketing that adapts to your brand voice.
+            Identify your customer personas and deliver tailored social content for marketing campaigns that actually resonate.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
