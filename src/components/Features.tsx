@@ -25,7 +25,7 @@ const Features = () => {
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            Everything You Need to <span className="text-fabel-primary">Succeed</span>
+            Meet Your Customer. Tell Your Story. Win Their Business.
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Powerful features designed specifically for small businesses to streamline their social media marketing.
