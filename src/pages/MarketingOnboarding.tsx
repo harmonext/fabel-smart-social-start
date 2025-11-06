@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import MarketingOnboardingForm from "@/components/onboarding/MarketingOnboardingForm";
 import { useOnboarding } from "@/hooks/useOnboarding";
-import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 
 const MarketingOnboarding = () => {
@@ -32,9 +31,16 @@ const MarketingOnboarding = () => {
 
   return (
     <>
-      <Navigation />
-      <div className="min-h-screen bg-gradient-to-br from-soft-gold/20 via-background to-muted-teal/20 p-4 pt-24">
+      <div className="min-h-screen bg-gradient-to-br from-soft-gold/20 via-background to-muted-teal/20 p-4">
         <div className="container mx-auto py-8">
+          <div className="flex justify-center mb-8">
+            <div className="flex items-center space-x-2">
+              <div className="w-10 h-10 bg-fabel-primary rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-xl">F</span>
+              </div>
+              <span className="text-2xl font-bold text-foreground">Fabel</span>
+            </div>
+          </div>
           <MarketingOnboardingForm />
         </div>
       </div>
