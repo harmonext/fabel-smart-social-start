@@ -72,6 +72,7 @@ export type Database = {
         Row: {
           company_description: string | null
           created_at: string
+          current_step: string | null
           current_tab: string | null
           customer_age_ranges: string[]
           customer_gender: string[]
@@ -89,6 +90,7 @@ export type Database = {
         Insert: {
           company_description?: string | null
           created_at?: string
+          current_step?: string | null
           current_tab?: string | null
           customer_age_ranges?: string[]
           customer_gender?: string[]
@@ -106,6 +108,7 @@ export type Database = {
         Update: {
           company_description?: string | null
           created_at?: string
+          current_step?: string | null
           current_tab?: string | null
           customer_age_ranges?: string[]
           customer_gender?: string[]

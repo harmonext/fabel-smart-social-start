@@ -101,6 +101,11 @@ const EmailSignup = () => {
             ...prev,
             general: "An account with this email already exists. Please sign in instead."
           }));
+        } else if (error.message.toLowerCase().includes('weak') || error.message.toLowerCase().includes('password should contain')) {
+          setValidationErrors(prev => ({
+            ...prev,
+            general: "Password must include: • 1 lowercase letter • 1 uppercase letter • 1 number • 1 special character (!@#$%^&*_<>{}[] etc.) Your password is too weak. Please choose a stronger one."
+          }));
         } else {
           setValidationErrors(prev => ({
             ...prev,
