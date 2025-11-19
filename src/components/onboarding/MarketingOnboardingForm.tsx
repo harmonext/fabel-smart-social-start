@@ -20,7 +20,7 @@ const MarketingOnboardingForm = () => {
   const { generatePersonas } = usePersonas();
   const { isCompleted: onboardingCompleted } = useOnboarding();
   const { companyDetails } = useCompanyDetails();
-  const [activeTab, setActiveTab] = useState("about-you");
+  const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [completedTabs, setCompletedTabs] = useState<string[]>([]);
   const [isSavingProgress, setIsSavingProgress] = useState(false);
   
@@ -48,12 +48,14 @@ const MarketingOnboardingForm = () => {
         
         // If there's a saved tab, restore to that position
         if (savedTab) {
-          setActiveTab(savedTab);
-          // Mark tabs up to saved tab as completed
           const tabIds = ["about-you", "about-company", "about-customer", "about-goals"];
           const savedIndex = tabIds.indexOf(savedTab);
           if (savedIndex >= 0) {
+            setCurrentStepIndex(savedIndex);
+            // Mark tabs up to saved tab as completed
             setCompletedTabs(tabIds.slice(0, savedIndex));
+          } else {
+            setCurrentStepIndex(0);
           }
         } else {
           // Mark all tabs as completed if data exists but no saved tab
@@ -124,15 +126,12 @@ const MarketingOnboardingForm = () => {
     { id: "about-goals", label: "About Your Goals", component: AboutGoalsTab, stepLabel: "Goals" }
   ];
 
-  const getCurrentTabIndex = () => {
-    const index = tabs.findIndex(tab => tab.id === activeTab);
-    return index === -1 ? 0 : index;
-  };
+  const activeTabId = tabs[currentStepIndex]?.id ?? tabs[0].id;
 
   const progress = ((completedTabs.length) / tabs.length) * 100;
 
   const validateCurrentTab = (): boolean => {
-    switch (activeTab) {
+    switch (activeTabId) {
       case "about-you":
         return formData.name.trim() !== "" && formData.title !== "";
       case "about-company":
@@ -150,31 +149,39 @@ const MarketingOnboardingForm = () => {
     }
   };
 
-  const handleNext = () => {
-    const currentIndex = getCurrentTabIndex();
-    console.log("handleNext clicked", { activeTab, currentIndex });
+  const goToNextStep = () => {
+    setCurrentStepIndex((prev) => Math.min(prev + 1, tabs.length - 1));
+  };
 
-    if (!completedTabs.includes(activeTab) && validateCurrentTab()) {
-      setCompletedTabs(prev => [...prev, activeTab]);
+  const goToPreviousStep = () => {
+    setCurrentStepIndex((prev) => Math.max(prev - 1, 0));
+  };
+
+  const handleNext = () => {
+    const currentIndex = currentStepIndex;
+    console.log("handleNext clicked", { activeTab: activeTabId, currentIndex });
+
+    if (!completedTabs.includes(activeTabId) && validateCurrentTab()) {
+      setCompletedTabs(prev => [...prev, activeTabId]);
     }
 
     if (currentIndex < tabs.length - 1) {
-      setActiveTab(tabs[currentIndex + 1].id);
+      goToNextStep();
     }
   };
 
   const handlePrevious = () => {
-    const currentIndex = getCurrentTabIndex();
-    console.log("handlePrevious clicked", { activeTab, currentIndex });
+    const currentIndex = currentStepIndex;
+    console.log("handlePrevious clicked", { activeTab: activeTabId, currentIndex });
 
     if (currentIndex > 0) {
-      setActiveTab(tabs[currentIndex - 1].id);
+      goToPreviousStep();
     }
   };
 
   const handleSaveProgress = async () => {
     setIsSavingProgress(true);
-    const success = await saveProgress(formData, activeTab);
+    const success = await saveProgress(formData, activeTabId);
     setIsSavingProgress(false);
   };
 
@@ -203,7 +210,7 @@ const MarketingOnboardingForm = () => {
   };
 
   const isCurrentTabValid = validateCurrentTab();
-  const isLastTab = getCurrentTabIndex() === tabs.length - 1;
+  const isLastTab = currentStepIndex === tabs.length - 1;
   const canGoNext = !isLastTab;
   const canSubmit = isCurrentTabValid && isLastTab;
 
@@ -249,12 +256,12 @@ const MarketingOnboardingForm = () => {
                 <div className="flex flex-col items-center">
                   <div 
                     className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                      index <= getCurrentTabIndex() 
+                      index <= currentStepIndex 
                         ? 'text-white' 
                         : 'text-gray-600'
                     }`}
                     style={{ 
-                      backgroundColor: index <= getCurrentTabIndex() ? '#E3C38A' : '#BAC5C2'
+                      backgroundColor: index <= currentStepIndex ? '#E3C38A' : '#BAC5C2'
                     }}
                   >
                     {index + 1}
@@ -267,7 +274,7 @@ const MarketingOnboardingForm = () => {
                   <div 
                     className={`w-16 h-0.5 mx-2`}
                     style={{ 
-                      backgroundColor: index < getCurrentTabIndex() ? '#E3C38A' : '#abbdc6'
+                      backgroundColor: index < currentStepIndex ? '#E3C38A' : '#abbdc6'
                     }}
                   />
                 )}
@@ -281,7 +288,7 @@ const MarketingOnboardingForm = () => {
           <CardContent className="p-8">
             {/* Render active tab component */}
             {tabs.map((tab) => {
-              if (tab.id !== activeTab) return null;
+              if (tab.id !== activeTabId) return null;
               const TabComponent = tab.component;
               return (
                 <div key={tab.id}>
@@ -299,7 +306,7 @@ const MarketingOnboardingForm = () => {
                 <Button
                   variant="outline"
                   onClick={handlePrevious}
-                  disabled={getCurrentTabIndex() === 0}
+                  disabled={currentStepIndex === 0}
                   className="px-6 py-2 text-gray-600"
                   style={{ 
                     borderColor: '#abbdc6', 
