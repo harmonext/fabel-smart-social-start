@@ -147,15 +147,16 @@ const MarketingOnboardingForm = () => {
   };
 
   const handleNext = () => {
-    if (validateCurrentTab()) {
-      if (!completedTabs.includes(activeTab)) {
-        setCompletedTabs(prev => [...prev, activeTab]);
-      }
-      
-      const currentIndex = getCurrentTabIndex();
-      if (currentIndex < tabs.length - 1) {
-        setActiveTab(tabs[currentIndex + 1].id);
-      }
+    const currentIndex = getCurrentTabIndex();
+
+    // Always allow navigating to the next tab (do not block on validation here)
+    // Validation is still enforced for final submission.
+    if (!completedTabs.includes(activeTab) && validateCurrentTab()) {
+      setCompletedTabs(prev => [...prev, activeTab]);
+    }
+
+    if (currentIndex < tabs.length - 1) {
+      setActiveTab(tabs[currentIndex + 1].id);
     }
   };
 
@@ -198,7 +199,7 @@ const MarketingOnboardingForm = () => {
 
   const isCurrentTabValid = validateCurrentTab();
   const isLastTab = getCurrentTabIndex() === tabs.length - 1;
-  const canGoNext = isCurrentTabValid && !isLastTab;
+  const canGoNext = !isLastTab;
   const canSubmit = isCurrentTabValid && isLastTab;
 
   if (isLoadingData) {
@@ -323,7 +324,6 @@ const MarketingOnboardingForm = () => {
                 {canGoNext && (
                   <Button
                     onClick={handleNext}
-                    disabled={!isCurrentTabValid}
                     className="px-6 py-2 text-white border-0"
                     style={{ 
                       backgroundColor: '#E3C38A',
@@ -333,7 +333,7 @@ const MarketingOnboardingForm = () => {
                     Next
                   </Button>
                 )}
-                
+
                 {canSubmit && (
                   <Button
                     onClick={handleSubmit}
