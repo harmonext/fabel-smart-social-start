@@ -169,6 +169,7 @@ export const useMarketingOnboarding = () => {
       console.log('Saving marketing onboarding data:', data);
       const dataToSave = {
         user_id: user.id,
+        current_tab: null, // Clear current_tab to mark as complete
         ...data
       };
       console.log('Data being sent to Supabase:', dataToSave);
