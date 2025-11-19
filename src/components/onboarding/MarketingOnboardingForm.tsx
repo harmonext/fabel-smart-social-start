@@ -124,7 +124,11 @@ const MarketingOnboardingForm = () => {
     { id: "about-goals", label: "About Your Goals", component: AboutGoalsTab, stepLabel: "Goals" }
   ];
 
-  const getCurrentTabIndex = () => tabs.findIndex(tab => tab.id === activeTab);
+  const getCurrentTabIndex = () => {
+    const index = tabs.findIndex(tab => tab.id === activeTab);
+    return index === -1 ? 0 : index;
+  };
+
   const progress = ((completedTabs.length) / tabs.length) * 100;
 
   const validateCurrentTab = (): boolean => {
@@ -148,9 +152,8 @@ const MarketingOnboardingForm = () => {
 
   const handleNext = () => {
     const currentIndex = getCurrentTabIndex();
+    console.log("handleNext clicked", { activeTab, currentIndex });
 
-    // Always allow navigating to the next tab (do not block on validation here)
-    // Validation is still enforced for final submission.
     if (!completedTabs.includes(activeTab) && validateCurrentTab()) {
       setCompletedTabs(prev => [...prev, activeTab]);
     }
@@ -162,6 +165,8 @@ const MarketingOnboardingForm = () => {
 
   const handlePrevious = () => {
     const currentIndex = getCurrentTabIndex();
+    console.log("handlePrevious clicked", { activeTab, currentIndex });
+
     if (currentIndex > 0) {
       setActiveTab(tabs[currentIndex - 1].id);
     }
