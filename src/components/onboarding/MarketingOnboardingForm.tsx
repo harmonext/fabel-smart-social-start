@@ -274,7 +274,7 @@ const MarketingOnboardingForm = () => {
         {/* Main Card */}
         <Card className="bg-white shadow-sm" style={{ borderColor: '#abbdc6' }}>
           <CardContent className="p-8">
-            <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <Tabs value={activeTab}>
               {tabs.map((tab) => {
                 const TabComponent = tab.component;
                 return (
