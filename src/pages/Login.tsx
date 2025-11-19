@@ -40,6 +40,26 @@ const Login = () => {
           variant: "destructive"
         });
       } else {
+        // Check if user has incomplete marketing onboarding
+        const { data: user } = await supabase.auth.getUser();
+        if (user.user) {
+          const { data: marketingData } = await supabase
+            .from('marketing_onboarding')
+            .select('current_tab')
+            .eq('user_id', user.user.id)
+            .maybeSingle();
+
+          // If user has saved progress (current_tab is not null), take them to onboarding
+          if (marketingData && marketingData.current_tab) {
+            toast({
+              title: "Welcome back!",
+              description: "Continue where you left off."
+            });
+            navigate('/marketing-onboarding');
+            return;
+          }
+        }
+
         toast({
           title: "Welcome back!",
           description: "You have successfully signed in."
