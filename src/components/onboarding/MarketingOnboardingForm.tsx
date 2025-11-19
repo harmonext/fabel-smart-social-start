@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { MarketingOnboardingData, useMarketingOnboarding } from "@/hooks/useMarketingOnboarding";
 import { usePersonas } from "@/hooks/usePersonas";
@@ -274,19 +273,19 @@ const MarketingOnboardingForm = () => {
         {/* Main Card */}
         <Card className="bg-white shadow-sm" style={{ borderColor: '#abbdc6' }}>
           <CardContent className="p-8">
-            <Tabs value={activeTab}>
-              {tabs.map((tab) => {
-                const TabComponent = tab.component;
-                return (
-                  <TabsContent key={tab.id} value={tab.id} className="mt-0">
-                    <TabComponent 
-                      formData={formData} 
-                      onInputChange={handleInputChange} 
-                    />
-                  </TabsContent>
-                );
-              })}
-            </Tabs>
+            {/* Render active tab component */}
+            {tabs.map((tab) => {
+              if (tab.id !== activeTab) return null;
+              const TabComponent = tab.component;
+              return (
+                <div key={tab.id}>
+                  <TabComponent 
+                    formData={formData} 
+                    onInputChange={handleInputChange} 
+                  />
+                </div>
+              );
+            })}
 
             {/* Navigation Buttons */}
             <div className="flex items-center justify-between mt-8 pt-6 border-t" style={{ borderColor: '#abbdc6' }}>
