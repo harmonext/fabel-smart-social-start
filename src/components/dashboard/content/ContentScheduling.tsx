@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar, Clock, Plus, Edit, Trash2, ChevronLeft, ChevronRight, Move, Check, X } from "lucide-react";
-import { Facebook, Instagram, Linkedin, Twitter } from "lucide-react";
+import { Facebook, Instagram, Linkedin } from "lucide-react";
 import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { useState } from "react";
 import { useScheduledContent, ScheduledContent } from "@/hooks/useScheduledContent";
@@ -145,7 +145,7 @@ const getSocialIcon = (platform: string, size: 'xs' | 'sm' | 'md' = 'sm') => {
     case 'facebook': return <Facebook {...iconProps} className={`${sizeClasses} text-blue-600`} />;
     case 'instagram': return <Instagram {...iconProps} className={`${sizeClasses} text-pink-600`} />;
     case 'linkedin': return <Linkedin {...iconProps} className={`${sizeClasses} text-blue-700`} />;
-    case 'twitter': return <Twitter {...iconProps} className={`${sizeClasses} text-blue-400`} />;
+    case 'threads': return <i className={`fab fa-threads ${sizeClasses} text-black`}></i>;
     case 'pinterest': return <div className={`${sizeClasses} bg-red-600 rounded-full flex items-center justify-center`}>
       <span className="text-white text-xs font-bold">P</span>
     </div>;
@@ -997,7 +997,7 @@ const Legend = ({ posts }: { posts: ScheduledContent[] }) => {
   const { personas } = usePersonas();
   
   // Define all available social platforms
-  const allPlatforms = ['facebook', 'instagram', 'linkedin', 'twitter', 'pinterest', 'tiktok'];
+  const allPlatforms = ['facebook', 'instagram', 'linkedin', 'threads', 'pinterest', 'tiktok'];
   
   // Only show the first 3 active personas (from the personas hook)
   const activePersonas = personas.slice(0, 3);
@@ -1254,7 +1254,7 @@ const ContentScheduling = () => {
                 </SelectTrigger>
                 <SelectContent className="bg-background border border-border z-50">
                   <SelectItem value="all">All Platforms</SelectItem>
-                  {['facebook', 'instagram', 'twitter', 'linkedin', 'pinterest', 'tiktok']
+                  {['facebook', 'instagram', 'threads', 'linkedin', 'pinterest', 'tiktok']
                     .filter(platform => content.some(post => post.platform === platform))
                     .map(platform => (
                       <SelectItem key={platform} value={platform}>
