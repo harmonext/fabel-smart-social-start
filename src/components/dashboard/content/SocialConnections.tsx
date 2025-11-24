@@ -63,9 +63,9 @@ const SocialConnections = () => {
       icon: "fab fa-instagram text-pink-500"
     },
     {
-      platform: "twitter",
-      name: "Twitter/X",
-      icon: "fab fa-twitter text-sky-500"
+      platform: "threads",
+      name: "Threads",
+      icon: "fab fa-at text-gray-900"
     },
     {
       platform: "linkedin",
@@ -86,7 +86,7 @@ const SocialConnections = () => {
 
   const handleConnect = async (platform: string) => {
     // Support for implemented platforms
-    const supportedPlatforms = ['facebook', 'instagram', 'twitter', 'linkedin'];
+    const supportedPlatforms = ['facebook', 'instagram', 'threads', 'linkedin'];
     
     if (supportedPlatforms.includes(platform)) {
       try {

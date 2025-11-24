@@ -8,7 +8,7 @@ import {
   Instagram, 
   Music, 
   Linkedin, 
-  Twitter, 
+  AtSign, 
   Facebook,
   MapPin,
   Settings,
@@ -30,7 +30,7 @@ const PLATFORM_ICONS: Record<SupportedPlatform, any> = {
   instagram: Instagram,
   tiktok: Music,
   linkedin: Linkedin,
-  twitter: Twitter,
+  threads: AtSign,
   facebook: Facebook,
   pinterest: MapPin
 };
@@ -48,7 +48,7 @@ export const PlatformRulesManager = ({ selectedPlatforms }: PlatformRulesManager
   // Filter platforms based on selection
   const availablePlatforms = selectedPlatforms && selectedPlatforms.length > 0
     ? (selectedPlatforms as SupportedPlatform[])
-    : (['instagram', 'tiktok', 'linkedin', 'twitter', 'facebook', 'pinterest'] as SupportedPlatform[]);
+    : (['instagram', 'tiktok', 'linkedin', 'threads', 'facebook', 'pinterest'] as SupportedPlatform[]);
 
   const displayedRules = selectedPlatform === 'all' 
     ? rules 
