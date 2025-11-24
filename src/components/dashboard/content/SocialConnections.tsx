@@ -65,7 +65,7 @@ const SocialConnections = () => {
     {
       platform: "threads",
       name: "Threads",
-      icon: "fab fa-at text-gray-900"
+      icon: "fab fa-threads text-gray-900"
     },
     {
       platform: "linkedin",

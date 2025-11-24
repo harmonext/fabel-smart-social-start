@@ -45,7 +45,7 @@ const Persona2 = ({ persona }: Persona2Props) => {
       case 'linkedin':
         return { icon: () => <SocialIcon className="fab fa-linkedin text-[#0077B5]" />, color: 'text-[#0077B5]', name: 'LinkedIn' };
       case 'threads':
-        return { icon: () => <SocialIcon className="fab fa-at text-brand-dark" />, color: 'text-brand-dark', name: 'Threads' };
+        return { icon: () => <SocialIcon className="fab fa-threads text-brand-dark" />, color: 'text-brand-dark', name: 'Threads' };
       case 'youtube':
         return { icon: () => <SocialIcon className="fab fa-youtube text-[#FF0000]" />, color: 'text-[#FF0000]', name: 'YouTube' };
       case 'facebook':
@@ -100,7 +100,7 @@ const Persona2 = ({ persona }: Persona2Props) => {
     },
     threads: {
       name: 'Threads',
-      icon: () => <i className="fab fa-at" />,
+      icon: () => <i className="fab fa-threads" />,
       color: 'text-brand-dark',
       content: `🚀 Ready to level up your career game? Our mentorship programs connect you with top executives who've been where you want to go. Apply now! #CareerGoals #Mentorship #Success`
     },

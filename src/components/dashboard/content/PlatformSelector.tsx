@@ -13,7 +13,7 @@ interface PlatformSelectorProps {
 
 const AVAILABLE_PLATFORMS = [
   { name: "LinkedIn", value: "linkedin", icon: "fab fa-linkedin", color: "text-[#0077B5]" },
-  { name: "Threads", value: "threads", icon: "fab fa-at", color: "text-[#000000]" },
+  { name: "Threads", value: "threads", icon: "fab fa-threads", color: "text-[#000000]" },
   { name: "Facebook", value: "facebook", icon: "fab fa-facebook", color: "text-[#1877F2]" },
   { name: "Instagram", value: "instagram", icon: "fab fa-instagram", color: "text-[#E4405F]" },
   { name: "TikTok", value: "tiktok", icon: "fab fa-tiktok", color: "text-[#000000]" },
