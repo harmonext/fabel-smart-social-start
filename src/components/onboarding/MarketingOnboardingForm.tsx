@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { MarketingOnboardingData, useMarketingOnboarding } from "@/hooks/useMarketingOnboarding";
 import { usePersonas } from "@/hooks/usePersonas";
@@ -16,13 +17,12 @@ import AboutCustomerTab from "./marketing/AboutCustomerTab";
 const MarketingOnboardingForm = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { saveOnboarding, isSaving, fetchOnboardingData, saveProgress, fetchSavedTab } = useMarketingOnboarding();
+  const { saveOnboarding, isSaving, fetchOnboardingData } = useMarketingOnboarding();
   const { generatePersonas } = usePersonas();
   const { isCompleted: onboardingCompleted } = useOnboarding();
   const { companyDetails } = useCompanyDetails();
-  const [currentStepIndex, setCurrentStepIndex] = useState(0);
+  const [activeTab, setActiveTab] = useState("about-you");
   const [completedTabs, setCompletedTabs] = useState<string[]>([]);
-  const [isSavingProgress, setIsSavingProgress] = useState(false);
   
   const [formData, setFormData] = useState<MarketingOnboardingData>({
     name: "",
@@ -41,26 +41,10 @@ const MarketingOnboardingForm = () => {
   useEffect(() => {
     const loadExistingData = async () => {
       const existingData = await fetchOnboardingData();
-      const savedTab = await fetchSavedTab();
-      
       if (existingData) {
         setFormData(existingData);
-        
-        // If there's a saved tab, restore to that position
-        if (savedTab) {
-          const tabIds = ["about-you", "about-company", "about-customer", "about-goals"];
-          const savedIndex = tabIds.indexOf(savedTab);
-          if (savedIndex >= 0) {
-            setCurrentStepIndex(savedIndex);
-            // Mark tabs up to saved tab as completed
-            setCompletedTabs(tabIds.slice(0, savedIndex));
-          } else {
-            setCurrentStepIndex(0);
-          }
-        } else {
-          // Mark all tabs as completed if data exists but no saved tab
-          setCompletedTabs(["about-you", "about-company", "about-goals", "about-customer"]);
-        }
+        // Mark all tabs as completed if data exists
+        setCompletedTabs(["about-you", "about-company", "about-goals", "about-customer"]);
       } else {
         // Pre-populate from user and company data
         const formatUserName = () => {
@@ -126,12 +110,11 @@ const MarketingOnboardingForm = () => {
     { id: "about-goals", label: "About Your Goals", component: AboutGoalsTab, stepLabel: "Goals" }
   ];
 
-  const activeTabId = tabs[currentStepIndex]?.id ?? tabs[0].id;
-
+  const getCurrentTabIndex = () => tabs.findIndex(tab => tab.id === activeTab);
   const progress = ((completedTabs.length) / tabs.length) * 100;
 
   const validateCurrentTab = (): boolean => {
-    switch (activeTabId) {
+    switch (activeTab) {
       case "about-you":
         return formData.name.trim() !== "" && formData.title !== "";
       case "about-company":
@@ -150,24 +133,23 @@ const MarketingOnboardingForm = () => {
   };
 
   const handleNext = () => {
-    if (!completedTabs.includes(activeTabId) && validateCurrentTab()) {
-      setCompletedTabs(prev => [...prev, activeTabId]);
-    }
-    if (currentStepIndex < tabs.length - 1) {
-      setCurrentStepIndex(currentStepIndex + 1);
+    if (validateCurrentTab()) {
+      if (!completedTabs.includes(activeTab)) {
+        setCompletedTabs(prev => [...prev, activeTab]);
+      }
+      
+      const currentIndex = getCurrentTabIndex();
+      if (currentIndex < tabs.length - 1) {
+        setActiveTab(tabs[currentIndex + 1].id);
+      }
     }
   };
 
   const handlePrevious = () => {
-    if (currentStepIndex > 0) {
-      setCurrentStepIndex(currentStepIndex - 1);
+    const currentIndex = getCurrentTabIndex();
+    if (currentIndex > 0) {
+      setActiveTab(tabs[currentIndex - 1].id);
     }
-  };
-
-  const handleSaveProgress = async () => {
-    setIsSavingProgress(true);
-    const success = await saveProgress(formData, activeTabId);
-    setIsSavingProgress(false);
   };
 
   const handleSubmit = async () => {
@@ -195,8 +177,8 @@ const MarketingOnboardingForm = () => {
   };
 
   const isCurrentTabValid = validateCurrentTab();
-  const isLastTab = currentStepIndex === tabs.length - 1;
-  const canGoNext = !isLastTab;
+  const isLastTab = getCurrentTabIndex() === tabs.length - 1;
+  const canGoNext = isCurrentTabValid && !isLastTab;
   const canSubmit = isCurrentTabValid && isLastTab;
 
   if (isLoadingData) {
@@ -241,12 +223,12 @@ const MarketingOnboardingForm = () => {
                 <div className="flex flex-col items-center">
                   <div 
                     className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                      index <= currentStepIndex 
+                      index <= getCurrentTabIndex() 
                         ? 'text-white' 
                         : 'text-gray-600'
                     }`}
                     style={{ 
-                      backgroundColor: index <= currentStepIndex ? '#E3C38A' : '#BAC5C2'
+                      backgroundColor: index <= getCurrentTabIndex() ? '#E3C38A' : '#BAC5C2'
                     }}
                   >
                     {index + 1}
@@ -259,7 +241,7 @@ const MarketingOnboardingForm = () => {
                   <div 
                     className={`w-16 h-0.5 mx-2`}
                     style={{ 
-                      backgroundColor: index < currentStepIndex ? '#E3C38A' : '#abbdc6'
+                      backgroundColor: index < getCurrentTabIndex() ? '#E3C38A' : '#abbdc6'
                     }}
                   />
                 )}
@@ -271,80 +253,63 @@ const MarketingOnboardingForm = () => {
         {/* Main Card */}
         <Card className="bg-white shadow-sm" style={{ borderColor: '#abbdc6' }}>
           <CardContent className="p-8">
-            {/* Render active tab component */}
-            {tabs.map((tab) => {
-              if (tab.id !== activeTabId) return null;
-              const TabComponent = tab.component;
-              return (
-                <div key={tab.id}>
-                  <TabComponent 
-                    formData={formData} 
-                    onInputChange={handleInputChange} 
-                  />
-                </div>
-              );
-            })}
+            <Tabs value={activeTab} onValueChange={setActiveTab}>
+              {tabs.map((tab) => {
+                const TabComponent = tab.component;
+                return (
+                  <TabsContent key={tab.id} value={tab.id} className="mt-0">
+                    <TabComponent 
+                      formData={formData} 
+                      onInputChange={handleInputChange} 
+                    />
+                  </TabsContent>
+                );
+              })}
+            </Tabs>
 
             {/* Navigation Buttons */}
-            <div className="flex items-center justify-between mt-8 pt-6 border-t" style={{ borderColor: '#abbdc6' }}>
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  onClick={handlePrevious}
-                  disabled={currentStepIndex === 0}
-                  className="px-6 py-2 text-gray-600"
-                  style={{ 
-                    borderColor: '#abbdc6', 
-                    backgroundColor: 'transparent',
-                    color: '#333'
-                  }}
-                >
-                  Previous
-                </Button>
-                
-                <Button
-                  variant="secondary"
-                  onClick={handleSaveProgress}
-                  disabled={isSavingProgress}
-                  className="px-6 py-2"
-                  style={{ 
-                    backgroundColor: '#BAC5C2',
-                    color: 'white',
-                    border: 'none'
-                  }}
-                >
-                  {isSavingProgress ? "Saving..." : "Save Progress"}
-                </Button>
-              </div>
+            <div className="flex justify-between mt-8 pt-6 border-t" style={{ borderColor: '#abbdc6' }}>
+              <Button
+                variant="outline"
+                onClick={handlePrevious}
+                disabled={getCurrentTabIndex() === 0}
+                className="px-6 py-2 text-gray-600"
+                style={{ 
+                  borderColor: '#abbdc6', 
+                  backgroundColor: 'transparent',
+                  color: '#333'
+                }}
+              >
+                Previous
+              </Button>
               
-              <div className="flex gap-2">
-                {canGoNext && (
-                  <Button
-                    onClick={handleNext}
-                    className="px-6 py-2 text-white border-0"
-                    style={{ 
-                      backgroundColor: '#E3C38A',
-                      color: 'white'
-                    }}
-                  >
-                    Next
-                  </Button>
-                )}
-
-                {canSubmit && (
-                  <Button
-                    onClick={handleSubmit}
-                    disabled={!isCurrentTabValid || isSaving || onboardingCompleted}
-                    className="px-6 py-2 text-white border-0"
-                    style={{ 
-                      backgroundColor: '#E3C38A',
-                      color: 'white'
-                    }}
-                  >
-                    {onboardingCompleted ? "Already Completed" : isSaving ? "Saving..." : "Complete Setup"}
-                  </Button>
-                )}
-              </div>
+              {canGoNext && (
+                <Button
+                  onClick={handleNext}
+                  disabled={!isCurrentTabValid}
+                  className="px-6 py-2 text-white border-0"
+                  style={{ 
+                    backgroundColor: '#E3C38A',
+                    color: 'white'
+                  }}
+                >
+                  Next
+                </Button>
+              )}
+              
+              {canSubmit && (
+                <Button
+                  onClick={handleSubmit}
+                  disabled={!isCurrentTabValid || isSaving || onboardingCompleted}
+                  className="px-6 py-2 text-white border-0"
+                  style={{ 
+                    backgroundColor: '#E3C38A',
+                    color: 'white'
+                  }}
+                >
+                  {onboardingCompleted ? "Already Completed" : isSaving ? "Saving..." : "Complete Setup"}
+                </Button>
+              )}
             </div>
           </CardContent>
         </Card>

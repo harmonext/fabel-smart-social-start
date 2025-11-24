@@ -169,7 +169,6 @@ export const useMarketingOnboarding = () => {
       console.log('Saving marketing onboarding data:', data);
       const dataToSave = {
         user_id: user.id,
-        current_tab: null, // Clear current_tab to mark as complete
         ...data
       };
       console.log('Data being sent to Supabase:', dataToSave);
@@ -236,84 +235,11 @@ export const useMarketingOnboarding = () => {
     }
   };
 
-  const saveProgress = async (data: MarketingOnboardingData, currentTab: string): Promise<boolean> => {
-    if (!user) {
-      toast({
-        title: "Error",
-        description: "You must be logged in to save progress.",
-        variant: "destructive"
-      });
-      return false;
-    }
-
-    try {
-      const dataToSave = {
-        user_id: user.id,
-        current_tab: currentTab,
-        ...data
-      };
-
-      const { error } = await supabase
-        .from('marketing_onboarding')
-        .upsert(dataToSave, {
-          onConflict: 'user_id'
-        });
-
-      if (error) {
-        console.error('Error saving progress:', error);
-        toast({
-          title: "Error",
-          description: "Failed to save your progress. Please try again.",
-          variant: "destructive"
-        });
-        return false;
-      }
-
-      toast({
-        title: "Progress Saved!",
-        description: "Your responses have been saved. You can continue later.",
-      });
-      return true;
-    } catch (error) {
-      console.error('Error saving progress:', error);
-      toast({
-        title: "Error",
-        description: "Failed to save your progress. Please try again.",
-        variant: "destructive"
-      });
-      return false;
-    }
-  };
-
-  const fetchSavedTab = async (): Promise<string | null> => {
-    if (!user) return null;
-
-    try {
-      const { data, error } = await supabase
-        .from('marketing_onboarding')
-        .select('current_tab')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (error) {
-        console.error('Error fetching saved tab:', error);
-        return null;
-      }
-
-      return data?.current_tab || null;
-    } catch (error) {
-      console.error('Error fetching saved tab:', error);
-      return null;
-    }
-  };
-
   return {
     isCompleted,
     isLoading,
     isSaving,
     saveOnboarding,
-    fetchOnboardingData,
-    saveProgress,
-    fetchSavedTab
+    fetchOnboardingData
   };
 };

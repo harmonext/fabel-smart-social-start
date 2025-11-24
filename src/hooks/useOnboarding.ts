@@ -24,20 +24,16 @@ export const useOnboarding = () => {
             .maybeSingle(),
           supabase
             .from('marketing_onboarding')
-            .select('id, current_tab')
+            .select('id')
             .eq('user_id', user.id)
             .maybeSingle()
         ]);
 
         const hasCompanyDetails = !!companyDetailsResult.data;
         const hasMarketingOnboarding = !!marketingOnboardingResult.data;
-        
-        // Marketing onboarding is only complete if current_tab is null (finished)
-        const marketingOnboardingComplete = hasMarketingOnboarding && 
-          marketingOnboardingResult.data?.current_tab === null;
 
         // Both company details and marketing onboarding must be completed
-        setIsCompleted(hasCompanyDetails && marketingOnboardingComplete);
+        setIsCompleted(hasCompanyDetails && hasMarketingOnboarding);
       } catch (error) {
         console.error('Error checking onboarding status:', error);
         setIsCompleted(false);
