@@ -1,15 +1,14 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Building2, FileText, CheckCircle } from "lucide-react";
 import { useCompanyDetails } from "@/hooks/useCompanyDetails";
-
 const ProfileSurvey = () => {
-  const { companyDetails, isLoading } = useCompanyDetails();
-
+  const {
+    companyDetails,
+    isLoading
+  } = useCompanyDetails();
   if (isLoading) {
-    return (
-      <div className="max-w-4xl mx-auto space-y-6">
+    return <div className="max-w-4xl mx-auto space-y-6">
         <div>
           <h1 className="text-3xl font-bold text-foreground mb-2">Company</h1>
           <p className="text-muted-foreground">Complete your company profile to generate personalized marketing personas.</p>
@@ -20,12 +19,9 @@ const ProfileSurvey = () => {
             <span className="ml-2">Loading company details...</span>
           </CardContent>
         </Card>
-      </div>
-    );
+      </div>;
   }
-
-  return (
-    <div className="max-w-4xl mx-auto space-y-6">
+  return <div className="max-w-4xl mx-auto space-y-6">
       <div>
         <h1 className="text-3xl font-bold text-foreground mb-2">Company</h1>
         <p className="text-muted-foreground">Complete your company profile to generate personalized marketing personas.</p>
@@ -55,34 +51,15 @@ const ProfileSurvey = () => {
                 {companyDetails?.industry || "Not provided"}
               </div>
             </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground">Phone Number</label>
-              <div className="p-3 border rounded-lg bg-muted">
-                {companyDetails?.phone_number || "Not provided"}
-              </div>
-            </div>
+            
           </div>
           
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground">Company Address</label>
-            <div className="p-3 border rounded-lg bg-muted min-h-20">
-              {companyDetails ? (
-                <div className="space-y-1">
-                  <div>{companyDetails.street_address1}</div>
-                  {companyDetails.street_address2 && <div>{companyDetails.street_address2}</div>}
-                  <div>{companyDetails.city}, {companyDetails.state} {companyDetails.zip}</div>
-                  <div>{companyDetails.country}</div>
-                </div>
-              ) : "Not provided"}
-            </div>
-          </div>
           
-          {companyDetails && (
-            <div className="flex items-center gap-3 p-4 bg-green-50 border border-green-200 rounded-lg">
+          
+          {companyDetails && <div className="flex items-center gap-3 p-4 bg-green-50 border border-green-200 rounded-lg">
               <CheckCircle className="h-5 w-5 text-green-600" />
               <span className="text-sm text-green-700">Company details completed!</span>
-            </div>
-          )}
+            </div>}
           
           <div className="pt-4 space-x-3">
             <Button className="bg-fabel-primary hover:bg-fabel-primary/90">
@@ -94,8 +71,6 @@ const ProfileSurvey = () => {
           </div>
         </CardContent>
       </Card>
-    </div>
-  );
+    </div>;
 };
-
 export default ProfileSurvey;
