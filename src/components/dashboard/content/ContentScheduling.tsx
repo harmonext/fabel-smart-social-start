@@ -1180,23 +1180,27 @@ const ContentScheduling = () => {
   }
 
   return (
-    <div className={`space-y-6 transition-all duration-300 ${editMode ? 'p-4 rounded-lg bg-fabel-primary/5' : ''}`}>
+    <div className={`space-y-6 transition-all duration-300 ${editMode ? 'p-6 rounded-lg bg-gray-900' : ''}`}>
       <div>
-        <h1 className="text-3xl font-bold text-foreground mb-2">Content Scheduling</h1>
+        <h1 className={`text-3xl font-bold mb-2 transition-colors duration-300 ${editMode ? 'text-white' : 'text-foreground'}`}>
+          Content Scheduling
+        </h1>
         <div className="flex items-center justify-between">
-          <p className="text-muted-foreground">Schedule and manage your social media content across all platforms.</p>
+          <p className={`transition-colors duration-300 ${editMode ? 'text-gray-300' : 'text-muted-foreground'}`}>
+            Schedule and manage your social media content across all platforms.
+          </p>
           <div className={`flex items-center gap-3 px-4 py-2 rounded-lg border-2 transition-all duration-300 ${
             editMode 
-              ? 'bg-fabel-primary/10 border-fabel-primary' 
+              ? 'bg-gray-800 border-gray-600' 
               : 'bg-muted/30 border-border'
           }`}>
             <div className="flex items-center gap-2">
               {editMode ? (
-                <Edit className="h-4 w-4 text-fabel-primary" />
+                <Edit className="h-4 w-4 text-white" />
               ) : (
                 <Move className="h-4 w-4 text-muted-foreground" />
               )}
-              <span className={`text-sm font-medium ${editMode ? 'text-fabel-primary' : 'text-muted-foreground'}`}>
+              <span className={`text-sm font-medium ${editMode ? 'text-white' : 'text-muted-foreground'}`}>
                 {editMode ? 'Edit Mode' : 'Read Mode'}
               </span>
               <Switch
@@ -1205,7 +1209,7 @@ const ContentScheduling = () => {
                 aria-label="Toggle edit mode"
               />
             </div>
-            <span className={`text-xs ${editMode ? 'text-fabel-primary' : 'text-muted-foreground'}`}>
+            <span className={`text-xs ${editMode ? 'text-gray-300' : 'text-muted-foreground'}`}>
               {editMode ? 'Click posts to edit, drag to reschedule' : 'Toggle to edit & reschedule posts'}
             </span>
           </div>
