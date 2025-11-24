@@ -149,23 +149,19 @@ const MarketingOnboardingForm = () => {
     }
   };
 
-  const goToNextStep = () => {
-    setCurrentStepIndex((prev) => Math.min(prev + 1, tabs.length - 1));
-  };
-
-  const goToPreviousStep = () => {
-    setCurrentStepIndex((prev) => Math.max(prev - 1, 0));
-  };
-
   const handleNext = () => {
     if (!completedTabs.includes(activeTabId) && validateCurrentTab()) {
       setCompletedTabs(prev => [...prev, activeTabId]);
     }
-    goToNextStep();
+    if (currentStepIndex < tabs.length - 1) {
+      setCurrentStepIndex(currentStepIndex + 1);
+    }
   };
 
   const handlePrevious = () => {
-    goToPreviousStep();
+    if (currentStepIndex > 0) {
+      setCurrentStepIndex(currentStepIndex - 1);
+    }
   };
 
   const handleSaveProgress = async () => {
