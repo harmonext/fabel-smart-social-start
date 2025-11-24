@@ -4,12 +4,14 @@ import { Badge } from "@/components/ui/badge";
 import { useCompanyDetails } from "@/hooks/useCompanyDetails";
 import { useMarketingOnboarding, MarketingOnboardingData } from "@/hooks/useMarketingOnboarding";
 import { Separator } from "@/components/ui/separator";
-
 const OnboardedData = () => {
-  const { companyDetails } = useCompanyDetails();
-  const { fetchOnboardingData } = useMarketingOnboarding();
+  const {
+    companyDetails
+  } = useCompanyDetails();
+  const {
+    fetchOnboardingData
+  } = useMarketingOnboarding();
   const [marketingData, setMarketingData] = useState<MarketingOnboardingData | null>(null);
-
   useEffect(() => {
     const loadData = async () => {
       const data = await fetchOnboardingData();
@@ -17,21 +19,16 @@ const OnboardedData = () => {
     };
     loadData();
   }, [fetchOnboardingData]);
-
   if (!companyDetails || !marketingData) {
-    return (
-      <div className="p-6">
+    return <div className="p-6">
         <Card>
           <CardContent className="flex items-center justify-center py-8">
             <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
           </CardContent>
         </Card>
-      </div>
-    );
+      </div>;
   }
-
-  return (
-    <div className="space-y-6">
+  return <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold gradient-text">Onboarded Data</h1>
         <p className="text-muted-foreground">
@@ -53,19 +50,8 @@ const OnboardedData = () => {
             <label className="text-sm font-medium text-muted-foreground">Industry</label>
             <p className="text-lg">{companyDetails.industry}</p>
           </div>
-          <div>
-            <label className="text-sm font-medium text-muted-foreground">Address</label>
-            <div className="text-lg space-y-1">
-              <p>{companyDetails.street_address1}</p>
-              {companyDetails.street_address2 && <p>{companyDetails.street_address2}</p>}
-              <p>{companyDetails.city}, {companyDetails.state} {companyDetails.zip}</p>
-              <p>{companyDetails.country}</p>
-            </div>
-          </div>
-          <div>
-            <label className="text-sm font-medium text-muted-foreground">Phone Number</label>
-            <p className="text-lg">{companyDetails.phone_number}</p>
-          </div>
+          
+          
         </CardContent>
       </Card>
 
@@ -94,27 +80,21 @@ const OnboardedData = () => {
           <div>
             <label className="text-sm font-medium text-muted-foreground">Product Types</label>
             <div className="flex flex-wrap gap-2 mt-2">
-              {marketingData.product_types.map((type, index) => (
-                <Badge key={index} variant="secondary">{type}</Badge>
-              ))}
+              {marketingData.product_types.map((type, index) => <Badge key={index} variant="secondary">{type}</Badge>)}
             </div>
           </div>
 
           <div>
             <label className="text-sm font-medium text-muted-foreground">Store Type</label>
             <div className="flex flex-wrap gap-2 mt-2">
-              {marketingData.store_type.map((type, index) => (
-                <Badge key={index} variant="secondary">{type}</Badge>
-              ))}
+              {marketingData.store_type.map((type, index) => <Badge key={index} variant="secondary">{type}</Badge>)}
             </div>
           </div>
 
           <div>
             <label className="text-sm font-medium text-muted-foreground">Goals</label>
             <div className="flex flex-wrap gap-2 mt-2">
-              {marketingData.goals.map((goal, index) => (
-                <Badge key={index} variant="outline">{goal}</Badge>
-              ))}
+              {marketingData.goals.map((goal, index) => <Badge key={index} variant="outline">{goal}</Badge>)}
             </div>
           </div>
 
@@ -126,34 +106,26 @@ const OnboardedData = () => {
             <div>
               <label className="text-sm font-medium text-muted-foreground">Gender</label>
               <div className="flex flex-wrap gap-2 mt-2">
-                {marketingData.customer_gender.map((gender, index) => (
-                  <Badge key={index} variant="secondary">{gender}</Badge>
-                ))}
+                {marketingData.customer_gender.map((gender, index) => <Badge key={index} variant="secondary">{gender}</Badge>)}
               </div>
             </div>
 
             <div>
               <label className="text-sm font-medium text-muted-foreground">Age Ranges</label>
               <div className="flex flex-wrap gap-2 mt-2">
-                {marketingData.customer_age_ranges.map((range, index) => (
-                  <Badge key={index} variant="secondary">{range}</Badge>
-                ))}
+                {marketingData.customer_age_ranges.map((range, index) => <Badge key={index} variant="secondary">{range}</Badge>)}
               </div>
             </div>
 
             <div>
               <label className="text-sm font-medium text-muted-foreground">Income Ranges</label>
               <div className="flex flex-wrap gap-2 mt-2">
-                {marketingData.customer_income_ranges.map((range, index) => (
-                  <Badge key={index} variant="secondary">{range}</Badge>
-                ))}
+                {marketingData.customer_income_ranges.map((range, index) => <Badge key={index} variant="secondary">{range}</Badge>)}
               </div>
             </div>
           </div>
         </CardContent>
       </Card>
-    </div>
-  );
+    </div>;
 };
-
 export default OnboardedData;
