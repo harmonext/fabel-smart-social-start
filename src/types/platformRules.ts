@@ -66,13 +66,13 @@ export interface RuleWarning {
   message: string;
 }
 
-export type SupportedPlatform = 'instagram' | 'tiktok' | 'linkedin' | 'twitter' | 'facebook' | 'pinterest';
+export type SupportedPlatform = 'instagram' | 'tiktok' | 'linkedin' | 'threads' | 'facebook' | 'pinterest';
 
 export const PLATFORM_ICONS: Record<SupportedPlatform, string> = {
   instagram: '📷',
   tiktok: '🎵',
   linkedin: '💼',
-  twitter: '🐦',
+  threads: '🧵',
   facebook: '👥',
   pinterest: '📌'
 };
@@ -81,7 +81,7 @@ export const PLATFORM_COLORS: Record<SupportedPlatform, string> = {
   instagram: 'hsl(330, 75%, 50%)',
   tiktok: 'hsl(349, 88%, 60%)',
   linkedin: 'hsl(201, 100%, 35%)',
-  twitter: 'hsl(203, 89%, 53%)',
+  threads: 'hsl(0, 0%, 0%)',
   facebook: 'hsl(221, 44%, 41%)',
   pinterest: 'hsl(0, 78%, 50%)'
 };

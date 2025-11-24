@@ -38,7 +38,7 @@ const platformMediaRules: Record<string, PlatformMediaRules> = {
     },
     aspectRatios: { min: 1, max: 1.91, preferred: 1.91 }
   },
-  twitter: {
+  threads: {
     acceptedFormats: {
       image: ['jpg', 'jpeg', 'png', 'gif', 'webp'],
       video: ['mp4', 'mov']
