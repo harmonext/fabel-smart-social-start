@@ -1180,23 +1180,33 @@ const ContentScheduling = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className={`space-y-6 transition-all duration-300 ${editMode ? 'p-4 rounded-lg bg-fabel-primary/5' : ''}`}>
       <div>
         <h1 className="text-3xl font-bold text-foreground mb-2">Content Scheduling</h1>
         <div className="flex items-center justify-between">
           <p className="text-muted-foreground">Schedule and manage your social media content across all platforms.</p>
-          <div className="flex items-center gap-3">
+          <div className={`flex items-center gap-3 px-4 py-2 rounded-lg border-2 transition-all duration-300 ${
+            editMode 
+              ? 'bg-fabel-primary/10 border-fabel-primary' 
+              : 'bg-muted/30 border-border'
+          }`}>
             <div className="flex items-center gap-2">
-              <Move className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">Read Mode</span>
+              {editMode ? (
+                <Edit className="h-4 w-4 text-fabel-primary" />
+              ) : (
+                <Move className="h-4 w-4 text-muted-foreground" />
+              )}
+              <span className={`text-sm font-medium ${editMode ? 'text-fabel-primary' : 'text-muted-foreground'}`}>
+                {editMode ? 'Edit Mode' : 'Read Mode'}
+              </span>
               <Switch
                 checked={editMode}
                 onCheckedChange={setEditMode}
                 aria-label="Toggle edit mode"
               />
             </div>
-            <span className="text-xs text-muted-foreground">
-              {editMode ? 'Edit, drag & drop' : 'Edit, drag & drop'}
+            <span className={`text-xs ${editMode ? 'text-fabel-primary' : 'text-muted-foreground'}`}>
+              {editMode ? 'Click posts to edit, drag to reschedule' : 'Toggle to edit & reschedule posts'}
             </span>
           </div>
         </div>
