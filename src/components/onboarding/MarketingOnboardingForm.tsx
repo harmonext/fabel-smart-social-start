@@ -158,25 +158,14 @@ const MarketingOnboardingForm = () => {
   };
 
   const handleNext = () => {
-    const currentIndex = currentStepIndex;
-    console.log("handleNext clicked", { activeTab: activeTabId, currentIndex });
-
     if (!completedTabs.includes(activeTabId) && validateCurrentTab()) {
       setCompletedTabs(prev => [...prev, activeTabId]);
     }
-
-    if (currentIndex < tabs.length - 1) {
-      goToNextStep();
-    }
+    goToNextStep();
   };
 
   const handlePrevious = () => {
-    const currentIndex = currentStepIndex;
-    console.log("handlePrevious clicked", { activeTab: activeTabId, currentIndex });
-
-    if (currentIndex > 0) {
-      goToPreviousStep();
-    }
+    goToPreviousStep();
   };
 
   const handleSaveProgress = async () => {
