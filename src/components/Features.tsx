@@ -28,7 +28,7 @@ const Features = () => {
             Meet Your Customer. Tell Your Story. Win Their Business.
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Powerful features designed specifically for small businesses to streamline their social media marketing.
+            Skip the spray-and-pray. Start marketing with purpose and results.
           </p>
         </div>
         
