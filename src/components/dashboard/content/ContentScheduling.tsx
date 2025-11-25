@@ -987,8 +987,9 @@ const Legend = ({ posts }: { posts: ScheduledContent[] }) => {
   // Define all available social platforms
   const allPlatforms = ['facebook', 'instagram', 'linkedin', 'threads', 'pinterest', 'tiktok'];
   
-  // Only show the first 3 active personas (from the personas hook)
-  const activePersonas = personas.slice(0, 3);
+  // Only show the first persona (active/unlocked) for users who haven't upgraded
+  // Additional personas (index 1 and 2) are locked behind upgrade
+  const activePersonas = personas.slice(0, 1);
   
   // Create platform status map
   const platformStatus = allPlatforms.map(platform => {
@@ -1266,7 +1267,7 @@ const ContentScheduling = () => {
                 </SelectTrigger>
                 <SelectContent className="bg-background border border-border z-50">
                   <SelectItem value="all">All Personas</SelectItem>
-                  {personas.slice(0, 3).map(persona => (
+                  {personas.slice(0, 1).map(persona => (
                     <SelectItem key={persona.name} value={persona.name}>
                       <div className="flex items-center gap-2">
                         <div className="w-4 h-4 rounded-full flex items-center justify-center text-xs font-bold bg-primary/20 border">
