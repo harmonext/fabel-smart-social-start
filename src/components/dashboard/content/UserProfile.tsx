@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { User, Mail, Phone, MapPin, Edit, Save } from "lucide-react";
+import { User, Mail, Phone, Edit, Save } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -12,7 +12,6 @@ interface UserProfileData {
   lastName: string;
   email: string;
   phone?: string;
-  location?: string;
 }
 
 const UserProfile = () => {
@@ -22,8 +21,7 @@ const UserProfile = () => {
     firstName: "",
     lastName: "",
     email: "",
-    phone: "",
-    location: ""
+    phone: ""
   });
   const [isLoading, setIsLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
@@ -39,14 +37,12 @@ const UserProfile = () => {
       const lastName = user.user_metadata?.last_name || user.user_metadata?.lastName || "";
       const email = user.email || "";
       const phone = user.user_metadata?.phone || user.phone || "";
-      const location = user.user_metadata?.location || "";
 
       setProfileData({
         firstName,
         lastName,
         email,
-        phone,
-        location
+        phone
       });
       
       setIsLoading(false);
@@ -62,8 +58,7 @@ const UserProfile = () => {
         data: {
           first_name: profileData.firstName,
           last_name: profileData.lastName,
-          phone: profileData.phone,
-          location: profileData.location
+          phone: profileData.phone
         }
       });
 
@@ -194,24 +189,6 @@ const UserProfile = () => {
             ) : (
               <div className="p-3 border rounded-lg bg-muted">
                 {profileData.phone || "Not provided"}
-              </div>
-            )}
-          </div>
-          
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground flex items-center gap-2">
-              <MapPin className="h-4 w-4" />
-              Location
-            </label>
-            {isEditing ? (
-              <Input
-                value={profileData.location}
-                onChange={(e) => handleInputChange('location', e.target.value)}
-                placeholder="Enter location"
-              />
-            ) : (
-              <div className="p-3 border rounded-lg bg-muted">
-                {profileData.location || "Not provided"}
               </div>
             )}
           </div>
