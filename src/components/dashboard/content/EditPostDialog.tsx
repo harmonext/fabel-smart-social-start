@@ -335,7 +335,7 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto translate-x-[280px]">
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto !left-auto !right-8 !translate-x-0">
         <DialogHeader>
           <DialogTitle>Edit Post</DialogTitle>
         </DialogHeader>
