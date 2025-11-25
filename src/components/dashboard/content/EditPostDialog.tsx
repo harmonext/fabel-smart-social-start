@@ -362,7 +362,7 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
                   : 'bg-muted text-muted-foreground hover:bg-fabel-neutral/50'
               }`}
             >
-              {editData.status === 'draft' ? 'Schedule it' : 'Scheduled'}
+              Scheduled
             </button>
             <button
               onClick={() => handleChange('status', 'published')}
