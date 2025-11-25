@@ -614,48 +614,36 @@ const EditableListPost = ({ post, editMode, timeString }: {
   );
 };
 
-const ListView = ({ posts, allContent, currentDate, setCurrentDate, onReschedule, editMode, startFromFirstScheduled }: {
+const ListView = ({ posts, allContent, currentDate, setCurrentDate, onReschedule, editMode, showAllCalendarDates }: {
   posts: ScheduledContent[];
   allContent: ScheduledContent[];
   currentDate: Date;
   setCurrentDate: (date: Date) => void;
   onReschedule: (postId: string, newDate: Date) => void;
   editMode: boolean;
-  startFromFirstScheduled?: boolean;
+  showAllCalendarDates?: boolean;
 }) => {
   const getDaysInMonth = (date: Date) => {
     return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
   };
 
-  // Generate days to show based on startFromFirstScheduled setting
+  // Generate days to show based on showAllCalendarDates setting
   const daysInMonth = getDaysInMonth(currentDate);
   const daysToShow = [];
   
   let startDay = 1;
   
-  // If startFromFirstScheduled is enabled, find the first scheduled date across all posts
-  if (startFromFirstScheduled && allContent.length > 0) {
-    // Get all scheduled dates from ALL content (not just filtered posts) and sort them
-    const allScheduledDates = allContent
-      .filter(post => post.scheduled_at)
-      .map(post => new Date(post.scheduled_at))
-      .sort((a, b) => a.getTime() - b.getTime());
+  // By default, start from current date unless showAllCalendarDates is enabled
+  if (!showAllCalendarDates) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
     
-    if (allScheduledDates.length > 0) {
-      const firstDate = allScheduledDates[0];
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      
-      // Use the later of today or the first scheduled date
-      const startDate = firstDate > today ? firstDate : today;
-      
-      // Set current date to the month of the start date
-      if (currentDate.getMonth() !== startDate.getMonth() || currentDate.getFullYear() !== startDate.getFullYear()) {
-        setCurrentDate(new Date(startDate.getFullYear(), startDate.getMonth(), 1));
-      }
-      // Only show days starting from the start date
-      startDay = startDate.getDate();
+    // If viewing current month, start from today
+    if (currentDate.getMonth() === today.getMonth() && currentDate.getFullYear() === today.getFullYear()) {
+      startDay = today.getDate();
     }
+    // If viewing a future month, start from day 1
+    // If viewing a past month, start from day 1
   }
   
   for (let day = startDay; day <= daysInMonth; day++) {
@@ -1070,7 +1058,7 @@ const ContentScheduling = () => {
   const [editMode, setEditMode] = useState(false);
   const [platformFilter, setPlatformFilter] = useState<string>('all');
   const [personaFilter, setPersonaFilter] = useState<string>('all');
-  const [startFromFirstScheduled, setStartFromFirstScheduled] = useState(false);
+  const [showAllCalendarDates, setShowAllCalendarDates] = useState(false);
   const { content, isLoading, getContentByStatus, deleteContent, updateContent } = useScheduledContent();
   const { connections } = useSocialConnections();
   const { personas } = usePersonas();
@@ -1315,12 +1303,12 @@ const ContentScheduling = () => {
                   </label>
                   <div className="flex items-center gap-2">
                     <Switch
-                      checked={startFromFirstScheduled}
-                      onCheckedChange={setStartFromFirstScheduled}
-                      id="start-from-first"
+                      checked={showAllCalendarDates}
+                      onCheckedChange={setShowAllCalendarDates}
+                      id="show-all-dates"
                     />
-                    <label htmlFor="start-from-first" className="text-sm text-muted-foreground whitespace-nowrap">
-                      Start from first scheduled date
+                    <label htmlFor="show-all-dates" className="text-sm text-muted-foreground whitespace-nowrap">
+                      Show all calendar dates
                     </label>
                   </div>
                 </div>
@@ -1375,7 +1363,7 @@ const ContentScheduling = () => {
               setCurrentDate={setCurrentDate}
               onReschedule={handleReschedule}
               editMode={editMode}
-              startFromFirstScheduled={startFromFirstScheduled}
+              showAllCalendarDates={showAllCalendarDates}
             />
           )}
           <DragOverlay>
@@ -1407,7 +1395,7 @@ const ContentScheduling = () => {
             setCurrentDate={setCurrentDate}
             onReschedule={handleReschedule}
             editMode={editMode}
-            startFromFirstScheduled={startFromFirstScheduled}
+            showAllCalendarDates={showAllCalendarDates}
           />
         )
       )}
