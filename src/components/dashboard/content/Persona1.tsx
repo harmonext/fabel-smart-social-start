@@ -325,7 +325,7 @@ const Persona1 = ({ persona }: Persona1Props) => {
                     </div>
                     <TooltipProvider>
                       <div className="flex items-center justify-center space-x-8">
-                         {socialMediaPlatforms.slice(0, 3).map((platform, index) => {
+                         {socialMediaPlatforms.slice(0, 1).map((platform, index) => {
                            const { icon: Icon, color, name } = getSocialMediaIcon(platform);
                            return (
                              <div key={index} className="flex flex-col items-center space-y-2">
@@ -346,8 +346,8 @@ const Persona1 = ({ persona }: Persona1Props) => {
                              </div>
                            );
                          })}
-                         {/* Fill remaining slots with empty spaces if less than 3 platforms */}
-                         {Array.from({ length: Math.max(0, 3 - socialMediaPlatforms.length) }).map((_, index) => (
+                         {/* Fill remaining slots with empty spaces if less than 1 platform */}
+                         {Array.from({ length: Math.max(0, 1 - socialMediaPlatforms.length) }).map((_, index) => (
                            <div key={`empty-${index}`} className="flex flex-col items-center space-y-2">
                              <Share2 className="w-6 h-6 text-muted-foreground opacity-30" />
                              <Checkbox disabled />
@@ -597,7 +597,7 @@ const Persona1 = ({ persona }: Persona1Props) => {
         </div>
         <TooltipProvider>
           <div className="flex items-center justify-center space-x-6">
-            {socialMediaPlatforms.slice(0, 3).map((platform, index) => {
+            {socialMediaPlatforms.slice(0, 1).map((platform, index) => {
               const { icon: Icon, color, name } = getSocialMediaIcon(platform);
               return (
                 <div key={index} className="flex flex-col items-center space-y-2">
@@ -656,6 +656,7 @@ const Persona1 = ({ persona }: Persona1Props) => {
         currentPlatforms={displayPlatforms}
         aiPlatforms={aiPlatforms}
         onSave={handleSavePlatforms}
+        maxPlatforms={1}
       />
 
       <div className="pt-4">
