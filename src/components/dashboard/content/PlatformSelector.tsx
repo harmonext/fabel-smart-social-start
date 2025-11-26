@@ -9,6 +9,7 @@ interface PlatformSelectorProps {
   currentPlatforms: string[];
   aiPlatforms: string[];
   onSave: (platforms: string[]) => void;
+  maxPlatforms?: number; // Maximum platforms allowed (default: 3)
 }
 
 const AVAILABLE_PLATFORMS = [
@@ -28,6 +29,7 @@ export const PlatformSelector: React.FC<PlatformSelectorProps> = ({
   currentPlatforms,
   aiPlatforms,
   onSave,
+  maxPlatforms = 3,
 }) => {
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
 
@@ -43,12 +45,12 @@ export const PlatformSelector: React.FC<PlatformSelectorProps> = ({
       if (prev.includes(platform)) {
         return prev.filter((p) => p !== platform);
       }
-      // If less than 3 selected, add it
-      if (prev.length < 3) {
+      // If less than max selected, add it
+      if (prev.length < maxPlatforms) {
         return [...prev, platform];
       }
-      // If 3 already selected, show toast
-      toast.error("You can only select up to 3 platforms");
+      // If max already selected, show toast
+      toast.error(`You can only select up to ${maxPlatforms} platform${maxPlatforms > 1 ? 's' : ''}`);
       return prev;
     });
   };
@@ -59,8 +61,8 @@ export const PlatformSelector: React.FC<PlatformSelectorProps> = ({
   };
 
   const handleSave = () => {
-    if (selectedPlatforms.length !== 3) {
-      toast.error("Please select exactly 3 platforms");
+    if (selectedPlatforms.length !== maxPlatforms) {
+      toast.error(`Please select exactly ${maxPlatforms} platform${maxPlatforms > 1 ? 's' : ''}`);
       return;
     }
     onSave(selectedPlatforms);
@@ -78,7 +80,7 @@ export const PlatformSelector: React.FC<PlatformSelectorProps> = ({
             Edit Social Platforms
           </DialogTitle>
           <DialogDescription>
-            Select 3 platforms for this persona. Click on a platform to add or remove it.
+            Select {maxPlatforms} platform{maxPlatforms > 1 ? 's' : ''} for this persona. Click on a platform to add or remove it.
           </DialogDescription>
         </DialogHeader>
 
@@ -86,7 +88,7 @@ export const PlatformSelector: React.FC<PlatformSelectorProps> = ({
           {/* Selected platforms display */}
           <div className="bg-muted/50 rounded-lg p-4 border">
             <p className="text-sm font-medium mb-3 text-muted-foreground">
-              Selected ({selectedPlatforms.length}/3):
+              Selected ({selectedPlatforms.length}/{maxPlatforms}):
             </p>
             <div className="flex gap-3 flex-wrap min-h-[60px]">
               {selectedPlatforms.map((platform, index) => {
@@ -166,7 +168,7 @@ export const PlatformSelector: React.FC<PlatformSelectorProps> = ({
             </Button>
             <Button
               onClick={handleSave}
-              disabled={selectedPlatforms.length !== 3}
+              disabled={selectedPlatforms.length !== maxPlatforms}
             >
               Save Changes
             </Button>
