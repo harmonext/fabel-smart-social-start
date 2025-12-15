@@ -125,6 +125,30 @@ export type Database = {
         }
         Relationships: []
       }
+      onboarding_progress: {
+        Row: {
+          answers: Json
+          current_step: number
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          answers: Json
+          current_step: number
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          answers?: Json
+          current_step?: number
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       platform_rules: {
         Row: {
           created_at: string
