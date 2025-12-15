@@ -6,7 +6,7 @@ const Features = () => {
     {
       icon: "🎯",
       title: "Identify",
-      description: "Create targeted marketing campaigns tailored to your specific customer personas for maximum engagement and conversion."
+      description: "Define your businesses customer personas for maximum engagement."
     },
     {
       icon: "✍️",
