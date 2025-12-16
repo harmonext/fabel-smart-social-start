@@ -16,7 +16,7 @@ const Features = () => {
     {
       icon: "📆",
       title: "Deploy & Optimize",
-      description: "Plan and schedule your content weeks in advance with our intelligent calendar that optimizes posting times."
+      description: "Deploy marketing campaigns across platforms automatically and optimize on findings, all in one place."
     }
   ];
 
