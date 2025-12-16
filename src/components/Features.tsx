@@ -11,7 +11,7 @@ const Features = () => {
     {
       icon: "✍️",
       title: "Create",
-      description: "Generate fresh, engaging posts that match your tone and keep your audience coming back."
+      description: "Generate engaging content automatically tailored to your brand's voice and customer personas."
     },
     {
       icon: "📆",
