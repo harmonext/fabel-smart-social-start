@@ -97,7 +97,7 @@ const Login = () => {
           <CardHeader className="space-y-1 text-center">
             <CardTitle className="text-2xl font-semibold">Welcome back</CardTitle>
             <CardDescription>
-              Sign in to your Fabel account
+              Please sign in to continue
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
