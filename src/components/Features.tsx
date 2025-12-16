@@ -10,7 +10,7 @@ const Features = () => {
     },
     {
       icon: "✍️",
-      title: "Content That Connects",
+      title: "Create",
       description: "Generate fresh, engaging posts that match your tone and keep your audience coming back."
     },
     {
