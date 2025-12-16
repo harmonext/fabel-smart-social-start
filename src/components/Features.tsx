@@ -15,7 +15,7 @@ const Features = () => {
     },
     {
       icon: "📆",
-      title: "Auto-Scheduling Calendar",
+      title: "Deploy & Optimize",
       description: "Plan and schedule your content weeks in advance with our intelligent calendar that optimizes posting times."
     }
   ];
