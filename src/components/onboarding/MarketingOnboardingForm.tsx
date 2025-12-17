@@ -263,11 +263,11 @@ const MarketingOnboardingForm = () => {
             borderColor: '#abbdc6'
           }}>
               <div className="flex gap-3">
-                <Button variant="outline" onClick={handlePrevious} disabled={getCurrentTabIndex() === 0} className="px-6 py-2 text-gray-600" style={{
+                <Button variant="outline" onClick={handlePrevious} disabled={getCurrentTabIndex() === 0} style={{
                 borderColor: '#abbdc6',
                 backgroundColor: 'transparent',
                 color: '#333'
-              }}>
+              }} className="px-6 py-2 text-gray-600 bg-fabel-primary">
                   Previous
                 </Button>
                 <Button variant="outline" style={{
