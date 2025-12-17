@@ -269,19 +269,32 @@ const MarketingOnboardingForm = () => {
 
             {/* Navigation Buttons */}
             <div className="flex justify-between mt-8 pt-6 border-t" style={{ borderColor: '#abbdc6' }}>
-              <Button
-                variant="outline"
-                onClick={handlePrevious}
-                disabled={getCurrentTabIndex() === 0}
-                className="px-6 py-2 text-gray-600"
-                style={{ 
-                  borderColor: '#abbdc6', 
-                  backgroundColor: 'transparent',
-                  color: '#333'
-                }}
-              >
-                Previous
-              </Button>
+              <div className="flex gap-3">
+                <Button
+                  variant="outline"
+                  onClick={handlePrevious}
+                  disabled={getCurrentTabIndex() === 0}
+                  className="px-6 py-2 text-gray-600"
+                  style={{ 
+                    borderColor: '#abbdc6', 
+                    backgroundColor: 'transparent',
+                    color: '#333'
+                  }}
+                >
+                  Previous
+                </Button>
+                <Button
+                  variant="outline"
+                  className="px-6 py-2 text-gray-600"
+                  style={{ 
+                    borderColor: '#abbdc6', 
+                    backgroundColor: 'transparent',
+                    color: '#333'
+                  }}
+                >
+                  Save for Later
+                </Button>
+              </div>
               
               {canGoNext && (
                 <Button
