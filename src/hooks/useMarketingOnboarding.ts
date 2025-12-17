@@ -12,6 +12,7 @@ export interface MarketingOnboardingData {
   industry: string;
   product_types: string[];
   store_type: string[];
+  company_description: string;
   
   // Tab 3: About Your Goals
   goals: string[];
@@ -110,6 +111,7 @@ export const useMarketingOnboarding = () => {
           industry: data.industry,
           product_types: parseArrayField(data.product_types),
           store_type: parseArrayField(data.store_type),
+          company_description: data.company_description || '',
           goals: parseArrayField(data.goals),
           customer_gender: parseArrayField(data.customer_gender),
           customer_age_ranges: parseArrayField(data.customer_age_ranges),

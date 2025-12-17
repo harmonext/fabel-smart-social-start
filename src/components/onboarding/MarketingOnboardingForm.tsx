@@ -40,6 +40,7 @@ const MarketingOnboardingForm = () => {
     industry: "",
     product_types: [],
     store_type: [],
+    company_description: "",
     goals: [],
     customer_gender: [],
     customer_age_ranges: [],

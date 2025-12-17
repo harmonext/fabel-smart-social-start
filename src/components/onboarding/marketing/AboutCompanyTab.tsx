@@ -21,6 +21,7 @@ const AboutCompanyTab = ({
     "Finance",
     "Education",
     "Retail",
+    "Apparel/Fashion",
     "Manufacturing",
     "Real Estate",
     "Consulting",
@@ -33,7 +34,7 @@ const AboutCompanyTab = ({
   ];
   const stageOptions = ["Idea", "Prototype", "Launched", "Scaling", "Mature"];
   const productTypeOptions = ["Physical Goods", "Services", "Digital Goods"];
-  const storeTypeOptions = ["Brick and Mortar", "E-Commerce Site", "Other", "Pop-Up Shops", "Wholesale"];
+  const storeTypeOptions = ["Brick and Mortar", "E-Commerce Site", "Pop-Up Shops", "Other"];
   const revenueOptions = ["$0-$5,000", "$5,000-$25,000", "$25,000-$50,000", "$50,000+"];
 
   const handleProductTypeToggle = (productType: string) => {
@@ -136,6 +137,17 @@ const AboutCompanyTab = ({
               })}
             </div>
           </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="company_description">Describe your company</Label>
+          <textarea
+            id="company_description"
+            className="w-full min-h-[100px] p-3 border rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+            placeholder="Tell us about your company, what you do, and what makes you unique..."
+            value={formData.company_description || ''}
+            onChange={(e) => onInputChange('company_description', e.target.value)}
+          />
         </div>
       </div>
     </div>
