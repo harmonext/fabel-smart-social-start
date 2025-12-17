@@ -14,10 +14,10 @@ interface AboutCustomerTabProps {
 const AboutCustomerTab = ({ formData, onInputChange }: AboutCustomerTabProps) => {
   const [genderInput, setGenderInput] = useState("");
   
-  const genderSuggestions = ["Female", "Male", "Non-Binary", "Other"];
+  const genderSuggestions = ["Female", "Male", "Other"];
 
   const ageRangeOptions = [
-    "0-18", "18-25", "25-34", "35-44", "45+"
+    "0-18", "18-25", "25-34", "35-44", "45-54", "55+"
   ];
 
   const incomeRangeOptions = [
