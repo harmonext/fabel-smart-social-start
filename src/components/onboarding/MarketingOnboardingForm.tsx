@@ -51,6 +51,14 @@ const MarketingOnboardingForm = () => {
   const [isLoadingData, setIsLoadingData] = useState(true);
   const [isGeneratingPersonas, setIsGeneratingPersonas] = useState(false);
 
+  // Map Tabs → Step Numbers
+  const tabToStepMap: Record<string, number> = {
+    'about-you': 0,
+    'about-company': 1,
+    'about-customer': 2,
+    'about-goals': 3
+  };
+  
   // Load draft from form_drafts table
   const loadDraft = useCallback(async (): Promise<boolean> => {
     if (!user) return false;
@@ -89,6 +97,58 @@ const MarketingOnboardingForm = () => {
 
     return false;
   }, [user]);
+
+  // Create the Save-for-Later Function
+  const saveDraft = useCallback(async (): Promise<boolean> => {
+  if (!user) return false;
+
+  const currentStep = tabToStepMap[activeTab] ?? 0;
+
+  const { error } = await supabase
+    .from('form_drafts')
+    .upsert({
+      user_id: user.id,
+      form_id: 'fabel_onboarding_v1',
+      current_step: currentStep,
+      form_data: formData,
+      status: 'draft',
+      updated_at: new Date().toISOString()
+    });
+
+  if (error) {
+    console.error('Error saving draft:', error);
+    return false;
+  }
+
+  return true;
+}, [user, activeTab, formData]);
+
+  // submit the onboarding
+  const submitOnboarding = async (): Promise<boolean> => {
+  if (!user) return false;
+
+  // 1. (Optional but recommended)
+  // Save one last time before submitting
+  await saveDraft();
+
+  // 2. Mark the draft as submitted
+  const { error } = await supabase
+    .from('form_drafts')
+    .update({
+      status: 'submitted',
+      updated_at: new Date().toISOString()
+    })
+    .eq('user_id', user.id)
+    .eq('form_id', 'fabel_onboarding_v1')
+    .eq('status', 'draft');
+
+  if (error) {
+    console.error('Error submitting onboarding:', error);
+    return false;
+  }
+
+  return true;
+};
 
   useEffect(() => {
     const loadExistingData = async () => {
@@ -205,7 +265,47 @@ const MarketingOnboardingForm = () => {
       setActiveTab(tabs[currentIndex - 1].id);
     }
   };
+
   const handleSubmit = async () => {
+  if (!validateCurrentTab()) {
+    return;
+  }
+
+  console.log('Submitting formData:', formData);
+
+  // Save onboarding data (your existing function)
+  const result = await saveOnboarding(formData);
+
+  if (result.success) {
+    // Mark the draft as submitted in form_drafts table
+    const submitted = await submitOnboarding();
+    if (!submitted) {
+      toast.error('Failed to finalize onboarding. Please try again.');
+      return; // stop further processing
+    }
+
+    if (result.shouldGeneratePersonas) {
+      setIsGeneratingPersonas(true);
+      try {
+        // Use the usePersonas hook which includes auto-saving functionality
+        await generatePersonas();
+      } catch (error) {
+        console.error('Error generating personas:', error);
+      } finally {
+        setIsGeneratingPersonas(false);
+      }
+    }
+
+    // Always navigate to personas dashboard after completion
+    navigate('/dashboard?tab=company-profile&subtab=personas', {
+      replace: true,
+    });
+  } else {
+    toast.error('Failed to save onboarding data. Please try again.');
+  }
+};
+  
+  /*const handleSubmit = async () => {
     if (!validateCurrentTab()) {
       return;
     }
@@ -228,7 +328,7 @@ const MarketingOnboardingForm = () => {
         replace: true
       });
     }
-  };
+  };*/
   const isCurrentTabValid = validateCurrentTab();
   const isLastTab = getCurrentTabIndex() === tabs.length - 1;
   const canGoNext = isCurrentTabValid && !isLastTab;
@@ -313,7 +413,14 @@ const MarketingOnboardingForm = () => {
               }} className="px-6 py-2 text-gray-600 bg-fabel-primary">
                   Previous
                 </Button>
-                <Button variant="outline" style={{
+                <Button type="button" variant="outline" 
+                  onClick={async () => {
+                    const success = await saveDraft();
+                    if (success) {
+                      toast.success('Progress saved. You can come back anytime.');
+                    }
+                }}
+                  style={{
                 borderColor: '#abbdc6',
                 backgroundColor: 'transparent',
                 color: '#333'
@@ -328,13 +435,31 @@ const MarketingOnboardingForm = () => {
             }}>
                   Next
                 </Button>}
+
+              {canSubmit && (
+  <Button
+    onClick={handleSubmit}
+    disabled={!isCurrentTabValid || isSaving || onboardingCompleted}
+    className="px-6 py-2 text-white border-0"
+    style={{
+      backgroundColor: '#E3C38A',
+      color: 'white',
+    }}
+  >
+    {onboardingCompleted
+      ? 'Already Completed'
+      : isSaving
+      ? 'Saving...'
+      : 'Complete Setup'}
+  </Button>
+)}
               
-              {canSubmit && <Button onClick={handleSubmit} disabled={!isCurrentTabValid || isSaving || onboardingCompleted} className="px-6 py-2 text-white border-0" style={{
-              backgroundColor: '#E3C38A',
-              color: 'white'
-            }}>
-                  {onboardingCompleted ? "Already Completed" : isSaving ? "Saving..." : "Complete Setup"}
-                </Button>}
+              //{canSubmit //&& <Button onClick={handleSubmit} disabled={!isCurrentTabValid || isSaving || onboardingCompleted} className="px-6 py-2 text-white border-0" style={{
+              //backgroundColor: '#E3C38A',
+              //color: 'white'
+            //}}>
+                  //{onboardingCompleted ? "Already Completed" : isSaving ? "Saving..." : "Complete Setup"}
+                //</Button>}
             </div>
           </CardContent>
         </Card>
