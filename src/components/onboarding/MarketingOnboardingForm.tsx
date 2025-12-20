@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,10 +9,12 @@ import { usePersonas } from "@/hooks/usePersonas";
 import { useOnboarding } from "@/hooks/useOnboarding";
 import { useCompanyDetails } from "@/hooks/useCompanyDetails";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import AboutYouTab from "./marketing/AboutYouTab";
 import AboutCompanyTab from "./marketing/AboutCompanyTab";
 import AboutGoalsTab from "./marketing/AboutGoalsTab";
 import AboutCustomerTab from "./marketing/AboutCustomerTab";
+
 const MarketingOnboardingForm = () => {
   const navigate = useNavigate();
   const {
@@ -48,6 +50,46 @@ const MarketingOnboardingForm = () => {
   });
   const [isLoadingData, setIsLoadingData] = useState(true);
   const [isGeneratingPersonas, setIsGeneratingPersonas] = useState(false);
+
+  // Load draft from form_drafts table
+  const loadDraft = useCallback(async (): Promise<boolean> => {
+    if (!user) return false;
+
+    const { data, error } = await supabase
+      .from('form_drafts')
+      .select('current_step, form_data')
+      .eq('form_id', 'fabel_onboarding_v1')
+      .eq('status', 'draft')
+      .eq('user_id', user.id)
+      .maybeSingle();
+
+    if (error) {
+      console.error('Error loading draft:', error);
+      return false;
+    }
+
+    if (data) {
+      // Restore the saved form step
+      const stepMap: Record<number, string> = {
+        0: 'about-you',
+        1: 'about-company',
+        2: 'about-customer',
+        3: 'about-goals'
+      };
+      const tabId = stepMap[data.current_step] || 'about-you';
+      setActiveTab(tabId);
+
+      // Restore the saved form values
+      if (data.form_data && typeof data.form_data === 'object' && !Array.isArray(data.form_data)) {
+        setFormData(data.form_data as unknown as MarketingOnboardingData);
+      }
+
+      return true;
+    }
+
+    return false;
+  }, [user]);
+
   useEffect(() => {
     const loadExistingData = async () => {
       const existingData = await fetchOnboardingData();
