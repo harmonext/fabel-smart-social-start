@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -100,28 +101,51 @@ const MarketingOnboardingForm = () => {
 
   // Create the Save-for-Later Function
   const saveDraft = useCallback(async (): Promise<boolean> => {
-  if (!user) return false;
+    if (!user) return false;
 
-  const currentStep = tabToStepMap[activeTab] ?? 0;
+    const currentStep = tabToStepMap[activeTab] ?? 0;
 
-  const { error } = await supabase
-    .from('form_drafts')
-    .upsert({
-      user_id: user.id,
-      form_id: 'fabel_onboarding_v1',
-      current_step: currentStep,
-      form_data: formData,
-      status: 'draft',
-      updated_at: new Date().toISOString()
-    });
+    // Check if draft already exists
+    const { data: existing } = await supabase
+      .from('form_drafts')
+      .select('id')
+      .eq('form_id', 'fabel_onboarding_v1')
+      .eq('user_id', user.id)
+      .maybeSingle();
 
-  if (error) {
-    console.error('Error saving draft:', error);
-    return false;
-  }
+    let error;
+    if (existing) {
+      // Update existing draft
+      const result = await supabase
+        .from('form_drafts')
+        .update({
+          current_step: currentStep,
+          form_data: formData as unknown as Record<string, never>,
+          status: 'draft',
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', existing.id);
+      error = result.error;
+    } else {
+      // Insert new draft
+      const result = await supabase
+        .from('form_drafts')
+        .insert([{
+          form_id: 'fabel_onboarding_v1',
+          current_step: currentStep,
+          form_data: formData as unknown as Record<string, never>,
+          status: 'draft'
+        }]);
+      error = result.error;
+    }
 
-  return true;
-}, [user, activeTab, formData]);
+    if (error) {
+      console.error('Error saving draft:', error);
+      return false;
+    }
+
+    return true;
+  }, [user, activeTab, formData]);
 
   // submit the onboarding
   const submitOnboarding = async (): Promise<boolean> => {
@@ -453,13 +477,6 @@ const MarketingOnboardingForm = () => {
       : 'Complete Setup'}
   </Button>
 )}
-              
-              //{canSubmit //&& <Button onClick={handleSubmit} disabled={!isCurrentTabValid || isSaving || onboardingCompleted} className="px-6 py-2 text-white border-0" style={{
-              //backgroundColor: '#E3C38A',
-              //color: 'white'
-            //}}>
-                  //{onboardingCompleted ? "Already Completed" : isSaving ? "Saving..." : "Complete Setup"}
-                //</Button>}
             </div>
           </CardContent>
         </Card>
