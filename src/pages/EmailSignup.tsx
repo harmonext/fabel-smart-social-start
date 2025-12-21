@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -10,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import { generateOtp, storeOtp, sendOtpEmail } from "@/utils/otpUtils";
 
 const EmailSignup = () => {
   const [formData, setFormData] = useState({
@@ -113,13 +113,28 @@ const EmailSignup = () => {
           }));
         }
       } else if (data.user && !data.session) {
-        // User created successfully, OTP should be sent
+        // User created successfully, now send OTP via our custom email
+        const otp = generateOtp();
+        storeOtp(formData.email, otp);
         sessionStorage.setItem('verificationEmail', formData.email);
+        sessionStorage.setItem('verificationFirstName', formData.firstName);
         
-        toast({
-          title: "Check your email!",
-          description: "We've sent you a 6-digit verification code. Please check your email and enter the code to verify your account."
-        });
+        // Send OTP via Resend
+        const otpResult = await sendOtpEmail(formData.email, otp, formData.firstName);
+        
+        if (!otpResult.success) {
+          console.error('Failed to send OTP email:', otpResult.error);
+          // Still navigate - Supabase also sends a confirmation email
+          toast({
+            title: "Check your email!",
+            description: "We've sent you a verification code. If you don't see it, check your spam folder.",
+          });
+        } else {
+          toast({
+            title: "Check your email!",
+            description: "We've sent you a 6-digit verification code."
+          });
+        }
         
         navigate('/signup/verify-email');
       } else if (data.session) {

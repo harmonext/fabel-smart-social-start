@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -9,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import { verifyStoredOtp, clearStoredOtp, generateOtp, storeOtp, sendOtpEmail } from "@/utils/otpUtils";
 
 const EmailVerification = () => {
   const [otp, setOtp] = useState("");
@@ -46,32 +46,71 @@ const EmailVerification = () => {
     try {
       console.log('Verifying OTP for email:', email, 'OTP:', otp);
       
+      // First verify against our custom stored OTP
+      const { valid, expired } = verifyStoredOtp(otp);
+      
+      if (expired) {
+        toast({
+          title: "Code expired",
+          description: "Your verification code has expired. Please request a new one.",
+          variant: "destructive"
+        });
+        setOtp("");
+        setIsVerifying(false);
+        return;
+      }
+      
+      if (!valid) {
+        // Try Supabase's built-in OTP as fallback
+        const { data, error } = await supabase.auth.verifyOtp({
+          email: email,
+          token: otp,
+          type: 'signup'
+        });
+
+        if (error) {
+          console.error('OTP verification error:', error);
+          toast({
+            title: "Verification failed",
+            description: "Invalid verification code. Please try again.",
+            variant: "destructive"
+          });
+          setOtp("");
+          setIsVerifying(false);
+          return;
+        }
+        
+        if (data.user) {
+          handleSuccessfulVerification();
+        }
+        return;
+      }
+      
+      // Custom OTP is valid - now verify with Supabase using the token from signup
+      // Since we're using custom OTP, we need to sign in with password after verification
       const { data, error } = await supabase.auth.verifyOtp({
         email: email,
         token: otp,
         type: 'signup'
       });
 
-      console.log('OTP verification response:', { data, error });
-
       if (error) {
-        console.error('OTP verification error:', error);
-        toast({
-          title: "Verification failed",
-          description: error.message || "Invalid verification code. Please try again.",
-          variant: "destructive"
-        });
-        // Clear the OTP field on error
-        setOtp("");
-      } else if (data.user) {
-        console.log('OTP verification successful, user:', data.user.email);
+        // If Supabase verification fails but our OTP is correct, 
+        // the user might need to use the magic link from email
+        console.log('Supabase OTP verification failed, but custom OTP was valid');
         toast({
           title: "Email verified!",
-          description: "Your account has been successfully verified. You're now signed in."
+          description: "Your email has been verified. Please check your inbox for a confirmation link to complete sign-in."
         });
-        // Clear the stored email
+        clearStoredOtp();
         sessionStorage.removeItem('verificationEmail');
-        navigate('/onboarding');
+        sessionStorage.removeItem('verificationFirstName');
+        navigate('/login');
+        return;
+      }
+      
+      if (data.user) {
+        handleSuccessfulVerification();
       }
     } catch (error: any) {
       console.error('Unexpected OTP verification error:', error);
@@ -86,6 +125,18 @@ const EmailVerification = () => {
     }
   };
 
+  const handleSuccessfulVerification = () => {
+    console.log('Email verification successful');
+    toast({
+      title: "Email verified!",
+      description: "Your account has been successfully verified. You're now signed in."
+    });
+    clearStoredOtp();
+    sessionStorage.removeItem('verificationEmail');
+    sessionStorage.removeItem('verificationFirstName');
+    navigate('/onboarding');
+  };
+
   const handleResendCode = async () => {
     if (!email) return;
     
@@ -94,27 +145,29 @@ const EmailVerification = () => {
     try {
       console.log('Resending OTP to email:', email);
       
-      const { error } = await supabase.auth.resend({
-        type: 'signup',
-        email: email
-      });
-
-      if (error) {
-        console.error('Resend OTP error:', error);
-        toast({
-          title: "Failed to resend code",
-          description: error.message || "Unable to resend verification code. Please try again.",
-          variant: "destructive"
+      // Generate new OTP and send via Resend
+      const newOtp = generateOtp();
+      const firstName = sessionStorage.getItem('verificationFirstName') || undefined;
+      storeOtp(email, newOtp);
+      
+      const result = await sendOtpEmail(email, newOtp, firstName);
+      
+      if (!result.success) {
+        console.error('Resend OTP error:', result.error);
+        // Fallback to Supabase resend
+        await supabase.auth.resend({
+          type: 'signup',
+          email: email
         });
-      } else {
-        console.log('OTP resent successfully');
-        toast({
-          title: "Verification code sent",
-          description: "A new 6-digit code has been sent to your email address."
-        });
-        setResendTimer(60);
-        setOtp(""); // Clear current OTP
       }
+      
+      console.log('OTP resent successfully');
+      toast({
+        title: "Verification code sent",
+        description: "A new 6-digit code has been sent to your email address."
+      });
+      setResendTimer(60);
+      setOtp("");
     } catch (error: any) {
       console.error('Unexpected resend error:', error);
       toast({
