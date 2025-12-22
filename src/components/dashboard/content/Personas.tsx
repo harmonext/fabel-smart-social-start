@@ -106,6 +106,13 @@ const Personas = () => {
       )}
 
       <div className="space-y-6">
+        {/* Persona Components */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
+          <Persona1 persona={displayPersonas[0]} />
+          <Persona2 persona={displayPersonas[1]} />
+          <Persona3 persona={displayPersonas[2]} />
+        </div>
+
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -133,13 +140,6 @@ const Personas = () => {
             </div>
           </CardContent>
         </Card>
-
-        {/* Persona Components */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
-          <Persona1 persona={displayPersonas[0]} />
-          <Persona2 persona={displayPersonas[1]} />
-          <Persona3 persona={displayPersonas[2]} />
-        </div>
       </div>
     </div>
   );
