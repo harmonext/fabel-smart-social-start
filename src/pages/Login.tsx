@@ -23,21 +23,8 @@ const Login = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const checkForDraftAndRedirect = async (userId: string) => {
-    // Check if user has a draft form to resume
-    const { data: draft } = await supabase
-      .from("form_drafts")
-      .select("id")
-      .eq("user_id", userId)
-      .eq("form_id", "fabel_onboarding_v1")
-      .eq("status", "draft")
-      .maybeSingle();
-
-    if (draft) {
-      navigate('/marketing-onboarding');
-    } else {
-      navigate('/dashboard');
-    }
+  const redirectToDashboard = () => {
+    navigate('/dashboard');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -61,7 +48,7 @@ const Login = () => {
           title: "Welcome back!",
           description: "You have successfully signed in."
         });
-        await checkForDraftAndRedirect(data.user.id);
+        redirectToDashboard();
       }
     } catch (error) {
       toast({
