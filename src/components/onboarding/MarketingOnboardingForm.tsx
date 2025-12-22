@@ -168,6 +168,16 @@ const MarketingOnboardingForm = () => {
 
   useEffect(() => {
     const loadExistingData = async () => {
+      // First, try to load from draft (saved for later)
+      const draftLoaded = await loadDraft();
+      
+      if (draftLoaded) {
+        // Draft was loaded successfully, just finish loading
+        setIsLoadingData(false);
+        return;
+      }
+
+      // No draft, check for existing completed onboarding data
       const existingData = await fetchOnboardingData();
       if (existingData) {
         setFormData(existingData);
@@ -220,7 +230,7 @@ const MarketingOnboardingForm = () => {
     if (user) {
       loadExistingData();
     }
-  }, [fetchOnboardingData, user, companyDetails]);
+  }, [fetchOnboardingData, loadDraft, user, companyDetails]);
   const handleInputChange = (field: keyof MarketingOnboardingData, value: string | string[]) => {
     setFormData((prev) => ({
       ...prev,
