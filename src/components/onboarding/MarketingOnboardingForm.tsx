@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -43,6 +43,7 @@ const MarketingOnboardingForm = () => {
   });
   const [isLoadingData, setIsLoadingData] = useState(true);
   const [isGeneratingPersonas, setIsGeneratingPersonas] = useState(false);
+  const hasInitialLoadRef = useRef(false);
 
   // Map Tabs → Step Numbers
   const tabToStepMap: Record<string, number> = {
@@ -168,6 +169,10 @@ const MarketingOnboardingForm = () => {
 
   useEffect(() => {
     const loadExistingData = async () => {
+      // Prevent re-running the initial load
+      if (hasInitialLoadRef.current) return;
+      hasInitialLoadRef.current = true;
+
       // First, try to load from draft (saved for later)
       const draftLoaded = await loadDraft();
       
