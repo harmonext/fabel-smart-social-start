@@ -130,12 +130,9 @@ const Personas = () => {
               </Button>
               {isUsingAIPersonas && <Button 
                   variant="outline" 
-                  onClick={handleSavePersonas} 
-                  disabled={isSaving || !hasGenerated || hasSaved} 
                   className="flex items-center gap-2"
                 >
-                  <Save className="h-4 w-4" />
-                  {isSaving ? "Saving..." : hasSaved ? "Saved" : "Save Personas"}
+                  Go back to survey ←
                 </Button>}
             </div>
           </CardContent>
