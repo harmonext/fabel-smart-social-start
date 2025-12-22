@@ -115,7 +115,7 @@ serve(async (req) => {
       'linkedin': 'linkedin',
       'tiktok': 'tiktok',
       'pinterest': 'pinterest',
-      'youtube': 'instagram', // Map youtube to instagram as fallback since youtube isn't supported
+      'threads': 'threads',
     };
     
     const validPlatforms = ['instagram', 'tiktok', 'linkedin', 'twitter', 'facebook', 'pinterest'];

@@ -18,9 +18,7 @@ const AVAILABLE_PLATFORMS = [
   { name: "Facebook", value: "facebook", icon: "fab fa-facebook", color: "text-[#1877F2]" },
   { name: "Instagram", value: "instagram", icon: "fab fa-instagram", color: "text-[#E4405F]" },
   { name: "TikTok", value: "tiktok", icon: "fab fa-tiktok", color: "text-[#000000]" },
-  { name: "YouTube", value: "youtube", icon: "fab fa-youtube", color: "text-[#FF0000]" },
   { name: "Pinterest", value: "pinterest", icon: "fab fa-pinterest", color: "text-[#BD081C]" },
-  { name: "WhatsApp", value: "whatsapp", icon: "fab fa-whatsapp", color: "text-[#25D366]" },
 ];
 
 export const PlatformSelector: React.FC<PlatformSelectorProps> = ({

@@ -58,13 +58,6 @@ const platformMediaRules: Record<string, PlatformMediaRules> = {
       video: ['mp4', 'mov']
     },
     aspectRatios: { min: 0.5, max: 0.67, preferred: 0.67 } // 2:3 vertical
-  },
-  youtube: {
-    acceptedFormats: {
-      image: ['jpg', 'jpeg', 'png'],
-      video: ['mp4', 'mov', 'avi', 'mkv']
-    },
-    aspectRatios: { min: 1.78, max: 1.78, preferred: 1.78 } // 16:9
   }
 };
 
