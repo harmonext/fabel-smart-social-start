@@ -46,14 +46,10 @@ const Persona2 = ({ persona }: Persona2Props) => {
         return { icon: () => <SocialIcon className="fab fa-linkedin text-[#0077B5]" />, color: 'text-[#0077B5]', name: 'LinkedIn' };
       case 'threads':
         return { icon: () => <SocialIcon className="fab fa-threads text-brand-dark" />, color: 'text-brand-dark', name: 'Threads' };
-      case 'youtube':
-        return { icon: () => <SocialIcon className="fab fa-youtube text-[#FF0000]" />, color: 'text-[#FF0000]', name: 'YouTube' };
       case 'facebook':
         return { icon: () => <SocialIcon className="fab fa-facebook text-[#1877F2]" />, color: 'text-[#1877F2]', name: 'Facebook' };
       case 'instagram':
         return { icon: () => <SocialIcon className="fab fa-instagram text-[#E4405F]" />, color: 'text-[#E4405F]', name: 'Instagram' };
-      case 'whatsapp':
-        return { icon: () => <SocialIcon className="fab fa-whatsapp text-[#25D366]" />, color: 'text-[#25D366]', name: 'WhatsApp' };
       case 'tiktok':
         return { icon: () => <SocialIcon className="fab fa-tiktok text-brand-dark" />, color: 'text-brand-dark', name: 'TikTok' };
       case 'pinterest':
@@ -104,12 +100,6 @@ const Persona2 = ({ persona }: Persona2Props) => {
       color: 'text-brand-dark',
       content: `🚀 Ready to level up your career game? Our mentorship programs connect you with top executives who've been where you want to go. Apply now! #CareerGoals #Mentorship #Success`
     },
-    youtube: {
-      name: 'YouTube',
-      icon: () => <i className="fab fa-youtube" />,
-      color: 'text-[#FF0000]',
-      content: `Watch how our alumni went from entry-level to C-suite in just 5 years! Get the insider strategies that transformed their careers. Subscribe for more success stories! #CareerTransformation #ExecutiveCoaching`
-    }
   };
   const handlePlatformToggle = (platform: string) => {
     setSelectedPlatforms(prev => prev.includes(platform) ? prev.filter(p => p !== platform) : [...prev, platform]);
