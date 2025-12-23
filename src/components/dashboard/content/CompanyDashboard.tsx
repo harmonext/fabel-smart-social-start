@@ -15,7 +15,6 @@ import {
   Sparkles,
   ArrowRight,
   Instagram,
-  Youtube,
   Linkedin,
   Target
 } from "lucide-react";
@@ -40,14 +39,6 @@ const socialPlatforms = [
     growth: 8.3,
     data: [26000, 26500, 27200, 27800, 28200, 28500],
     color: "#0A66C2"
-  },
-  {
-    name: "YouTube",
-    icon: Youtube,
-    followers: 15800,
-    growth: -2.1,
-    data: [16500, 16200, 16000, 15900, 15850, 15800],
-    color: "#FF0000"
   },
   {
     name: "TikTok",
