@@ -104,7 +104,7 @@ const EmailSignup = () => {
         } else if (error.message.toLowerCase().includes('weak') || error.message.toLowerCase().includes('password should contain')) {
           setValidationErrors(prev => ({
             ...prev,
-            general: "Password must include: • 1 lowercase letter • 1 uppercase letter • 1 number • 1 special character (!@#$%^&*_<>{}[] etc.) Your password is too weak. Please choose a stronger one."
+            general: "Password must include:\n• 1 lowercase letter\n• 1 uppercase letter\n• 1 number\n• 1 special character (!@#$%^&*_<>{}[] etc.)\n\nYour password is too weak. Please choose a stronger one."
           }));
         } else {
           setValidationErrors(prev => ({
@@ -319,7 +319,7 @@ const EmailSignup = () => {
             {validationErrors.general && (
               <div className="flex items-start gap-2 p-3 border border-orange-200 bg-orange-50 rounded-md">
                 <AlertTriangle className="h-4 w-4 text-orange-500 mt-0.5 flex-shrink-0" />
-                <p className="text-sm text-orange-700">{validationErrors.general}</p>
+                <p className="text-sm text-orange-700 whitespace-pre-line">{validationErrors.general}</p>
               </div>
             )}
 
