@@ -4,13 +4,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Check, X, Clock, Upload, Image, Video, FileText, Trash2 } from 'lucide-react';
+import { Check, X, Clock, Upload, Image, Video, FileText, Trash2, ShieldCheck } from 'lucide-react';
 import { ScheduledContent, useScheduledContent } from '@/hooks/useScheduledContent';
 import { usePlatformRules } from '@/hooks/usePlatformRules';
 import { useSignedUrls } from '@/hooks/useSignedUrls';
 import { validateContent } from '@/utils/contentValidation';
 import { validateMediaFile } from '@/utils/mediaValidation';
 import { ContentValidationProgress } from './ContentValidationProgress';
+import { ContentValidationDialog } from './ContentValidationDialog';
 import { RuleValidationResult } from '@/types/platformRules';
 import { useToast } from '@/hooks/use-toast';
 
@@ -111,6 +112,7 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
   const [validation, setValidation] = useState<RuleValidationResult | null>(null);
   const [isValidating, setIsValidating] = useState(false);
   const [signedMediaUrl, setSignedMediaUrl] = useState<string>('');
+  const [showValidationDialog, setShowValidationDialog] = useState(false);
 
   useEffect(() => {
     if (post && open) {
@@ -494,13 +496,25 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
           
           <div className="space-y-2">
             <label className="text-xs font-medium">Scheduled Date & Time</label>
-            <Input
-              type="datetime-local"
-              value={formatForDatetimeLocal(editData.scheduled_at)}
-              onChange={(e) => handleChange('scheduled_at', e.target.value ? new Date(e.target.value).toISOString() : '')}
-              min={getMinDatetime()}
-              className="text-xs h-8"
-            />
+            <div className="flex gap-2">
+              <Input
+                type="datetime-local"
+                value={formatForDatetimeLocal(editData.scheduled_at)}
+                onChange={(e) => handleChange('scheduled_at', e.target.value ? new Date(e.target.value).toISOString() : '')}
+                min={getMinDatetime()}
+                className="text-xs h-8 flex-1"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setShowValidationDialog(true)}
+                className="h-8 px-3 text-xs whitespace-nowrap"
+              >
+                <ShieldCheck className="h-3.5 w-3.5 mr-1.5" />
+                Validate Content
+              </Button>
+            </div>
           </div>
           
           
@@ -562,6 +576,22 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
             </Button>
           </div>
         </div>
+
+        {/* Content Validation Dialog */}
+        <ContentValidationDialog
+          open={showValidationDialog}
+          onOpenChange={setShowValidationDialog}
+          platform={post.platform}
+          content={editData.content}
+          title={editData.title}
+          mediaUrl={editData.media_url}
+          onAcceptSchedule={() => {
+            // Update status to scheduled and save
+            handleChange('status', 'scheduled');
+            onSave(post.id, { ...editData, status: 'scheduled' });
+            onOpenChange(false);
+          }}
+        />
       </DialogContent>
     </Dialog>
   );
