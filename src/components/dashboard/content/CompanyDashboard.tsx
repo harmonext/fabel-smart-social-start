@@ -16,11 +16,15 @@ import {
   ArrowRight,
   Instagram,
   Linkedin,
-  Target
+  Target,
+  FileText,
+  Clock,
+  CheckCircle
 } from "lucide-react";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import { useCompanyDetails } from "@/hooks/useCompanyDetails";
 import { useNavigate } from "react-router-dom";
+import { useScheduledContent } from "@/hooks/useScheduledContent";
 
 // Mock data
 const socialPlatforms = [
@@ -78,6 +82,12 @@ const CompanyDashboard = () => {
   const [selectedMetric, setSelectedMetric] = useState("followers");
   const { companyDetails } = useCompanyDetails();
   const navigate = useNavigate();
+  const { getContentByStatus } = useScheduledContent();
+
+  // Get post counts by status
+  const scheduledPosts = getContentByStatus('scheduled');
+  const draftPosts = getContentByStatus('draft');
+  const publishedPosts = getContentByStatus('published');
 
   const handleViewPersonas = () => {
     navigate('/dashboard?tab=company-profile&subtab=personas');
@@ -113,6 +123,66 @@ const CompanyDashboard = () => {
             <SelectItem value="year">This Year</SelectItem>
           </SelectContent>
         </Select>
+      </div>
+
+      {/* Content Status Overview */}
+      <div>
+        <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
+          <FileText className="h-6 w-6 text-fabel-primary" />
+          Content Overview
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <Card className="hover:shadow-lg transition-shadow duration-300">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <Clock className="h-8 w-8 text-amber-500" />
+                <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
+                  Scheduled
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-foreground">
+                {scheduledPosts.length}
+              </div>
+              <p className="text-sm text-muted-foreground">posts scheduled</p>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow duration-300">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <FileText className="h-8 w-8 text-slate-500" />
+                <Badge variant="outline" className="bg-slate-50 text-slate-700 border-slate-200">
+                  Draft
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-foreground">
+                {draftPosts.length}
+              </div>
+              <p className="text-sm text-muted-foreground">drafts in progress</p>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow duration-300">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CheckCircle className="h-8 w-8 text-green-500" />
+                <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                  Published
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-foreground">
+                {publishedPosts.length}
+              </div>
+              <p className="text-sm text-muted-foreground">posts published</p>
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
       {/* Social Media Overview Cards */}
