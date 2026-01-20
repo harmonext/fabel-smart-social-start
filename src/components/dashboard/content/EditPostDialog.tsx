@@ -351,17 +351,35 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
         {/* Status Badge - Display only, non-interactive */}
         <div className="flex items-center gap-3 pb-4 border-b">
           <span className="text-sm font-medium text-muted-foreground">Status:</span>
-          <span
-            className={`px-3 py-1.5 rounded-full text-xs font-medium cursor-default ${
-              editData.status === 'draft'
-                ? 'bg-fabel-primary text-foreground'
-                : editData.status === 'scheduled'
-                ? 'bg-fabel-neutral text-foreground'
-                : 'bg-fabel-secondary text-foreground'
-            }`}
-          >
-            {editData.status === 'draft' ? 'Draft' : editData.status === 'scheduled' ? 'Scheduled' : 'Published'}
-          </span>
+          <div className="flex gap-2">
+            <span
+              className={`px-3 py-1.5 rounded-full text-xs font-medium cursor-default ${
+                editData.status === 'draft'
+                  ? 'bg-fabel-primary text-foreground ring-2 ring-fabel-primary ring-offset-2'
+                  : 'bg-muted text-muted-foreground'
+              }`}
+            >
+              Draft
+            </span>
+            <span
+              className={`px-3 py-1.5 rounded-full text-xs font-medium cursor-default ${
+                editData.status === 'scheduled'
+                  ? 'bg-fabel-neutral text-foreground ring-2 ring-fabel-neutral ring-offset-2'
+                  : 'bg-muted text-muted-foreground'
+              }`}
+            >
+              Scheduled
+            </span>
+            <span
+              className={`px-3 py-1.5 rounded-full text-xs font-medium cursor-default ${
+                editData.status === 'published'
+                  ? 'bg-fabel-secondary text-foreground ring-2 ring-fabel-secondary ring-offset-2'
+                  : 'bg-muted text-muted-foreground'
+              }`}
+            >
+              Published
+            </span>
+          </div>
         </div>
         
         {/* Validation Progress - Show when validating or when there's a validation result */}
@@ -543,6 +561,14 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
           )}
           
           <div className="flex gap-2 pt-4 border-t">
+            <Button
+              variant="outline"
+              onClick={handleCancel}
+              className="flex-1"
+            >
+              <X className="h-4 w-4 mr-2" />
+              Cancel
+            </Button>
             <div className="flex flex-1">
               <Button
                 onClick={handleSave}
@@ -561,7 +587,7 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
                     <ChevronDown className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
+                <DropdownMenuContent align="end" className="bg-popover z-50">
                   <DropdownMenuItem
                     onClick={handleSave}
                     disabled={!hasChanges}
@@ -584,14 +610,6 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
-            <Button
-              variant="outline"
-              onClick={handleCancel}
-              className="flex-1"
-            >
-              <X className="h-4 w-4 mr-2" />
-              Cancel
-            </Button>
           </div>
         </div>
 
