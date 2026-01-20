@@ -69,13 +69,19 @@ const DraggablePost = React.forwardRef<HTMLDivElement, {
           {...attributes}
           className={`${isDragging ? 'cursor-grabbing' : ''} touch-none relative group`}
         >
-          {/* Drag handle covering the left 75% of the post */}
+          {/* Drag handle - visible grip icon on the left side */}
           <div 
             {...listeners} 
-            className="absolute inset-y-0 left-0 right-1/4 cursor-grab hover:bg-white/10 transition-colors duration-200"
+            className="absolute inset-y-0 left-0 w-6 cursor-grab hover:bg-white/20 transition-colors duration-200 flex items-center justify-center z-10"
             title="Drag to reschedule"
-          />
-          {children}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Move className="h-3 w-3 opacity-40 group-hover:opacity-70" />
+          </div>
+          {/* Clickable area for editing - the rest of the post */}
+          <div className="pl-5">
+            {children}
+          </div>
         </div>
       );
     } else {
@@ -406,7 +412,8 @@ const EditablePost = ({ post, editMode, shortTitle, timeString }: {
         <Tooltip>
           <TooltipTrigger asChild>
             <div
-              className={`text-xs p-1 rounded flex items-center gap-1 min-h-[20px] ${getPersonaColor(post.persona_name || '')} hover:shadow-sm transition-all duration-200 border ${editMode ? 'cursor-pointer hover:border-primary' : ''}`}
+              className={`text-xs p-1 rounded flex items-center gap-1 min-h-[20px] ${getPersonaColor(post.persona_name || '')} hover:shadow-sm transition-all duration-200 border ${editMode ? 'cursor-pointer hover:border-primary hover:ring-1 hover:ring-primary/50' : ''}`}
+              onClick={editMode ? handleEditClick : undefined}
             >
               <div className="flex items-center gap-1 flex-shrink-0">
                 {getSocialIcon(post.platform, 'sm')}
@@ -427,7 +434,7 @@ const EditablePost = ({ post, editMode, shortTitle, timeString }: {
               )}
               {editMode && (
                 <Edit 
-                  className="h-5 w-5 ml-1 opacity-70 hover:opacity-100 cursor-pointer z-10" 
+                  className="h-4 w-4 ml-1 opacity-70 hover:opacity-100 cursor-pointer z-10 shrink-0" 
                   onClick={handleEditClick}
                   onPointerDown={(e) => e.stopPropagation()}
                   onMouseDown={(e) => e.stopPropagation()}
