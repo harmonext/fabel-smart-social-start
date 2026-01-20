@@ -578,16 +578,17 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
                 <Check className="h-4 w-4 mr-2" />
                 {isValidating ? 'Validating...' : 'Save Changes'}
               </Button>
-              <DropdownMenu>
+              <DropdownMenu modal={false}>
                 <DropdownMenuTrigger asChild>
                   <Button
+                    type="button"
                     disabled={isValidating || (validation ? !validation.isValid : false)}
                     className="rounded-l-none border-l border-primary-foreground/20 px-2"
                   >
                     <ChevronDown className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="bg-popover z-50">
+                <DropdownMenuContent align="end" className="bg-popover z-[100]" sideOffset={5}>
                   <DropdownMenuItem
                     onClick={handleSave}
                     disabled={!hasChanges}
