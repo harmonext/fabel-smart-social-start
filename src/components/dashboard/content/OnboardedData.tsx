@@ -1,17 +1,49 @@
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useNavigate } from "react-router-dom";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useCompanyDetails } from "@/hooks/useCompanyDetails";
 import { useMarketingOnboarding, MarketingOnboardingData } from "@/hooks/useMarketingOnboarding";
 import { Separator } from "@/components/ui/separator";
+import { Pencil, Check, X, ArrowRight } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+
+const industryOptions = [
+  "Technology",
+  "Healthcare",
+  "Finance",
+  "Education",
+  "Retail",
+  "Manufacturing",
+  "Real Estate",
+  "Consulting",
+  "Marketing & Advertising",
+  "Food & Beverage",
+  "Transportation",
+  "Entertainment",
+  "Non-profit",
+  "Other"
+];
+
 const OnboardedData = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const {
-    companyDetails
+    companyDetails,
+    saveCompanyDetails,
+    isSaving
   } = useCompanyDetails();
   const {
     fetchOnboardingData
   } = useMarketingOnboarding();
   const [marketingData, setMarketingData] = useState<MarketingOnboardingData | null>(null);
+  const [isEditingCompany, setIsEditingCompany] = useState(false);
+  const [editedName, setEditedName] = useState("");
+  const [editedIndustry, setEditedIndustry] = useState("");
+
   useEffect(() => {
     const loadData = async () => {
       const data = await fetchOnboardingData();
@@ -19,6 +51,58 @@ const OnboardedData = () => {
     };
     loadData();
   }, [fetchOnboardingData]);
+
+  useEffect(() => {
+    if (companyDetails) {
+      setEditedName(companyDetails.name || "");
+      setEditedIndustry(companyDetails.industry || "");
+    }
+  }, [companyDetails]);
+
+  const handleEditCompany = () => {
+    setIsEditingCompany(true);
+  };
+
+  const handleCancelEdit = () => {
+    setEditedName(companyDetails?.name || "");
+    setEditedIndustry(companyDetails?.industry || "");
+    setIsEditingCompany(false);
+  };
+
+  const handleSaveCompany = async () => {
+    if (!editedName.trim() || !editedIndustry.trim()) {
+      toast({
+        title: "Validation Error",
+        description: "Company name and industry are required.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const success = await saveCompanyDetails({
+      name: editedName,
+      industry: editedIndustry,
+      street_address1: companyDetails?.street_address1 || "",
+      city: companyDetails?.city || "",
+      state: companyDetails?.state || "",
+      country: companyDetails?.country || "",
+      zip: companyDetails?.zip || "",
+      phone_number: companyDetails?.phone_number || ""
+    });
+
+    if (success) {
+      setIsEditingCompany(false);
+      toast({
+        title: "Success",
+        description: "Company details updated successfully."
+      });
+    }
+  };
+
+  const handleEditOnboarding = () => {
+    navigate("/marketing-onboarding");
+  };
+
   if (!companyDetails || !marketingData) {
     return <div className="p-6">
         <Card>
@@ -28,6 +112,7 @@ const OnboardedData = () => {
         </Card>
       </div>;
   }
+
   return <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold gradient-text">Onboarded Data</h1>
@@ -38,27 +123,71 @@ const OnboardedData = () => {
 
       {/* Company Details */}
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Company Information</CardTitle>
+          {!isEditingCompany ? (
+            <Button variant="outline" size="sm" onClick={handleEditCompany}>
+              <Pencil className="h-4 w-4 mr-2" />
+              Edit
+            </Button>
+          ) : (
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" onClick={handleCancelEdit} disabled={isSaving}>
+                <X className="h-4 w-4 mr-2" />
+                Cancel
+              </Button>
+              <Button size="sm" onClick={handleSaveCompany} disabled={isSaving}>
+                <Check className="h-4 w-4 mr-2" />
+                {isSaving ? "Saving..." : "Save"}
+              </Button>
+            </div>
+          )}
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
             <label className="text-sm font-medium text-muted-foreground">Company Name</label>
-            <p className="text-lg">{companyDetails.name}</p>
+            {isEditingCompany ? (
+              <Input
+                value={editedName}
+                onChange={(e) => setEditedName(e.target.value)}
+                placeholder="Enter company name"
+                className="mt-1"
+              />
+            ) : (
+              <p className="text-lg">{companyDetails.name}</p>
+            )}
           </div>
           <div>
             <label className="text-sm font-medium text-muted-foreground">Industry</label>
-            <p className="text-lg">{companyDetails.industry}</p>
+            {isEditingCompany ? (
+              <Select value={editedIndustry} onValueChange={setEditedIndustry}>
+                <SelectTrigger className="mt-1">
+                  <SelectValue placeholder="Select industry" />
+                </SelectTrigger>
+                <SelectContent>
+                  {industryOptions.map((industry) => (
+                    <SelectItem key={industry} value={industry}>
+                      {industry}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            ) : (
+              <p className="text-lg">{companyDetails.industry}</p>
+            )}
           </div>
-          
-          
         </CardContent>
       </Card>
 
       {/* Marketing Onboarding Data */}
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Marketing Profile</CardTitle>
+          <Button variant="outline" size="sm" onClick={handleEditOnboarding}>
+            <Pencil className="h-4 w-4 mr-2" />
+            Edit Survey
+            <ArrowRight className="h-4 w-4 ml-2" />
+          </Button>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
