@@ -27,7 +27,7 @@ const cleanJsonResponse = (content: string): string => {
 };
 
 // Function to normalize persona data to expected format
-const normalizePersona = (persona: any) => {
+const normalizePersona = (persona: any, marketingData?: any) => {
   const normalized = { ...persona };
   
   // Handle demographics - convert object to string if needed
@@ -67,16 +67,33 @@ const normalizePersona = (persona: any) => {
   }
   
   // Map OpenAI response fields to database schema
-  // age_ranges, top_competitors, and genders are now strings in the database
-  if (persona.demographics && !normalized.age_ranges) {
-    // Extract age range from demographics string
-    const ageMatch = persona.demographics.match(/[Aa]ges?\s+(\d+[-–]\d+)/);
-    normalized.age_ranges = ageMatch ? ageMatch[1] : '';
+  // Use AI-generated values first, then fall back to marketing onboarding data
+  
+  // Handle age_ranges - use AI response or fall back to marketing data
+  if (!normalized.age_ranges) {
+    if (persona.age_ranges) {
+      normalized.age_ranges = persona.age_ranges;
+    } else if (persona.demographics) {
+      // Extract age range from demographics string
+      const ageMatch = persona.demographics.match(/[Aa]ges?\s+(\d+[-–]\d+)/);
+      normalized.age_ranges = ageMatch ? ageMatch[1] : '';
+    }
+    // Fall back to marketing onboarding data if still empty
+    if (!normalized.age_ranges && marketingData?.customer_age_ranges?.length > 0) {
+      normalized.age_ranges = marketingData.customer_age_ranges.join(', ');
+    }
   }
   
-  if (persona.demographics && !normalized.genders) {
-    // Extract gender info from demographics or default to 'All genders'
-    normalized.genders = 'All genders';
+  // Handle genders - use AI response or fall back to marketing data
+  if (!normalized.genders) {
+    if (persona.genders) {
+      normalized.genders = persona.genders;
+    } else if (marketingData?.customer_gender?.length > 0) {
+      // Use actual customer gender from marketing onboarding
+      normalized.genders = marketingData.customer_gender.join(', ');
+    } else {
+      normalized.genders = 'All genders';
+    }
   }
   
   if (!normalized.top_competitors) {
@@ -103,7 +120,11 @@ const normalizePersona = (persona: any) => {
 };
 
 // Fallback personas when OpenAI is unavailable
-const getFallbackPersonas = (hasCompanyData: boolean, companyDetails?: any, onboardingData?: any) => {
+const getFallbackPersonas = (hasCompanyData: boolean, companyDetails?: any, onboardingData?: any, marketingData?: any) => {
+  // Get gender from marketing data
+  const genders = marketingData?.customer_gender?.join(', ') || 'All genders';
+  const ageRanges = marketingData?.customer_age_ranges?.join(', ') || '25-54';
+  
   if (hasCompanyData && (companyDetails || onboardingData)) {
     // Generate more specific personas based on available company data
     const industry = companyDetails?.company_industry || 'business';
@@ -325,11 +346,15 @@ serve(async (req) => {
 - name: A descriptive persona name
 - description: A brief description of who they are
 - demographics: A single string with age range, education, location, occupation details (e.g., "Ages 30-45, college-educated, urban/suburban, professionals")
+- age_ranges: A single string with the target age range (e.g., "25-34" or "35-44, 45-54")
+- genders: A single string with the target gender(s) based on the Customer Gender provided above (e.g., "Female" or "Male, Female")
 - painPoints: A single string describing their main challenges and pain points
 - goals: A single string describing what they want to achieve
 - preferredChannels: A single string listing which social media platforms they use most
 - buyingMotivation: A single string describing what motivates them to make purchasing decisions
 - contentPreferences: A single string describing what type of content resonates with them
+
+IMPORTANT: The genders and age_ranges fields should reflect the Customer Gender and Customer Age Ranges data provided in the Marketing Details above. Use those values directly.
 
 Return the response as a JSON array with exactly 3 personas. Make sure the JSON is valid and properly formatted. Do not include any markdown formatting or code blocks in your response. Keep all field values as strings, not arrays or objects.`;
         }
@@ -406,8 +431,8 @@ Return the response as a JSON array with exactly 3 personas. Make sure the JSON 
                   personasToUse.push(personasToUse[0]); // Duplicate first persona if we don't have enough
                 }
                 
-                // Normalize personas to ensure consistent string format
-                const personas = personasToUse.map(normalizePersona);
+                // Normalize personas to ensure consistent string format, passing marketing data for fallbacks
+                const personas = personasToUse.map(p => normalizePersona(p, marketingOnboardingData));
                 console.log('Successfully generated and normalized personas with OpenAI');
                 console.log('Final normalized personas:', JSON.stringify(personas, null, 2));
                 return new Response(JSON.stringify({ personas }), {
