@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Share2, Sparkles, ChevronRight, X, Edit2 } from "lucide-react";
+import { Share2, Sparkles, ChevronRight, Edit2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -8,27 +8,27 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { PlatformSelector } from "./PlatformSelector";
 import PricingModal from "@/components/PricingModal";
-
-
 interface PlatformData {
   name: string;
   icon: React.ComponentType<any>;
   color: string;
   content: string;
 }
-
 interface GeneratedContent {
   platform: string;
   text: string;
 }
-
 interface Persona1Props {
   persona?: Persona | any; // Allow fallback default personas
 }
-
-const Persona1 = ({ persona }: Persona1Props) => {
+const Persona1 = ({
+  persona
+}: Persona1Props) => {
   console.log('Persona1 received persona data:', persona);
-  const { savePersonas, updatePersonaPlatforms } = usePersonas();
+  const {
+    savePersonas,
+    updatePersonaPlatforms
+  } = usePersonas();
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
   const [generatedContent, setGeneratedContent] = useState<GeneratedContent[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -40,46 +40,64 @@ const Persona1 = ({ persona }: Persona1Props) => {
   const [showPricingModal, setShowPricingModal] = useState(false);
   // Local state for checkbox states since this is mock data
   const [platformStates, setPlatformStates] = useState<boolean[]>([false, false, false]);
-
   const getSocialMediaIcon = (platform: string) => {
     const platformName = platform?.toLowerCase();
-    
-    const SocialIcon = ({ className }: { className: string }) => (
-      <i className={`${className}`} />
-    );
-
+    const SocialIcon = ({
+      className
+    }: {
+      className: string;
+    }) => <i className={`${className}`} />;
     switch (platformName) {
       case 'linkedin':
-        return { icon: () => <SocialIcon className="fab fa-linkedin text-[#0077B5]" />, color: 'text-[#0077B5]', name: 'LinkedIn' };
+        return {
+          icon: () => <SocialIcon className="fab fa-linkedin text-[#0077B5]" />,
+          color: 'text-[#0077B5]',
+          name: 'LinkedIn'
+        };
       case 'twitter':
       case 'x':
-        return { icon: () => <SocialIcon className="fab fa-twitter text-brand-dark" />, color: 'text-brand-dark', name: 'Twitter/X' };
+        return {
+          icon: () => <SocialIcon className="fab fa-twitter text-brand-dark" />,
+          color: 'text-brand-dark',
+          name: 'Twitter/X'
+        };
       case 'facebook':
-        return { icon: () => <SocialIcon className="fab fa-facebook text-[#1877F2]" />, color: 'text-[#1877F2]', name: 'Facebook' };
+        return {
+          icon: () => <SocialIcon className="fab fa-facebook text-[#1877F2]" />,
+          color: 'text-[#1877F2]',
+          name: 'Facebook'
+        };
       case 'instagram':
-        return { icon: () => <SocialIcon className="fab fa-instagram text-[#E4405F]" />, color: 'text-[#E4405F]', name: 'Instagram' };
+        return {
+          icon: () => <SocialIcon className="fab fa-instagram text-[#E4405F]" />,
+          color: 'text-[#E4405F]',
+          name: 'Instagram'
+        };
       case 'tiktok':
-        return { icon: () => <SocialIcon className="fab fa-tiktok text-brand-dark" />, color: 'text-brand-dark', name: 'TikTok' };
+        return {
+          icon: () => <SocialIcon className="fab fa-tiktok text-brand-dark" />,
+          color: 'text-brand-dark',
+          name: 'TikTok'
+        };
       case 'pinterest':
-        return { icon: () => <SocialIcon className="fab fa-pinterest text-[#BD081C]" />, color: 'text-[#BD081C]', name: 'Pinterest' };
+        return {
+          icon: () => <SocialIcon className="fab fa-pinterest text-[#BD081C]" />,
+          color: 'text-[#BD081C]',
+          name: 'Pinterest'
+        };
       default:
-        return { icon: () => <SocialIcon className="fas fa-share-alt text-muted-foreground" />, color: 'text-muted-foreground', name: 'Social Media' };
+        return {
+          icon: () => <SocialIcon className="fas fa-share-alt text-muted-foreground" />,
+          color: 'text-muted-foreground',
+          name: 'Social Media'
+        };
     }
   };
 
   // Get the platforms to display - user override or AI recommendations
-  const aiPlatforms = persona?.ai_platforms && persona.ai_platforms.length > 0 
-    ? persona.ai_platforms 
-    : [
-        persona?.social_media_top_1,
-        persona?.social_media_top_2,
-        persona?.social_media_top_3
-      ].filter(Boolean).map(p => p.toLowerCase());
-
+  const aiPlatforms = persona?.ai_platforms && persona.ai_platforms.length > 0 ? persona.ai_platforms : [persona?.social_media_top_1, persona?.social_media_top_2, persona?.social_media_top_3].filter(Boolean).map(p => p.toLowerCase());
   const displayPlatforms = persona?.user_platforms || aiPlatforms;
-  
   const socialMediaPlatforms = displayPlatforms.filter(Boolean).slice(0, 3);
-
   const handleSavePlatforms = async (platforms: string[]) => {
     if (!persona?.id) {
       toast.error("Cannot update platforms: Persona not found");
@@ -94,7 +112,6 @@ const Persona1 = ({ persona }: Persona1Props) => {
       }
     }
   };
-
   const platformData: Record<string, PlatformData> = {
     linkedin: {
       name: 'LinkedIn',
@@ -107,9 +124,8 @@ const Persona1 = ({ persona }: Persona1Props) => {
       icon: () => <i className="fab fa-twitter" />,
       color: 'text-brand-dark',
       content: `🚀 Ready to level up your career game? Our mentorship programs connect you with top executives who've been where you want to go. Apply now! #CareerGoals #Mentorship #Success`
-    },
+    }
   };
-
   const handlePlatformToggle = (platform: string, index: number) => {
     setSelectedPlatforms(prev => {
       const isSelected = prev.includes(platform);
@@ -126,7 +142,6 @@ const Persona1 = ({ persona }: Persona1Props) => {
       return newStates;
     });
   };
-
   const handleGenerateContent = () => {
     if (selectedPlatforms.length === 0) {
       return;
@@ -142,14 +157,12 @@ const Persona1 = ({ persona }: Persona1Props) => {
       setIsGenerating(false);
     }, 1500);
   };
-
   const handleEditContent = (platform: string) => {
     const currentContent = generatedContent.find(c => c.platform === platform);
     setCurrentEditingPlatform(platform);
     setModalText(currentContent?.text || '');
     setShowModal(true);
   };
-
   const handleSaveChanges = () => {
     if (currentEditingPlatform) {
       setGeneratedContent(prev => prev.map(content => content.platform === currentEditingPlatform ? {
@@ -159,7 +172,6 @@ const Persona1 = ({ persona }: Persona1Props) => {
       handleCloseModal();
     }
   };
-
   const handleCloseModal = () => {
     setShowModal(false);
     setCurrentEditingPlatform(null);
@@ -174,13 +186,16 @@ const Persona1 = ({ persona }: Persona1Props) => {
       return newStates;
     });
   };
-
   const handlePlatformActiveToggle = async (platformIndex: number, isActive: boolean) => {
     if (!persona) return;
-    
     try {
       // Update the persona in the database
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      const {
+        data: {
+          user
+        },
+        error: userError
+      } = await supabase.auth.getUser();
       if (userError || !user) {
         toast.error("Authentication error");
         return;
@@ -201,13 +216,11 @@ const Persona1 = ({ persona }: Persona1Props) => {
         default:
           return;
       }
-
-      const { error } = await supabase
-        .from('saved_personas')
-        .update({ [updateField]: isActive })
-        .eq('user_id', user.id)
-        .eq('name', persona.name);
-
+      const {
+        error
+      } = await supabase.from('saved_personas').update({
+        [updateField]: isActive
+      }).eq('user_id', user.id).eq('name', persona.name);
       if (error) {
         console.error('Error updating platform active state:', error);
         toast.error("Failed to update platform state");
@@ -222,40 +235,34 @@ const Persona1 = ({ persona }: Persona1Props) => {
       } else if (platformIndex === 2) {
         persona.social_media_top_3_active = isActive;
       }
-
       toast.success(`Platform ${isActive ? 'activated' : 'deactivated'}`);
     } catch (error) {
       console.error('Error updating platform active state:', error);
       toast.error("Failed to update platform state");
     }
   };
-
-
   const handleGenerateContentClick = async () => {
     if (selectedPlatforms.length === 0) {
       return;
     }
-
     const personaName = persona?.name || "The Ambitious Entrepreneur";
-    
     console.log('Persona object:', persona);
     console.log('Persona name:', personaName);
     console.log('Selected platforms:', selectedPlatforms);
-    
     setIsGenerating(true);
-    
     try {
-      const { data, error } = await supabase.functions.invoke('generate-content', {
-        body: { 
+      const {
+        data,
+        error
+      } = await supabase.functions.invoke('generate-content', {
+        body: {
           personaName,
           selectedPlatforms // Pass selected platforms to only generate for these
         }
       });
-
       if (error) {
         throw error;
       }
-
       if (data.success) {
         toast.success(`Generated ${data.contentGenerated} social media posts!`);
       } else {
@@ -268,21 +275,14 @@ const Persona1 = ({ persona }: Persona1Props) => {
       setIsGenerating(false);
     }
   };
-
   if (isExpanded) {
-    return (
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    return <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div className="bg-card border border-border rounded-2xl shadow-2xl max-w-7xl w-full max-h-[90vh] overflow-y-auto">
           <div className="p-8">
             {/* Close button */}
             <div className="flex justify-end mb-6">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsExpanded(false)}
-                className="shrink-0"
-              >
-                <X className="h-5 w-5" />
+              <Button variant="ghost" size="icon" onClick={() => setIsExpanded(false)} className="shrink-0 text-xs bg-primary-foreground mt-[11px]">
+                <X className="w-[26px] h-[26px]" />
               </Button>
             </div>
 
@@ -303,12 +303,7 @@ const Persona1 = ({ persona }: Persona1Props) => {
                  <div className="space-y-3">
                     <div className="flex items-center justify-between">
                       <h2 className="font-bold text-sm">Social Media Platforms:</h2>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setShowPlatformSelector(true)}
-                        className="h-7 px-2 text-xs text-fabel-primary hover:text-fabel-primary/90 hover:bg-fabel-primary/10"
-                      >
+                      <Button variant="ghost" size="sm" onClick={() => setShowPlatformSelector(true)} className="h-7 px-2 text-xs text-fabel-primary hover:text-fabel-primary/90 hover:bg-fabel-primary/10">
                         <Edit2 className="h-3 w-3 mr-1" />
                         Edit
                       </Button>
@@ -316,9 +311,12 @@ const Persona1 = ({ persona }: Persona1Props) => {
                     <TooltipProvider>
                       <div className="flex items-center justify-center space-x-8">
                          {socialMediaPlatforms.slice(0, 1).map((platform, index) => {
-                           const { icon: Icon, color, name } = getSocialMediaIcon(platform);
-                           return (
-                             <div key={index} className="flex flex-col items-center space-y-2">
+                        const {
+                          icon: Icon,
+                          color,
+                          name
+                        } = getSocialMediaIcon(platform);
+                        return <div key={index} className="flex flex-col items-center space-y-2">
                                <Tooltip>
                                   <TooltipTrigger asChild>
                                     <div className="text-xl">
@@ -329,20 +327,16 @@ const Persona1 = ({ persona }: Persona1Props) => {
                                     <p>{name}</p>
                                   </TooltipContent>
                                 </Tooltip>
-                                <Checkbox
-                                  checked={selectedPlatforms.includes(platform.toLowerCase())}
-                                  onCheckedChange={() => handlePlatformToggle(platform.toLowerCase(), index)}
-                                />
-                             </div>
-                           );
-                         })}
+                                <Checkbox checked={selectedPlatforms.includes(platform.toLowerCase())} onCheckedChange={() => handlePlatformToggle(platform.toLowerCase(), index)} />
+                             </div>;
+                      })}
                          {/* Fill remaining slots with empty spaces if less than 1 platform */}
-                         {Array.from({ length: Math.max(0, 1 - socialMediaPlatforms.length) }).map((_, index) => (
-                           <div key={`empty-${index}`} className="flex flex-col items-center space-y-2">
+                         {Array.from({
+                        length: Math.max(0, 1 - socialMediaPlatforms.length)
+                      }).map((_, index) => <div key={`empty-${index}`} className="flex flex-col items-center space-y-2">
                              <Share2 className="w-6 h-6 text-muted-foreground opacity-30" />
                              <Checkbox disabled />
-                           </div>
-                         ))}
+                           </div>)}
                       </div>
                     </TooltipProvider>
                   </div>
@@ -381,22 +375,14 @@ const Persona1 = ({ persona }: Persona1Props) => {
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <div>
-                            <Button 
-                              className={selectedPlatforms.length === 0 
-                                ? "bg-muted text-muted-foreground hover:bg-muted w-full cursor-not-allowed" 
-                                : "bg-fabel-primary hover:bg-fabel-primary/90 w-full"}
-                              onClick={handleGenerateContentClick}
-                              disabled={isGenerating || selectedPlatforms.length === 0}
-                            >
+                            <Button className={selectedPlatforms.length === 0 ? "bg-muted text-muted-foreground hover:bg-muted w-full cursor-not-allowed" : "bg-fabel-primary hover:bg-fabel-primary/90 w-full"} onClick={handleGenerateContentClick} disabled={isGenerating || selectedPlatforms.length === 0}>
                               {isGenerating ? "Generating..." : "Generate Content"}
                             </Button>
                           </div>
                         </TooltipTrigger>
-                        {selectedPlatforms.length === 0 && (
-                          <TooltipContent>
+                        {selectedPlatforms.length === 0 && <TooltipContent>
                             <p>Please select at least one social media platform</p>
-                          </TooltipContent>
-                        )}
+                          </TooltipContent>}
                       </Tooltip>
                     </TooltipProvider>
                   </div>
@@ -422,10 +408,7 @@ const Persona1 = ({ persona }: Persona1Props) => {
                   <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                     <div className="flex items-center gap-2 mb-2">
                       <i className="fa-solid fa-lock text-foreground"></i>
-                      <span 
-                        className="font-bold text-sm cursor-pointer hover:text-fabel-primary transition-colors"
-                        onClick={() => setShowPricingModal(true)}
-                      >
+                      <span className="font-bold text-sm cursor-pointer hover:text-fabel-primary transition-colors" onClick={() => setShowPricingModal(true)}>
                         Upgrade to Unlock:
                       </span>
                     </div>
@@ -446,10 +429,7 @@ const Persona1 = ({ persona }: Persona1Props) => {
                 <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
                   <div className="flex items-center gap-2 mb-3">
                     <i className="fa-solid fa-lock text-foreground"></i>
-                    <span 
-                      className="font-bold text-sm cursor-pointer hover:text-fabel-primary transition-colors"
-                      onClick={() => setShowPricingModal(true)}
-                    >
+                    <span className="font-bold text-sm cursor-pointer hover:text-fabel-primary transition-colors" onClick={() => setShowPricingModal(true)}>
                       Upgrade to Unlock:
                     </span>
                   </div>
@@ -488,8 +468,7 @@ const Persona1 = ({ persona }: Persona1Props) => {
         </div>
 
         {/* Progress Overlay for expanded view */}
-        {isGenerating && (
-          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm z-10 flex items-center justify-center">
+        {isGenerating && <div className="absolute inset-0 bg-black/30 backdrop-blur-sm z-10 flex items-center justify-center">
             <div className="bg-card/95 backdrop-blur-md border border-border rounded-2xl p-6 shadow-2xl max-w-sm mx-4">
               <div className="flex flex-col items-center space-y-4">
                 <div className="relative">
@@ -509,17 +488,12 @@ const Persona1 = ({ persona }: Persona1Props) => {
                 </div>
               </div>
             </div>
-          </div>
-        )}
-      </div>
-    );
+          </div>}
+      </div>;
   }
-
-  return (
-    <div className="relative bg-muted rounded-lg p-6 space-y-4 flex flex-col">
+  return <div className="relative bg-muted rounded-lg p-6 space-y-4 flex flex-col">
       {/* Progress Overlay */}
-      {isGenerating && (
-        <div className="absolute inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center rounded-lg">
+      {isGenerating && <div className="absolute inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center rounded-lg">
           <div className="bg-card/95 backdrop-blur-md border border-border rounded-2xl p-6 shadow-2xl max-w-sm mx-4">
             <div className="flex flex-col items-center space-y-4">
               {/* Animated Icon */}
@@ -546,19 +520,13 @@ const Persona1 = ({ persona }: Persona1Props) => {
               </div>
             </div>
           </div>
-        </div>
-      )}
+        </div>}
 
       {/* Regular View Header */}
       <div>
         <div className="flex items-center justify-between">
           <h1 className="text-lg font-bold text-foreground">{persona?.name || "Urban Creative"}</h1>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setIsExpanded(true)}
-            className="text-muted-foreground hover:text-foreground"
-          >
+          <Button variant="ghost" size="sm" onClick={() => setIsExpanded(true)} className="text-muted-foreground hover:text-foreground">
             More <ChevronRight className="h-4 w-4 ml-1" />
           </Button>
         </div>
@@ -571,12 +539,7 @@ const Persona1 = ({ persona }: Persona1Props) => {
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <h2 className="font-bold text-sm">Social Media Platforms:</h2>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setShowPlatformSelector(true)}
-            className="h-7 px-2 text-xs text-fabel-primary hover:text-fabel-primary/90 hover:bg-fabel-primary/10"
-          >
+          <Button variant="ghost" size="sm" onClick={() => setShowPlatformSelector(true)} className="h-7 px-2 text-xs text-fabel-primary hover:text-fabel-primary/90 hover:bg-fabel-primary/10">
             <Edit2 className="h-3 w-3 mr-1" />
             Edit
           </Button>
@@ -584,9 +547,12 @@ const Persona1 = ({ persona }: Persona1Props) => {
         <TooltipProvider>
           <div className="flex items-center justify-center space-x-6">
             {socialMediaPlatforms.slice(0, 1).map((platform, index) => {
-              const { icon: Icon, color, name } = getSocialMediaIcon(platform);
-              return (
-                <div key={index} className="flex flex-col items-center space-y-2">
+            const {
+              icon: Icon,
+              color,
+              name
+            } = getSocialMediaIcon(platform);
+            return <div key={index} className="flex flex-col items-center space-y-2">
                   <Tooltip>
                      <TooltipTrigger asChild>
                        <div className="text-xl">
@@ -597,13 +563,9 @@ const Persona1 = ({ persona }: Persona1Props) => {
                        <p>{name}</p>
                      </TooltipContent>
                    </Tooltip>
-                   <Checkbox
-                     checked={selectedPlatforms.includes(platform.toLowerCase())}
-                     onCheckedChange={() => handlePlatformToggle(platform.toLowerCase(), index)}
-                   />
-                </div>
-              );
-            })}
+                   <Checkbox checked={selectedPlatforms.includes(platform.toLowerCase())} onCheckedChange={() => handlePlatformToggle(platform.toLowerCase(), index)} />
+                </div>;
+          })}
           </div>
         </TooltipProvider>
       </div>
@@ -636,48 +598,27 @@ const Persona1 = ({ persona }: Persona1Props) => {
       <div className="flex-1"></div>
 
       {/* Platform Selector Modal */}
-      <PlatformSelector
-        isOpen={showPlatformSelector}
-        onClose={() => setShowPlatformSelector(false)}
-        currentPlatforms={displayPlatforms}
-        aiPlatforms={aiPlatforms}
-        onSave={handleSavePlatforms}
-        maxPlatforms={1}
-      />
+      <PlatformSelector isOpen={showPlatformSelector} onClose={() => setShowPlatformSelector(false)} currentPlatforms={displayPlatforms} aiPlatforms={aiPlatforms} onSave={handleSavePlatforms} maxPlatforms={1} />
 
       <div className="pt-4">
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
               <div>
-                <Button
-                  className={selectedPlatforms.length === 0 
-                    ? "bg-muted text-muted-foreground hover:bg-muted w-full cursor-not-allowed" 
-                    : "bg-fabel-primary hover:bg-fabel-primary/90 w-full"}
-                  onClick={handleGenerateContentClick}
-                  disabled={isGenerating || selectedPlatforms.length === 0}
-                >
+                <Button className={selectedPlatforms.length === 0 ? "bg-muted text-muted-foreground hover:bg-muted w-full cursor-not-allowed" : "bg-fabel-primary hover:bg-fabel-primary/90 w-full"} onClick={handleGenerateContentClick} disabled={isGenerating || selectedPlatforms.length === 0}>
                   {isGenerating ? "Generating..." : "Generate Content"}
                 </Button>
               </div>
             </TooltipTrigger>
-            {selectedPlatforms.length === 0 && (
-              <TooltipContent>
+            {selectedPlatforms.length === 0 && <TooltipContent>
                 <p>Please select at least one social media platform</p>
-              </TooltipContent>
-            )}
+              </TooltipContent>}
           </Tooltip>
         </TooltipProvider>
       </div>
 
       {/* Pricing Modal - renders on top of everything with z-index higher than expanded view */}
-      <PricingModal
-        open={showPricingModal}
-        onOpenChange={setShowPricingModal}
-        currentPlan="free"
-      />
-    </div>
-  );
+      <PricingModal open={showPricingModal} onOpenChange={setShowPricingModal} currentPlan="free" />
+    </div>;
 };
-
 export default Persona1;
