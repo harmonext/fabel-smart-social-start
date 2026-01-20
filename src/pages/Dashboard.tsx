@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import DashboardContent from "@/components/dashboard/DashboardContent";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { useOnboarding } from "@/hooks/useOnboarding";
 import { useCompanyDetails } from "@/hooks/useCompanyDetails";
 
@@ -77,7 +77,9 @@ const Dashboard = () => {
           setActiveTab={setActiveTab}
           setActiveSubTab={setActiveSubTab}
         />
-        <main className="flex-1 overflow-auto">
+        <main className="flex-1 overflow-auto relative">
+          {/* Persistent sidebar trigger - always visible */}
+          <SidebarTrigger className="fixed top-4 left-4 z-50 bg-background border border-border shadow-sm hover:bg-muted" />
           <DashboardContent 
             activeTab={activeTab}
             activeSubTab={activeSubTab}
