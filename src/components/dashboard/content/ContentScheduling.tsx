@@ -67,19 +67,10 @@ const DraggablePost = React.forwardRef<HTMLDivElement, {
           ref={setNodeRef}
           style={style}
           {...attributes}
-          className={`${isDragging ? 'cursor-grabbing' : ''} touch-none relative group`}
+          {...listeners}
+          className={`${isDragging ? 'cursor-grabbing' : 'cursor-grab'} touch-none relative group`}
         >
-          {/* Invisible drag handle covering the entire post */}
-          <div 
-            {...listeners} 
-            className="absolute inset-0 cursor-grab z-10"
-            title="Drag to reschedule"
-            onClick={(e) => e.stopPropagation()}
-          />
-          {/* Clickable area for editing - the rest of the post */}
-          <div>
-            {children}
-          </div>
+          {children}
         </div>
       );
     } else {
