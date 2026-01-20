@@ -599,6 +599,20 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
                   <DropdownMenuItem
                     onClick={() => {
                       if (post) {
+                        // Check if scheduled date is in the past
+                        const scheduledDate = editData.scheduled_at ? new Date(editData.scheduled_at) : null;
+                        const now = new Date();
+                        
+                        if (!scheduledDate || scheduledDate < now) {
+                          toast({
+                            title: "Cannot Schedule Post",
+                            description: "Please set a scheduled date in the future before scheduling this post.",
+                            variant: "destructive",
+                            duration: 5000
+                          });
+                          return;
+                        }
+                        
                         setEditData(prev => ({ ...prev, status: 'scheduled' }));
                         onSave(post.id, { ...editData, status: 'scheduled' });
                         onOpenChange(false);
