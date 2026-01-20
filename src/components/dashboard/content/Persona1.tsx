@@ -418,7 +418,7 @@ const Persona1 = ({ persona }: Persona1Props) => {
                     </ul>
                   </div>
 
-                  {/* Upgrade to Unlock */}
+                  {/* Upgrade to Unlock - LTV/CAC */}
                   <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                     <div className="flex items-center gap-2 mb-2">
                       <i className="fa-solid fa-lock text-foreground"></i>
@@ -432,19 +432,19 @@ const Persona1 = ({ persona }: Persona1Props) => {
                     <div className="space-y-2">
                       <div className="bg-green-100 rounded p-2">
                         <div className="text-xs font-semibold text-green-800">ESTIMATED LTV</div>
-                        <div className="text-sm text-muted-foreground">~$600-$900</div>
+                        <div className="text-sm text-muted-foreground blur-sm select-none">~$600-$900</div>
                       </div>
                       <div className="bg-green-100 rounded p-2">
                         <div className="text-xs font-semibold text-green-800">ESTIMATED CAC</div>
-                        <div className="text-sm text-muted-foreground">~$70</div>
+                        <div className="text-sm text-muted-foreground blur-sm select-none">~$70</div>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                {/* Second Upgrade to Unlock */}
+                {/* Second Upgrade to Unlock - Competitors, Pain Points, How to Appeal */}
                 <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
-                  <div className="flex items-center gap-2 mb-2">
+                  <div className="flex items-center gap-2 mb-3">
                     <i className="fa-solid fa-lock text-foreground"></i>
                     <span 
                       className="font-bold text-sm cursor-pointer hover:text-fabel-primary transition-colors"
@@ -453,14 +453,10 @@ const Persona1 = ({ persona }: Persona1Props) => {
                       Upgrade to Unlock:
                     </span>
                   </div>
-                </div>
-
-                {/* Three columns section */}
-                <div className="bg-muted rounded-lg p-4">
                   <div className="grid grid-cols-3 gap-4 text-center">
                     <div>
                       <h4 className="font-bold text-sm text-green-600 mb-2">COMPETITORS</h4>
-                      <div className="space-y-1 text-xs">
+                      <div className="space-y-1 text-xs blur-sm select-none">
                         <div>CUYANA</div>
                         <div>POLÈNE</div>
                         <div className="text-muted-foreground">MANSUR GAVRIEL</div>
@@ -468,7 +464,7 @@ const Persona1 = ({ persona }: Persona1Props) => {
                     </div>
                     <div>
                       <h4 className="font-bold text-sm text-orange-600 mb-2 text-left">PAIN POINTS</h4>
-                      <ul className="space-y-1 text-xs text-left">
+                      <ul className="space-y-1 text-xs text-left blur-sm select-none">
                         <li>• Fatigue with overexposed "it" brands</li>
                         <li>• Lack of unique, high-quality options that align with values</li>
                         <li>• Overpriced designer goods with unclear origin</li>
@@ -476,7 +472,7 @@ const Persona1 = ({ persona }: Persona1Props) => {
                     </div>
                     <div>
                       <h4 className="font-bold text-sm text-purple-600 mb-2 text-left">HOW TO APPEAL</h4>
-                      <ul className="space-y-1 text-xs text-left">
+                      <ul className="space-y-1 text-xs text-left blur-sm select-none">
                         <li>• Focus on storytelling: emphasize the materials, artisans, and heritage behind each item</li>
                         <li>• Highlight sustainable practices and slow fashion ethos</li>
                         <li>• Collaborate with style influencers and micro-creatives in art/fashion</li>
