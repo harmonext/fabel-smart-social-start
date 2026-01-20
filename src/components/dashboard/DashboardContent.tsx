@@ -1,5 +1,4 @@
 import UserProfile from "./content/UserProfile";
-import ProfileSurvey from "./content/ProfileSurvey";
 import Personas from "./content/Personas";
 import SocialConnections from "./content/SocialConnections";
 import ContentScheduling from "./content/ContentScheduling";
@@ -85,9 +84,6 @@ const DashboardContent = ({ activeTab, activeSubTab }: DashboardContentProps) =>
     if (activeTab === "settings") {
       if (activeSubTab === "user-profile") {
         return <UserProfile />;
-      }
-      if (activeSubTab === "profile-survey") {
-        return <ProfileSurvey />;
       }
       if (activeSubTab === "onboarding") {
         return onboardingCompleted ? <OnboardedData /> : <OnboardingFlow />;
