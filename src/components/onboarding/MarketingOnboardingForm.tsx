@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -11,6 +11,7 @@ import { useOnboarding } from "@/hooks/useOnboarding";
 import { useCompanyDetails } from "@/hooks/useCompanyDetails";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { ArrowLeft } from "lucide-react";
 import AboutYouTab from "./marketing/AboutYouTab";
 import AboutCompanyTab from "./marketing/AboutCompanyTab";
 import AboutGoalsTab from "./marketing/AboutGoalsTab";
@@ -18,12 +19,15 @@ import AboutCustomerTab from "./marketing/AboutCustomerTab";
 
 const MarketingOnboardingForm = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const isEditMode = searchParams.get("edit") === "true";
   const { user } = useAuth();
   const { saveOnboarding, isSaving, fetchOnboardingData } = useMarketingOnboarding();
   const { generatePersonas } = usePersonas();
   const { isCompleted: onboardingCompleted } = useOnboarding();
   const { companyDetails } = useCompanyDetails();
   const [activeTab, setActiveTab] = useState("about-you");
+  const [originalFormData, setOriginalFormData] = useState<MarketingOnboardingData | null>(null);
 
   useEffect(() => {
     console.log("Active tab:", activeTab);
@@ -173,6 +177,18 @@ const MarketingOnboardingForm = () => {
       if (hasInitialLoadRef.current) return;
       hasInitialLoadRef.current = true;
 
+      // In edit mode, always load existing onboarding data first
+      if (isEditMode) {
+        const existingData = await fetchOnboardingData();
+        if (existingData) {
+          setFormData(existingData);
+          setOriginalFormData(existingData); // Store original for comparison
+          setCompletedTabs(["about-you", "about-company", "about-goals", "about-customer"]);
+        }
+        setIsLoadingData(false);
+        return;
+      }
+
       // First, try to load from draft (saved for later)
       const draftLoaded = await loadDraft();
       
@@ -235,7 +251,17 @@ const MarketingOnboardingForm = () => {
     if (user) {
       loadExistingData();
     }
-  }, [fetchOnboardingData, loadDraft, user, companyDetails]);
+  }, [fetchOnboardingData, loadDraft, user, companyDetails, isEditMode]);
+
+  // Check if form data has changed from original (for edit mode)
+  const hasFormDataChanged = useCallback(() => {
+    if (!originalFormData) return true;
+    return JSON.stringify(formData) !== JSON.stringify(originalFormData);
+  }, [formData, originalFormData]);
+
+  const handleBackToOnboardedData = () => {
+    navigate("/dashboard?tab=company-profile&subtab=dashboard");
+  };
   const handleInputChange = (field: keyof MarketingOnboardingData, value: string | string[]) => {
     setFormData((prev) => ({
       ...prev,
@@ -317,14 +343,19 @@ const MarketingOnboardingForm = () => {
     const result = await saveOnboarding(formData);
 
     if (result.success) {
-      // Mark the draft as submitted in form_drafts table
-      const submitted = await submitOnboarding();
-      if (!submitted) {
-        toast.error("Failed to finalize onboarding. Please try again.");
-        return; // stop further processing
+      // Mark the draft as submitted in form_drafts table (only for new onboarding)
+      if (!isEditMode) {
+        const submitted = await submitOnboarding();
+        if (!submitted) {
+          toast.error("Failed to finalize onboarding. Please try again.");
+          return; // stop further processing
+        }
       }
 
-      if (result.shouldGeneratePersonas) {
+      // In edit mode, regenerate personas if data changed; in new mode, check shouldGeneratePersonas
+      const shouldRegenerate = isEditMode ? hasFormDataChanged() : result.shouldGeneratePersonas;
+
+      if (shouldRegenerate) {
         setIsGeneratingPersonas(true);
         try {
           // Use the usePersonas hook which includes auto-saving functionality
@@ -336,10 +367,18 @@ const MarketingOnboardingForm = () => {
         }
       }
 
-      // Always navigate to personas dashboard after completion
-      navigate("/dashboard?tab=company-profile&subtab=personas", {
-        replace: true,
-      });
+      // Navigate based on mode
+      if (isEditMode) {
+        toast.success("Survey updated successfully!");
+        navigate("/dashboard?tab=company-profile&subtab=dashboard", {
+          replace: true,
+        });
+      } else {
+        // Always navigate to personas dashboard after completion
+        navigate("/dashboard?tab=company-profile&subtab=personas", {
+          replace: true,
+        });
+      }
     } else {
       toast.error("Failed to save onboarding data. Please try again.");
     }
@@ -420,6 +459,20 @@ const MarketingOnboardingForm = () => {
       }}
     >
       <div className="max-w-2xl mx-auto">
+        {/* Back button for edit mode */}
+        {isEditMode && (
+          <div className="mb-6">
+            <Button
+              variant="ghost"
+              onClick={handleBackToOnboardedData}
+              className="text-gray-600 hover:text-gray-900"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Onboarded Data
+            </Button>
+          </div>
+        )}
+
         {/* Progress Steps */}
         <div className="flex items-center justify-center mb-8">
           <div className="flex items-center space-x-4">
@@ -526,14 +579,14 @@ const MarketingOnboardingForm = () => {
               {canSubmit && (
                 <Button
                   onClick={handleSubmit}
-                  disabled={!isCurrentTabValid || isSaving || onboardingCompleted}
+                  disabled={!isCurrentTabValid || isSaving || (onboardingCompleted && !isEditMode)}
                   className="px-6 py-2 text-white border-0"
                   style={{
                     backgroundColor: "#E3C38A",
                     color: "white",
                   }}
                 >
-                  {onboardingCompleted ? "Already Completed" : isSaving ? "Saving..." : "Complete Setup"}
+                  {isSaving ? "Saving..." : isEditMode ? "Save Changes" : onboardingCompleted ? "Already Completed" : "Complete Setup"}
                 </Button>
               )}
             </div>
