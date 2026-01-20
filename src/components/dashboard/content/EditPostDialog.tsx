@@ -4,7 +4,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Check, X, Clock, Upload, Image, Video, FileText, Trash2, ShieldCheck } from 'lucide-react';
+import { Check, X, Clock, Upload, Image, Video, FileText, Trash2, ShieldCheck, ChevronDown } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { ScheduledContent, useScheduledContent } from '@/hooks/useScheduledContent';
 import { usePlatformRules } from '@/hooks/usePlatformRules';
 import { useSignedUrls } from '@/hooks/useSignedUrls';
@@ -342,41 +348,20 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
           <DialogTitle>Edit Post</DialogTitle>
         </DialogHeader>
         
-        {/* Status Badge - Moved to top with brand colors */}
+        {/* Status Badge - Display only, non-interactive */}
         <div className="flex items-center gap-3 pb-4 border-b">
           <span className="text-sm font-medium text-muted-foreground">Status:</span>
-          <div className="flex gap-2">
-            <button
-              onClick={() => handleChange('status', 'draft')}
-              className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
-                editData.status === 'draft'
-                  ? 'bg-fabel-primary text-foreground ring-2 ring-fabel-primary ring-offset-2'
-                  : 'bg-muted text-muted-foreground hover:bg-fabel-primary/50'
-              }`}
-            >
-              Draft
-            </button>
-            <button
-              onClick={() => handleChange('status', 'scheduled')}
-              className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
-                editData.status === 'scheduled'
-                  ? 'bg-fabel-neutral text-foreground ring-2 ring-fabel-neutral ring-offset-2'
-                  : 'bg-muted text-muted-foreground hover:bg-fabel-neutral/50'
-              }`}
-            >
-              Scheduled
-            </button>
-            <button
-              onClick={() => handleChange('status', 'published')}
-              className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
-                editData.status === 'published'
-                  ? 'bg-fabel-secondary text-foreground ring-2 ring-fabel-secondary ring-offset-2'
-                  : 'bg-muted text-muted-foreground hover:bg-fabel-secondary/50'
-              }`}
-            >
-              Published
-            </button>
-          </div>
+          <span
+            className={`px-3 py-1.5 rounded-full text-xs font-medium cursor-default ${
+              editData.status === 'draft'
+                ? 'bg-fabel-primary text-foreground'
+                : editData.status === 'scheduled'
+                ? 'bg-fabel-neutral text-foreground'
+                : 'bg-fabel-secondary text-foreground'
+            }`}
+          >
+            {editData.status === 'draft' ? 'Draft' : editData.status === 'scheduled' ? 'Scheduled' : 'Published'}
+          </span>
         </div>
         
         {/* Validation Progress - Show when validating or when there's a validation result */}
@@ -558,14 +543,47 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
           )}
           
           <div className="flex gap-2 pt-4 border-t">
-            <Button
-              onClick={handleSave}
-              disabled={!hasChanges || isValidating || (validation ? !validation.isValid : false)}
-              className="flex-1"
-            >
-              <Check className="h-4 w-4 mr-2" />
-              {isValidating ? 'Validating...' : 'Save Changes'}
-            </Button>
+            <div className="flex flex-1">
+              <Button
+                onClick={handleSave}
+                disabled={!hasChanges || isValidating || (validation ? !validation.isValid : false)}
+                className="flex-1 rounded-r-none"
+              >
+                <Check className="h-4 w-4 mr-2" />
+                {isValidating ? 'Validating...' : 'Save Changes'}
+              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    disabled={isValidating || (validation ? !validation.isValid : false)}
+                    className="rounded-l-none border-l border-primary-foreground/20 px-2"
+                  >
+                    <ChevronDown className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem
+                    onClick={handleSave}
+                    disabled={!hasChanges}
+                  >
+                    <Check className="h-4 w-4 mr-2" />
+                    Save Changes
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => {
+                      if (post) {
+                        setEditData(prev => ({ ...prev, status: 'scheduled' }));
+                        onSave(post.id, { ...editData, status: 'scheduled' });
+                        onOpenChange(false);
+                      }
+                    }}
+                  >
+                    <Clock className="h-4 w-4 mr-2" />
+                    Schedule Post
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
             <Button
               variant="outline"
               onClick={handleCancel}
