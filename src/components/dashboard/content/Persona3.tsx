@@ -236,33 +236,13 @@ const Persona3 = ({ persona }: Persona3Props) => {
       )}
       
       {/* Blur overlay with Upgrade button */}
-      <div className="absolute inset-0 bg-background/40 backdrop-blur-md z-40 rounded-lg flex items-center justify-center p-6">
-        <div className="text-center space-y-4 max-w-md">
+      <div className="absolute inset-0 bg-background/40 backdrop-blur-md z-40 rounded-lg flex items-center justify-center">
+        <div className="text-center space-y-4">
           <Lock className="h-12 w-12 mx-auto text-fabel-primary" />
           <h3 className="text-xl font-bold">Upgrade to Unlock</h3>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-muted-foreground max-w-xs">
             Get access to additional personas and unlock powerful insights
           </p>
-          
-          {/* Preview of locked content - titles only */}
-          <div className="bg-muted/50 rounded-lg p-4 text-left space-y-3">
-            <div className="flex items-center gap-2">
-              <i className="fa-solid fa-users text-sm text-muted-foreground"></i>
-              <span className="text-sm font-semibold">Top Competitors</span>
-              <span className="text-xs text-muted-foreground ml-auto blur-sm select-none">Hidden content</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <i className="fa-solid fa-heart-crack text-sm text-muted-foreground"></i>
-              <span className="text-sm font-semibold">Pain Points</span>
-              <span className="text-xs text-muted-foreground ml-auto blur-sm select-none">Hidden content</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <i className="fa-solid fa-heart text-sm text-muted-foreground"></i>
-              <span className="text-sm font-semibold">How to Appeal</span>
-              <span className="text-xs text-muted-foreground ml-auto blur-sm select-none">Hidden content</span>
-            </div>
-          </div>
-          
           <Button 
             className="bg-fabel-primary hover:bg-fabel-primary/90"
             onClick={() => setShowPricingModal(true)}
@@ -372,6 +352,10 @@ const Persona3 = ({ persona }: Persona3Props) => {
           <i className="fa-solid fa-lock text-lg text-muted-foreground"></i>
           <h2 className="font-bold text-sm">Unlock for:</h2>
         </div>
+        <p className="text-xs text-muted-foreground flex items-start justify-start">
+          <i className="fa-solid fa-users mr-1"></i>
+          Top Competitors: {persona?.top_competitors || "Competitors analysis"}
+        </p>
         <p className="text-xs text-muted-foreground flex items-center justify-center gap-1">
           <i className="fa-solid fa-dollar-sign"></i>
           CAC: {persona?.cac_estimate || "$20-50"}
@@ -379,6 +363,10 @@ const Persona3 = ({ persona }: Persona3Props) => {
         <p className="text-xs text-muted-foreground flex items-center justify-center gap-1">
           <i className="fa-solid fa-infinity"></i>
           LTV: {persona?.ltv_estimate || "$200-600"}
+        </p>
+        <p className="text-xs text-muted-foreground flex items-start justify-start">
+          <i className="fa-solid fa-heart mr-0.5"></i>
+          Appeal: {persona?.appeal_how_to || "Appeal strategies"}
         </p>
       </div>
 
