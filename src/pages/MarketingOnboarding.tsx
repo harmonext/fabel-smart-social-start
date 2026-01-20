@@ -1,19 +1,21 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import MarketingOnboardingForm from "@/components/onboarding/MarketingOnboardingForm";
 import { useOnboarding } from "@/hooks/useOnboarding";
 import Footer from "@/components/Footer";
 
 const MarketingOnboarding = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const isEditMode = searchParams.get("edit") === "true";
   const { isCompleted, isLoading } = useOnboarding();
 
   useEffect(() => {
-    // If user has already completed full onboarding, redirect to company dashboard
-    if (!isLoading && isCompleted) {
+    // If user has already completed full onboarding and NOT in edit mode, redirect to company dashboard
+    if (!isLoading && isCompleted && !isEditMode) {
       navigate('/dashboard?tab=company-profile&subtab=dashboard');
     }
-  }, [isCompleted, isLoading, navigate]);
+  }, [isCompleted, isLoading, navigate, isEditMode]);
 
   // Show loading while checking onboarding status
   if (isLoading) {
@@ -24,8 +26,8 @@ const MarketingOnboarding = () => {
     );
   }
 
-  // Don't render the form if user is already completed (will be redirected)
-  if (isCompleted) {
+  // Don't render the form if user is already completed (will be redirected) - unless in edit mode
+  if (isCompleted && !isEditMode) {
     return null;
   }
 

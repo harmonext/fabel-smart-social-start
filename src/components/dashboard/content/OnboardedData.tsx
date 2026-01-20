@@ -100,7 +100,7 @@ const OnboardedData = () => {
   };
 
   const handleEditOnboarding = () => {
-    navigate("/marketing-onboarding");
+    navigate("/marketing-onboarding?edit=true");
   };
 
   if (!companyDetails || !marketingData) {
