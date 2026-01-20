@@ -901,7 +901,7 @@ const CalendarView = ({ posts, allContent, currentDate, setCurrentDate, onResche
               <DroppableDay
                 key={day}
                 date={dayDate}
-                className={`h-32 border rounded-lg p-1 ${
+                className={`min-h-[160px] border rounded-lg p-1.5 ${
                   isToday ? 'bg-blue-50 border-blue-200' : 'border-gray-200'
                 }`}
               >
@@ -910,11 +910,11 @@ const CalendarView = ({ posts, allContent, currentDate, setCurrentDate, onResche
                 }`}>
                   {day}
                 </div>
-                <div className="space-y-0.5 overflow-hidden">
-                  {postsForDay.slice(0, 4).map((post, index) => {
+                <div className="space-y-1 overflow-y-auto max-h-[130px]">
+                  {postsForDay.slice(0, 5).map((post, index) => {
                     const scheduledTime = post.scheduled_at ? new Date(post.scheduled_at) : null;
                     const timeString = scheduledTime ? scheduledTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
-                    const shortTitle = post.title.length > 8 ? `${post.title.substring(0, 8)}...` : post.title;
+                    const shortTitle = post.title.length > 10 ? `${post.title.substring(0, 10)}...` : post.title;
                     
                      return (
                        <DraggablePost key={post.id} post={post} editMode={editMode}>
@@ -927,9 +927,9 @@ const CalendarView = ({ posts, allContent, currentDate, setCurrentDate, onResche
                        </DraggablePost>
                      )
                   })}
-                  {postsForDay.length > 4 && (
+                  {postsForDay.length > 5 && (
                     <div className="text-[10px] text-muted-foreground font-medium px-1 py-0.5 bg-muted/50 rounded text-center border border-dashed border-muted-foreground/30">
-                      +{postsForDay.length - 4} more
+                      +{postsForDay.length - 5} more
                     </div>
                   )}
                 </div>
