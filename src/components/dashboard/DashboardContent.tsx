@@ -1,4 +1,3 @@
-
 import UserProfile from "./content/UserProfile";
 import ProfileSurvey from "./content/ProfileSurvey";
 import Personas from "./content/Personas";
@@ -14,6 +13,7 @@ import AdminContentModeration from "./content/AdminContentModeration";
 import { PlatformRulesWrapper } from "./content/PlatformRulesWrapper";
 import { useOnboarding } from "@/hooks/useOnboarding";
 import CompanyDashboard from "./content/CompanyDashboard";
+import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 
 interface DashboardContentProps {
   activeTab: string;
@@ -22,6 +22,7 @@ interface DashboardContentProps {
 
 const DashboardContent = ({ activeTab, activeSubTab }: DashboardContentProps) => {
   const { isCompleted: onboardingCompleted } = useOnboarding();
+  const { state } = useSidebar();
   
   const renderContent = () => {
     if (activeTab === "company-profile") {
@@ -102,6 +103,9 @@ const DashboardContent = ({ activeTab, activeSubTab }: DashboardContentProps) =>
 
   return (
     <div className="p-6">
+      {state === "collapsed" && (
+        <SidebarTrigger className="mb-4" />
+      )}
       {renderContent()}
     </div>
   );
