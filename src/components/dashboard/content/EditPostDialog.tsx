@@ -588,7 +588,7 @@ export const EditPostDialog: React.FC<EditPostDialogProps> = ({
                     <ChevronDown className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="bg-popover z-[100]" sideOffset={5}>
+                <DropdownMenuContent align="end" className="bg-popover z-[300]" sideOffset={5}>
                   <DropdownMenuItem
                     onClick={handleSave}
                     disabled={!hasChanges}
