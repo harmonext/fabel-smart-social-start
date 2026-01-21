@@ -483,12 +483,19 @@ const EditableListPost = ({ post, editMode, timeString }: {
 
   const statusBadge = getStatusBadge(post.status);
   
+  const handleRowClick = () => {
+    setEditDialogOpen(true);
+  };
+
   return (
     <>
       <TooltipProvider delayDuration={200}>
         <Tooltip>
           <TooltipTrigger asChild>
-            <div className={`flex items-center gap-3 p-3 rounded-lg ${getPersonaColor(post.persona_name || '')} hover:shadow-sm transition-all duration-200 border cursor-pointer hover:border-primary`}>
+            <div 
+              className={`flex items-center gap-3 p-3 rounded-lg ${getPersonaColor(post.persona_name || '')} hover:shadow-sm transition-all duration-200 border cursor-pointer hover:border-primary hover:ring-1 hover:ring-primary/50`}
+              onClick={handleRowClick}
+            >
               <div className="flex items-center gap-2 flex-shrink-0">
                 {getSocialIcon(post.platform, 'md')}
                 <div className="w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold bg-white/80 border">
@@ -676,7 +683,7 @@ const ListView = ({ posts, allContent, currentDate, setCurrentDate, onReschedule
   };
 
   return (
-    <Card>
+    <Card className="list-view-tooltip">
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle>
@@ -770,11 +777,10 @@ const ListView = ({ posts, allContent, currentDate, setCurrentDate, onReschedule
                       const timeString = scheduledTime ? scheduledTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
                       
                       return (
-                        <EditablePost
+                        <EditableListPost
                           key={post.id}
                           post={post}
-                          editMode={editMode}
-                          shortTitle={post.title}
+                          editMode={true}
                           timeString={timeString}
                         />
                       );

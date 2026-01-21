@@ -185,3 +185,9 @@
     transform: scale(1.05);
   }
 }
+
+/* List view tooltip positioning - center horizontally */
+.list-view-tooltip [data-radix-popper-content-wrapper] {
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+}
