@@ -13,8 +13,7 @@ const AboutGoalsTab = ({ formData, onInputChange }: AboutGoalsTabProps) => {
     "Generate Leads",
     "Grow Revenue", 
     "Increase Brand Awareness",
-    "Increase Traffic",
-    "Validate an Idea"
+    "Increase Traffic"
   ];
 
   const handleGoalToggle = (goal: string) => {
