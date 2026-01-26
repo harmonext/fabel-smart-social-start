@@ -3,10 +3,39 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Users, Target, Heart, Briefcase, Sparkles, Save } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { usePersonas } from "@/hooks/usePersonas";
 import Persona1 from "./Persona1";
 import Persona2 from "./Persona2";
 import Persona3 from "./Persona3";
+
+// Loading skeleton for persona cards
+const PersonaSkeleton = () => (
+  <Card className="h-full">
+    <CardHeader className="space-y-3">
+      <div className="flex items-center gap-3">
+        <Skeleton className="h-10 w-10 rounded-full" />
+        <Skeleton className="h-6 w-32" />
+      </div>
+      <Skeleton className="h-4 w-full" />
+      <Skeleton className="h-4 w-3/4" />
+    </CardHeader>
+    <CardContent className="space-y-4">
+      <div className="space-y-2">
+        <Skeleton className="h-4 w-24" />
+        <Skeleton className="h-4 w-full" />
+      </div>
+      <div className="space-y-2">
+        <Skeleton className="h-4 w-28" />
+        <Skeleton className="h-4 w-full" />
+      </div>
+      <div className="space-y-2">
+        <Skeleton className="h-4 w-20" />
+        <Skeleton className="h-4 w-3/4" />
+      </div>
+    </CardContent>
+  </Card>
+);
 const Personas = () => {
   const {
     personas,
@@ -47,8 +76,12 @@ const Personas = () => {
     buyingMotivation: "Innovation and trends",
     contentPreferences: "Visual content, behind-the-scenes, trending topics"
   }];
-  const displayPersonas = personas.length > 0 ? personas : defaultPersonas;
+  // Only show default personas if we've finished loading and have no saved personas
+  // This prevents flickering by not showing defaults during the loading phase
+  const hasLoadedPersonas = !isLoading && personas.length > 0;
+  const displayPersonas = hasLoadedPersonas ? personas : (isLoading ? [] : defaultPersonas);
   const isUsingAIPersonas = personas.length > 0;
+  const showSkeletons = isLoading && personas.length === 0;
   const handleRegeneratePersonas = async () => {
     const success = await generatePersonas();
     if (success) {
@@ -108,9 +141,25 @@ const Personas = () => {
       <div className="space-y-6">
         {/* Persona Components */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
-          <Persona1 persona={displayPersonas[0]} />
-          <Persona2 persona={displayPersonas[1]} />
-          <Persona3 persona={displayPersonas[2]} />
+          {showSkeletons ? (
+            <>
+              <PersonaSkeleton />
+              <PersonaSkeleton />
+              <PersonaSkeleton />
+            </>
+          ) : displayPersonas.length > 0 ? (
+            <>
+              <Persona1 persona={displayPersonas[0]} />
+              {displayPersonas[1] && <Persona2 persona={displayPersonas[1]} />}
+              {displayPersonas[2] && <Persona3 persona={displayPersonas[2]} />}
+            </>
+          ) : (
+            <>
+              <Persona1 persona={defaultPersonas[0]} />
+              <Persona2 persona={defaultPersonas[1]} />
+              <Persona3 persona={defaultPersonas[2]} />
+            </>
+          )}
         </div>
 
         <Card>
