@@ -1,5 +1,6 @@
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -25,61 +26,62 @@ export interface Persona {
   user_platforms?: string[] | null;
 }
 
+const fetchSavedPersonas = async (): Promise<Persona[]> => {
+  const { data, error } = await supabase
+    .from('saved_personas')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Error loading saved personas:', error);
+    throw error;
+  }
+
+  if (data && data.length > 0) {
+    return data.map(persona => ({
+      id: persona.id,
+      name: persona.name,
+      description: persona.description,
+      location: persona.location || '',
+      psychographics: persona.psychographics || '',
+      age_ranges: persona.age_ranges || '',
+      genders: persona.genders || '',
+      top_competitors: persona.top_competitors || '',
+      social_media_top_1: persona.social_media_top_1 || '',
+      social_media_top_1_active: persona.social_media_top_1_active ?? true,
+      social_media_top_2: persona.social_media_top_2,
+      social_media_top_2_active: persona.social_media_top_2_active ?? true,
+      social_media_top_3: persona.social_media_top_3,
+      social_media_top_3_active: persona.social_media_top_3_active ?? true,
+      cac_estimate: persona.cac_estimate,
+      ltv_estimate: persona.ltv_estimate,
+      appeal_how_to: persona.appeal_how_to || '',
+      ai_platforms: Array.isArray(persona.ai_platforms) ? (persona.ai_platforms as string[]) : [],
+      user_platforms: Array.isArray(persona.user_platforms) ? (persona.user_platforms as string[]) : null,
+    }));
+  }
+
+  return [];
+};
+
 export const usePersonas = () => {
   const { toast } = useToast();
-  const [personas, setPersonas] = useState<Persona[]>([]);
+  const queryClient = useQueryClient();
   const [rawPersonaData, setRawPersonaData] = useState<string>('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
-  // Load saved personas on mount
-  useEffect(() => {
-    loadSavedPersonas();
-  }, []);
-
-  const loadSavedPersonas = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('saved_personas')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.error('Error loading saved personas:', error);
-        return;
-      }
-
-      if (data && data.length > 0) {
-        const loadedPersonas: Persona[] = data.map(persona => ({
-          id: persona.id,
-          name: persona.name,
-          description: persona.description,
-          location: persona.location || '',
-          psychographics: persona.psychographics || '',
-          age_ranges: persona.age_ranges || '',
-          genders: persona.genders || '',
-          top_competitors: persona.top_competitors || '',
-          social_media_top_1: persona.social_media_top_1 || '',
-          social_media_top_1_active: persona.social_media_top_1_active ?? true,
-          social_media_top_2: persona.social_media_top_2,
-          social_media_top_2_active: persona.social_media_top_2_active ?? true,
-          social_media_top_3: persona.social_media_top_3,
-          social_media_top_3_active: persona.social_media_top_3_active ?? true,
-          cac_estimate: persona.cac_estimate,
-          ltv_estimate: persona.ltv_estimate,
-          appeal_how_to: persona.appeal_how_to || '',
-          ai_platforms: Array.isArray(persona.ai_platforms) ? (persona.ai_platforms as string[]) : [],
-          user_platforms: Array.isArray(persona.user_platforms) ? (persona.user_platforms as string[]) : null,
-        }));
-        setPersonas(loadedPersonas);
-      }
-    } catch (error) {
-      console.error('Error loading saved personas:', error);
-    }
-  };
+  // Use react-query for cached persona fetching - prevents flicker on navigation
+  const { data: personas = [], isLoading: isLoadingPersonas } = useQuery({
+    queryKey: ['saved-personas'],
+    queryFn: fetchSavedPersonas,
+    staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
+    gcTime: 30 * 60 * 1000, // Keep in cache for 30 minutes
+    refetchOnWindowFocus: false,
+  });
 
   const generatePersonas = async (): Promise<boolean> => {
-    setIsLoading(true);
+    setIsGenerating(true);
 
     try {
       console.log('Starting persona generation...');
@@ -133,7 +135,6 @@ export const usePersonas = () => {
           ltv_estimate: persona.ltv_estimate || persona.ltvEstimate,
           appeal_how_to: persona.appeal_how_to || persona.appeal_howto || '',
         }));
-        setPersonas(mappedPersonas);
         
         // Auto-save the generated personas to the database
         try {
@@ -148,7 +149,9 @@ export const usePersonas = () => {
                description: "Personas generated but not saved automatically. Please use the Save button.",
                variant: "destructive"
              });
-             return true; // Still return true as personas were generated
+             // Update cache with generated personas even if save fails
+             queryClient.setQueryData(['saved-personas'], mappedPersonas);
+             return true;
            }
 
            if (!user) {
@@ -158,7 +161,8 @@ export const usePersonas = () => {
                description: "Personas generated but not saved automatically. Please use the Save button.",
                variant: "destructive"
              });
-             return true; // Still return true as personas were generated
+             queryClient.setQueryData(['saved-personas'], mappedPersonas);
+             return true;
            }
 
           // Delete existing saved personas for this user
@@ -213,12 +217,15 @@ export const usePersonas = () => {
               description: `Personas generated but auto-save failed: ${insertError.message}. Please use the Save button.`,
               variant: "destructive"
             });
+            queryClient.setQueryData(['saved-personas'], mappedPersonas);
           } else {
             console.log('Personas auto-saved successfully!', insertData);
             toast({
               title: "Success",
               description: "Personas generated and auto-saved successfully!",
             });
+            // Invalidate and refetch to get the saved personas with IDs
+            await queryClient.invalidateQueries({ queryKey: ['saved-personas'] });
           }
           console.log('=== AUTO-SAVE PERSONAS END ===');
          } catch (error) {
@@ -228,6 +235,7 @@ export const usePersonas = () => {
              description: "Personas generated but auto-save failed. Please use the Save button.",
              variant: "destructive"
            });
+           queryClient.setQueryData(['saved-personas'], mappedPersonas);
          }
          
          return true;
@@ -249,7 +257,7 @@ export const usePersonas = () => {
       });
       return false;
     } finally {
-      setIsLoading(false);
+      setIsGenerating(false);
     }
   };
 
@@ -358,6 +366,10 @@ export const usePersonas = () => {
         title: "Success",
         description: "Personas have been saved successfully!",
       });
+      
+      // Invalidate and refetch to update cache
+      await queryClient.invalidateQueries({ queryKey: ['saved-personas'] });
+      
       return true;
     } catch (error) {
       console.error('Unexpected error in savePersonas:', error);
@@ -402,10 +414,10 @@ export const usePersonas = () => {
         return false;
       }
 
-      // Update local state
-      setPersonas(prev => prev.map(p => 
-        p.id === personaId ? { ...p, user_platforms: platforms } : p
-      ));
+      // Update cache optimistically
+      queryClient.setQueryData(['saved-personas'], (old: Persona[] | undefined) => 
+        old?.map(p => p.id === personaId ? { ...p, user_platforms: platforms } : p) ?? []
+      );
 
       toast({
         title: "Platforms Updated",
@@ -426,7 +438,7 @@ export const usePersonas = () => {
 
   return {
     personas,
-    isLoading,
+    isLoading: isGenerating || isLoadingPersonas,
     isSaving,
     generatePersonas,
     savePersonas,
