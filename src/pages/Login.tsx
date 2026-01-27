@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -12,7 +11,6 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
-
 const Login = () => {
   const [formData, setFormData] = useState({
     email: "",
@@ -21,22 +19,23 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const { toast } = useToast();
-
+  const {
+    toast
+  } = useToast();
   const redirectToDashboard = () => {
     navigate('/dashboard');
   };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const {
+        data,
+        error
+      } = await supabase.auth.signInWithPassword({
         email: formData.email,
-        password: formData.password,
+        password: formData.password
       });
-
       if (error) {
         toast({
           title: "Sign in failed",
@@ -60,16 +59,16 @@ const Login = () => {
       setIsLoading(false);
     }
   };
-
   const handleSocialLogin = async (provider: 'google' | 'apple') => {
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
+      const {
+        error
+      } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
           redirectTo: `${window.location.origin}/dashboard`
         }
       });
-
       if (error) {
         toast({
           title: "Authentication failed",
@@ -85,19 +84,16 @@ const Login = () => {
       });
     }
   };
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData(prev => ({
       ...prev,
       [e.target.name]: e.target.value
     }));
   };
-
-  return (
-    <div className="min-h-screen">
+  return <div className="min-h-screen">
       <Navigation />
-      <div className="flex items-center justify-center bg-gradient-to-br from-soft-gold/20 via-background to-muted-teal/20 p-4 pt-24 min-h-[calc(100vh-80px)]">
-        <Card className="w-full max-w-md">
+      <div className="flex items-center justify-center bg-gradient-to-br from-soft-gold/20 via-background to-muted-teal/20 p-4 min-h-[calc(100vh-80px)] pt-[100px]">
+        <Card className="w-full max-w-md pt-0">
           <CardHeader className="space-y-1 text-center">
             <CardTitle className="text-2xl font-semibold">Welcome back</CardTitle>
             <CardDescription>
@@ -106,20 +102,12 @@ const Login = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-3">
-              <Button
-                variant="outline"
-                className="w-full h-12"
-                onClick={() => handleSocialLogin('google')}
-              >
+              <Button variant="outline" className="w-full h-12" onClick={() => handleSocialLogin('google')}>
                 <GoogleIcon className="mr-2 h-5 w-5" />
                 Continue with Google
               </Button>
               
-              <Button
-                variant="outline"
-                className="w-full h-12"
-                onClick={() => handleSocialLogin('apple')}
-              >
+              <Button variant="outline" className="w-full h-12" onClick={() => handleSocialLogin('apple')}>
                 <Apple className="mr-2 h-5 w-5" />
                 Continue with Apple
               </Button>
@@ -139,58 +127,25 @@ const Login = () => {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  placeholder="john@example.com"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  required
-                />
+                <Input id="email" name="email" type="email" placeholder="john@example.com" value={formData.email} onChange={handleInputChange} required />
               </div>
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label htmlFor="password">Password</Label>
-                  <Link
-                    to="/forgot-password"
-                    className="text-sm text-primary hover:underline"
-                  >
+                  <Link to="/forgot-password" className="text-sm text-primary hover:underline">
                     Forgot password?
                   </Link>
                 </div>
                 <div className="relative">
-                  <Input
-                    id="password"
-                    name="password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Enter your password"
-                    value={formData.password}
-                    onChange={handleInputChange}
-                    required
-                  />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
+                  <Input id="password" name="password" type={showPassword ? "text" : "password"} placeholder="Enter your password" value={formData.password} onChange={handleInputChange} required />
+                  <Button type="button" variant="ghost" size="icon" className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent" onClick={() => setShowPassword(!showPassword)}>
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </Button>
                 </div>
               </div>
 
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={isLoading}
-              >
+              <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? "Signing in..." : "Sign in"}
               </Button>
             </form>
@@ -205,8 +160,6 @@ const Login = () => {
         </Card>
       </div>
       <Footer />
-    </div>
-  );
+    </div>;
 };
-
 export default Login;
