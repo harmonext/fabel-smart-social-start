@@ -96,7 +96,7 @@ const Login = () => {
   return (
     <div className="min-h-screen">
       <Navigation />
-      <div className="flex items-center justify-center bg-gradient-to-br from-soft-gold/20 via-background to-muted-teal/20 p-4 min-h-[calc(100vh-80px)]">
+      <div className="flex items-center justify-center bg-gradient-to-br from-soft-gold/20 via-background to-muted-teal/20 p-4 pt-24 min-h-[calc(100vh-80px)]">
         <Card className="w-full max-w-md">
           <CardHeader className="space-y-1 text-center">
             <CardTitle className="text-2xl font-semibold">Welcome back</CardTitle>
