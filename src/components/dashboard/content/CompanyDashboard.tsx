@@ -135,23 +135,6 @@ const CompanyDashboard = () => {
           <Card className="hover:shadow-lg transition-shadow duration-300">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
-                <Clock className="h-8 w-8 text-amber-500" />
-                <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
-                  Scheduled
-                </Badge>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-foreground">
-                {scheduledPosts.length}
-              </div>
-              <p className="text-sm text-muted-foreground">posts scheduled</p>
-            </CardContent>
-          </Card>
-
-          <Card className="hover:shadow-lg transition-shadow duration-300">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
                 <FileText className="h-8 w-8 text-slate-500" />
                 <Badge variant="outline" className="bg-slate-50 text-slate-700 border-slate-200">
                   Draft
@@ -163,6 +146,23 @@ const CompanyDashboard = () => {
                 {draftPosts.length}
               </div>
               <p className="text-sm text-muted-foreground">drafts in progress</p>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow duration-300">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <Clock className="h-8 w-8 text-amber-500" />
+                <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
+                  Scheduled
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-foreground">
+                {scheduledPosts.length}
+              </div>
+              <p className="text-sm text-muted-foreground">posts scheduled</p>
             </CardContent>
           </Card>
 
