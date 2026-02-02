@@ -127,10 +127,21 @@ const CompanyDashboard = () => {
 
       {/* Content Status Overview */}
       <div>
-        <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
-          <FileText className="h-6 w-6 text-fabel-primary" />
-          Content Overview
-        </h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-2xl font-semibold flex items-center gap-2">
+            <FileText className="h-6 w-6 text-fabel-primary" />
+            Content Overview
+          </h2>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={handleCreateCampaign}
+            className="text-fabel-primary hover:text-fabel-primary/80 hover:bg-fabel-primary/10"
+          >
+            View All
+            <ArrowRight className="ml-1 h-4 w-4" />
+          </Button>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <Card className="hover:shadow-lg transition-shadow duration-300">
             <CardHeader className="pb-3">
